@@ -17,6 +17,9 @@
 # 关卡设计
 关卡主要分为：1.剧情类关卡；2.遗迹探索类关卡；3.无限深渊关卡。
 
+# 已实现功能
+- [x] 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板作为[游戏基础开发框架](https://github.com/TheBevyFlock/bevy_new_2d)
+
 
 # TODO List
 - [ ] LDTK软件编辑关卡
