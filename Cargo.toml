@@ -1,12 +1,16 @@
 [package]
-name = "skywalker2077"
+name = "skywalker2088"
 authors = ["Cloud Hu <cloudhu9527@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.14", features = ["wayland"] }
-rand = "0.8"
+bevy = { version = "0.14.2", features = ["wayland"] }
+rand = "0.9.0-alpha.2"
+bevy-parallax = "0.10.0"
+bevy_embedded_assets = "0.11.0"
+bevy_prototype_lyon = "0.12.0"
+#bevy_rapier2d = "0.27.0"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
     "max_level_debug",

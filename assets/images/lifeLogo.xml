@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:6f96dd9c068ac6a9c58c70e38efc9a00:eb2716e5968643612f5b4496b5fe38f7:a60cfa5004998dae0e999cae739ec7ff$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="lifeLogo.png" width="444" height="26">
+    <sprite n="playerLife1_blue.png" x="0" y="0" w="33" h="26"/>
+    <sprite n="playerLife1_green.png" x="37" y="0" w="33" h="26"/>
+    <sprite n="playerLife1_orange.png" x="74" y="0" w="33" h="26"/>
+    <sprite n="playerLife1_red.png" x="111" y="0" w="33" h="26"/>
+    <sprite n="playerLife2_blue.png" x="148" y="0" w="37" h="26"/>
+    <sprite n="playerLife2_green.png" x="185" y="0" w="37" h="26"/>
+    <sprite n="playerLife2_orange.png" x="222" y="0" w="37" h="26"/>
+    <sprite n="playerLife2_red.png" x="259" y="0" w="37" h="26"/>
+    <sprite n="playerLife3_blue.png" x="296" y="0" w="32" h="26"/>
+    <sprite n="playerLife3_green.png" x="333" y="0" w="32" h="26"/>
+    <sprite n="playerLife3_orange.png" x="370" y="0" w="32" h="26"/>
+    <sprite n="playerLife3_red.png" x="407" y="0" w="32" h="26"/>
+</TextureAtlas>

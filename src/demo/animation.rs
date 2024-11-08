@@ -14,7 +14,7 @@ use crate::{
     AppSet,
 };
 
-pub(super) fn plugin(app: &mut App) {
+pub(crate) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
     app.register_type::<PlayerAnimation>();
     app.add_systems(
@@ -78,7 +78,7 @@ fn trigger_step_sound_effect(
     for animation in &mut step_query {
         if animation.state == PlayerAnimationState::Walking
             && animation.changed()
-            && (animation.frame == 2 || animation.frame == 5)
+            && (animation.frame == 0 || animation.frame == 3)
         {
             let rng = &mut rand::thread_rng();
             let random_step = player_assets.steps.choose(rng).unwrap();
@@ -107,17 +107,22 @@ pub struct PlayerAnimation {
 pub enum PlayerAnimationState {
     Idling,
     Walking,
+    Attacking,
 }
 
 impl PlayerAnimation {
     /// The number of idle frames.
-    const IDLE_FRAMES: usize = 2;
+    const IDLE_FRAMES: usize = 0;
     /// The duration of each idle frame.
     const IDLE_INTERVAL: Duration = Duration::from_millis(500);
     /// The number of walking frames.
-    const WALKING_FRAMES: usize = 6;
+    const WALKING_FRAMES: usize = 0;
     /// The duration of each walking frame.
     const WALKING_INTERVAL: Duration = Duration::from_millis(50);
+
+    const ATTACK_FRAMES: usize = 0;
+    /// The duration of each idle frame.
+    const ATTACK_INTERVAL: Duration = Duration::from_millis(500);
 
     fn idling() -> Self {
         Self {
@@ -135,6 +140,14 @@ impl PlayerAnimation {
         }
     }
 
+    fn attacking() -> Self {
+        Self {
+            timer: Timer::new(Self::ATTACK_INTERVAL, TimerMode::Repeating),
+            frame: 0,
+            state: PlayerAnimationState::Attacking,
+        }
+    }
+
     pub fn new() -> Self {
         Self::idling()
     }
@@ -149,6 +162,7 @@ impl PlayerAnimation {
             % match self.state {
                 PlayerAnimationState::Idling => Self::IDLE_FRAMES,
                 PlayerAnimationState::Walking => Self::WALKING_FRAMES,
+                PlayerAnimationState::Attacking => Self::ATTACK_FRAMES,
             };
     }
 
@@ -158,6 +172,7 @@ impl PlayerAnimation {
             match state {
                 PlayerAnimationState::Idling => *self = Self::idling(),
                 PlayerAnimationState::Walking => *self = Self::walking(),
+                PlayerAnimationState::Attacking => *self = Self::attacking(),
             }
         }
     }
@@ -171,7 +186,8 @@ impl PlayerAnimation {
     pub fn get_atlas_index(&self) -> usize {
         match self.state {
             PlayerAnimationState::Idling => self.frame,
-            PlayerAnimationState::Walking => 6 + self.frame,
+            PlayerAnimationState::Walking => self.frame,
+            PlayerAnimationState::Attacking => self.frame,
         }
     }
 }

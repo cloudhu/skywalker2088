@@ -67,7 +67,7 @@ pub(super) fn plugin(app: &mut App) {
 ```
 
 ```rust
-// player.rs / enemy.rs / powerup.rs
+// batman / enemy.rs / powerup.rs
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

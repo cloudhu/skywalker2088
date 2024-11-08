@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:5c6acf8ef881b3a85c002291c145f36f:fc203ce5c1e51548e2904565935c06ff:966a13f1b69d90378536c71a1ea6591d$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="damage.png" width="1008" height="76">
+    <sprite n="playerShip1_damage1.png" x="0" y="0" w="99" h="76"/>
+    <sprite n="playerShip1_damage2.png" x="112" y="0" w="99" h="76"/>
+    <sprite n="playerShip1_damage3.png" x="224" y="0" w="100" h="76"/>
+    <sprite n="playerShip2_damage1.png" x="336" y="0" w="111" h="76"/>
+    <sprite n="playerShip2_damage2.png" x="448" y="0" w="112" h="76"/>
+    <sprite n="playerShip2_damage3.png" x="560" y="0" w="112" h="76"/>
+    <sprite n="playerShip3_damage1.png" x="672" y="0" w="97" h="76"/>
+    <sprite n="playerShip3_damage2.png" x="784" y="0" w="97" h="76"/>
+    <sprite n="playerShip3_damage3.png" x="896" y="0" w="97" h="76"/>
+</TextureAtlas>

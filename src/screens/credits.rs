@@ -2,20 +2,20 @@
 
 use bevy::prelude::*;
 
-use crate::{asset_tracking::LoadResource, audio::Music, screens::Screen, theme::prelude::*};
+use crate::{asset_tracking::LoadResource, audio::Music, screens::AppState, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Screen::Credits), spawn_credits_screen);
+    app.add_systems(OnEnter(AppState::Credits), spawn_credits_screen);
 
     app.load_resource::<CreditsMusic>();
-    app.add_systems(OnEnter(Screen::Credits), play_credits_music);
-    app.add_systems(OnExit(Screen::Credits), stop_music);
+    app.add_systems(OnEnter(AppState::Credits), play_credits_music);
+    app.add_systems(OnExit(AppState::Credits), stop_music);
 }
 
 fn spawn_credits_screen(mut commands: Commands) {
     commands
         .ui_root()
-        .insert(StateScoped(Screen::Credits))
+        .insert(StateScoped(AppState::Credits))
         .with_children(|children| {
             children.header("Made by");
             children.label("Joe Shmoe - Implemented aligator wrestling AI");
@@ -31,8 +31,8 @@ fn spawn_credits_screen(mut commands: Commands) {
         });
 }
 
-fn enter_title_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::Title);
+fn enter_title_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppState>>) {
+    next_screen.set(AppState::Title);
 }
 
 #[derive(Resource, Asset, Reflect, Clone)]

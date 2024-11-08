@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:11566515b6a39362a5ed90e0f4099c19:0f5fa596db4549b7a9eba09531c0a71e:d6d8f0f8bd7b73a8b05fbfe452b3202c$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="enemy.png" width="1040" height="168">
+    <sprite n="enemyBlack1.png" x="0" y="0" w="93" h="84"/>
+    <sprite n="enemyBlack2.png" x="104" y="0" w="104" h="84"/>
+    <sprite n="enemyBlack3.png" x="208" y="0" w="103" h="84"/>
+    <sprite n="enemyBlack4.png" x="312" y="0" w="82" h="84"/>
+    <sprite n="enemyBlack5.png" x="416" y="0" w="97" h="84"/>
+    <sprite n="enemyBlue1.png" x="520" y="0" w="93" h="84"/>
+    <sprite n="enemyBlue2.png" x="624" y="0" w="104" h="84"/>
+    <sprite n="enemyBlue3.png" x="728" y="0" w="103" h="84"/>
+    <sprite n="enemyBlue4.png" x="832" y="0" w="82" h="84"/>
+    <sprite n="enemyBlue5.png" x="936" y="0" w="97" h="84"/>
+    <sprite n="enemyGreen1.png" x="0" y="84" w="93" h="84"/>
+    <sprite n="enemyGreen2.png" x="104" y="84" w="104" h="84"/>
+    <sprite n="enemyGreen3.png" x="208" y="84" w="103" h="84"/>
+    <sprite n="enemyGreen4.png" x="312" y="84" w="82" h="84"/>
+    <sprite n="enemyGreen5.png" x="416" y="84" w="97" h="84"/>
+    <sprite n="enemyRed1.png" x="520" y="84" w="93" h="84"/>
+    <sprite n="enemyRed2.png" x="624" y="84" w="104" h="84"/>
+    <sprite n="enemyRed3.png" x="728" y="84" w="103" h="84"/>
+    <sprite n="enemyRed4.png" x="832" y="84" w="82" h="84"/>
+    <sprite n="enemyRed5.png" x="936" y="84" w="97" h="84"/>
+</TextureAtlas>

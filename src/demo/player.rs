@@ -8,13 +8,11 @@ use bevy::{
     render::texture::{ImageLoaderSettings, ImageSampler},
 };
 
+use crate::player::animation::PlayerAnimation;
 use crate::{
     asset_tracking::LoadResource,
-    demo::{
-        animation::PlayerAnimation,
-        movement::{MovementController, ScreenWrap},
-    },
-    screens::Screen,
+    demo::movement::{MovementController, ScreenWrap},
+    screens::AppState,
     AppSet,
 };
 
@@ -79,7 +77,7 @@ fn spawn_player(
         },
         ScreenWrap,
         player_animation,
-        StateScoped(Screen::Gameplay),
+        StateScoped(AppState::Gameplay),
     ));
 }
 
