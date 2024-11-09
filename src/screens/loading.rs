@@ -4,8 +4,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    player::batman::PlayerAssets,
     screens::{credits::CreditsMusic, gameplay::GameplayMusic, AppState},
+    ship::platform::Fonts,
     theme::{interaction::InteractionAssets, prelude::*},
 };
 
@@ -35,7 +35,7 @@ fn continue_to_title_screen(mut next_screen: ResMut<NextState<AppState>>) {
 }
 
 fn all_assets_loaded(
-    player_assets: Option<Res<PlayerAssets>>,
+    player_assets: Option<Res<Fonts>>,
     interaction_assets: Option<Res<InteractionAssets>>,
     credits_music: Option<Res<CreditsMusic>>,
     gameplay_music: Option<Res<GameplayMusic>>,

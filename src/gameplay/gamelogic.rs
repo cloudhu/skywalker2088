@@ -1,28 +1,54 @@
+use crate::components::common::Health;
+use crate::gameplay::effects::{FloatingText, HitFlash};
+use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
+use crate::gameplay::physics::{Collider, Physics};
 use crate::gameplay::GameState;
 use crate::player::batman::IsPlayer;
 use crate::screens::AppState;
-use crate::ship::platform::DespawnWithScene;
-use crate::util::Math;
+use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
+use crate::ship::platform::Fonts;
+use crate::util::{Colour, Math, RenderLayer};
 use crate::{AppSet, CameraShake, MainCamera};
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
-use std::fmt;
+use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
+use bevy_prototype_lyon::shapes;
+use rand::Rng;
+
+#[derive(Component, Default)]
+pub struct DespawnWithScene;
+
+#[derive(Component)]
+pub struct ExplodesOnDespawn {
+    pub amount_min: u32,
+    pub amount_max: u32,
+    pub spread: f32,
+    pub colour: Color,
+    pub duration_min: f32,
+    pub duration_max: f32,
+    pub size_min: f32,
+    pub size_max: f32,
+}
+
+impl Default for ExplodesOnDespawn {
+    fn default() -> Self {
+        ExplodesOnDespawn {
+            amount_min: 1,
+            amount_max: 1,
+            colour: Colour::RED,
+            duration_min: 0.3,
+            duration_max: 0.4,
+            size_min: 40.0,
+            size_max: 40.0,
+            spread: 10.0,
+        }
+    }
+}
 
 #[derive(Resource, Default)]
 pub struct GameTime(pub Stopwatch);
-
-#[derive(Resource)]
-pub struct Points {
-    pub value: u32,
-}
-
-impl fmt::Display for Points {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.value)
-    }
-}
 
 #[derive(Resource)]
 pub struct PlayerLevel {
@@ -72,28 +98,22 @@ impl Default for WillTarget {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::Gameplay), setup_new_game);
-    app.add_systems(OnExit(AppState::Gameplay), reset_game);
+    app.add_event::<TakeDamageEvent>()
+        .add_systems(OnEnter(AppState::InGame), setup_new_game);
+    app.add_systems(OnExit(AppState::InGame), reset_game);
     app.add_systems(
         Update,
         (
             game_time_system,
             camera_follow.before(ParallaxSystems),
-            // bullet_system,
-            // bullet_collision_system,
-            // combat_system,
-            // laser_render_system,
-            // explosion_render_system,
-            // expanding_collider_system,
-            // death_system,
-            // loot_magnet_system,
-            // loot_cargo_collision,
-            // seeker_system,
+            combat_system,
+            take_damage_events,
+            death_system,
         )
             .chain()
             .in_set(AppSet::TickTimers)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::Gameplay)),
+            .distributive_run_if(in_state(AppState::InGame)),
     );
 }
 fn setup_new_game(mut commands: Commands) {
@@ -157,5 +177,198 @@ pub fn camera_follow(
                 camera: camera_entity,
             });
         }
+    }
+}
+
+pub fn combat_system(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
+) {
+    for (mut health, entity) in &mut query {
+        if health.health <= 0 {
+            commands.entity(entity).insert(ShouldDespawn);
+            continue;
+        }
+
+        // Recharge shield
+        health.shield_recharge_cooldown.tick(time.delta());
+        if health.shield_recharge_cooldown.finished() {
+            health.shield_recharge_timer.tick(time.delta());
+            if health.shield_recharge_timer.just_finished() {
+                if health.shield == health.max_shield {
+                    return;
+                }
+                health.shield += 1;
+            }
+        }
+    }
+}
+
+pub fn take_damage_events(
+    mut commands: Commands,
+    fonts: Res<Fonts>,
+    mut take_damage_events: EventReader<TakeDamageEvent>,
+    mut query: Query<(
+        &Transform,
+        &mut Health,
+        Option<&IsPlayer>,
+        Option<&mut HitFlash>,
+    )>,
+    mut camera: Query<&mut CameraShake>,
+) {
+    for ev in take_damage_events.read() {
+        if let Ok((transform, mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
+            health.take_damage(ev.damage.amount);
+
+            if is_player.is_some() {
+                if let Ok(mut shake) = camera.get_single_mut() {
+                    shake.trauma = ev.damage.amount.clamp(0, 5) as f32;
+                }
+            } else {
+                // Floating Text
+                commands.spawn((
+                    FloatingText::default(),
+                    Text2dBundle {
+                        text: Text::from_section(
+                            format!("{}", ev.damage.amount),
+                            TextStyle {
+                                font: fonts.primary.clone(),
+                                font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
+                                color: if ev.damage.is_crit {
+                                    Colour::YELLOW
+                                } else {
+                                    Colour::WHITE
+                                },
+                            },
+                        )
+                        .with_justify(JustifyText::Center),
+                        transform: Transform::from_xyz(
+                            transform.translation.x,
+                            transform.translation.y + 10.0,
+                            RenderLayer::Effects.as_z(),
+                        ),
+                        ..default()
+                    },
+                ));
+            }
+
+            if let Some(mut hit_flash) = hit_flash {
+                hit_flash.hit();
+            }
+        }
+    }
+}
+
+pub fn death_system(
+    mut commands: Commands,
+    fonts: Res<Fonts>,
+    mut query: Query<
+        (
+            Entity,
+            Option<&DropsLoot>,
+            Option<&Transform>,
+            Option<&IsPlayer>,
+            Option<&ExplodesOnDespawn>,
+            Option<&WorthPoints>,
+        ),
+        With<ShouldDespawn>,
+    >,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut points: ResMut<Points>,
+) {
+    for (entity, drops_loot, transform, is_player, explodes, worth_points) in &mut query {
+        commands.entity(entity).despawn_recursive();
+
+        if let Some(transform) = transform {
+            if let Some(_drops_loot) = drops_loot {
+                spawn_loot(&mut commands, &fonts, transform.translation);
+            }
+            if let Some(explodes) = explodes {
+                explode(&mut commands, explodes, transform.translation.truncate());
+            }
+        }
+
+        if let Some(worth_points) = worth_points {
+            points.value += worth_points.value;
+        }
+
+        if let Some(_) = is_player {
+            game_state.set(GameState::GameOver);
+        }
+    }
+}
+
+fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+    let mut rng = rand::thread_rng();
+    let loots = (0..rng.gen_range(1..=3))
+        .map(|_| {
+            (
+                IsLoot,
+                Text2dBundle {
+                    text: Text::from_section(
+                        "*",
+                        TextStyle {
+                            font: fonts.primary.clone(),
+                            font_size: 12.0,
+                            color: Colour::PURPLE,
+                        },
+                    )
+                    .with_justify(JustifyText::Center),
+                    transform: Transform::from_translation(position),
+                    ..Default::default()
+                },
+                Physics {
+                    acceleration: Vec2 {
+                        x: rng.gen_range(-1.0..1.0),
+                        y: rng.gen_range(-1.0..1.0),
+                    }
+                    .normalize_or_zero()
+                        * rng.gen_range(50.0..100.0),
+                    drag: 1.0,
+                    ..Default::default()
+                },
+                Collider { radius: 20.0 },
+                DespawnWithScene,
+                WorthPoints { value: 1 },
+            )
+        })
+        .collect::<Vec<_>>();
+    commands.spawn_batch(loots);
+}
+
+fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2) {
+    // Spawn several explosions
+    let mut rng = rand::thread_rng();
+    let amount = rng.gen_range(explodes.amount_min..=explodes.amount_max);
+    for _ in 0..amount {
+        let offset = Vec2 {
+            x: rng.gen_range(-explodes.spread..=explodes.spread),
+            y: rng.gen_range(-explodes.spread..=explodes.spread),
+        };
+        commands.spawn((
+            ExplosionRender {
+                origin: position + offset,
+                radius: rng.gen_range(explodes.size_min..=explodes.size_max),
+                ttl: Timer::from_seconds(
+                    rng.gen_range(explodes.duration_min..=explodes.duration_max),
+                    TimerMode::Once,
+                ),
+                fade_out: false,
+            },
+            ShapeBundle {
+                path: GeometryBuilder::build_as(&shapes::Circle {
+                    center: position,
+                    radius: 0.0,
+                }),
+                spatial: SpatialBundle::from_transform(Transform::from_xyz(
+                    0.,
+                    0.,
+                    RenderLayer::Effects.as_z(),
+                )),
+                ..default()
+            },
+            Stroke::new(explodes.colour, 1.0),
+        ));
     }
 }

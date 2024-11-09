@@ -1,15 +1,17 @@
 use crate::asset_tracking::LoadResource;
-use crate::components::health::Health;
-use crate::gameplay::animation::{AnimationIndices, AnimationTimer};
+use crate::components::common::Health;
+use crate::gameplay::effects::HitFlash;
 use crate::gameplay::gamelogic::{
-    game_not_paused, Allegiance, PlayerLevel, Targettable, WillTarget,
+    game_not_paused, Allegiance, DespawnWithScene, ExplodesOnDespawn, PlayerLevel, Targettable,
+    WillTarget,
 };
+use crate::gameplay::loot::{Cargo, Magnet};
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
 use crate::gameplay::GameState;
 use crate::screens::AppState;
 use crate::ship::engine::Engine;
-use crate::ship::platform::{DespawnWithScene, ExplodesOnDespawn, HitFlash};
-use crate::util::RenderLayer;
+use crate::ship::platform::{Fonts, ShipBundle};
+use crate::util::{Colour, RenderLayer};
 use crate::{AppSet, CameraShake, MainCamera};
 use bevy::app::App;
 use bevy::ecs::system::RunSystemOnce;
@@ -18,36 +20,15 @@ use bevy::prelude::*;
 use bevy::render::texture::{ImageLoaderSettings, ImageSampler};
 use std::f32::consts::PI;
 
-#[derive(Component, Default)]
-pub struct Cargo {
-    pub amount: u32,
-    pub bonus_chance: f32,
-}
-
-#[derive(Component)]
-pub struct Magnet {
-    pub range: f32,
-    pub strength: f32,
-}
-
-impl Magnet {
-    pub fn default() -> Magnet {
-        Magnet {
-            range: 500.0,
-            strength: 5.0,
-        }
-    }
-}
-
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<IsPlayer>();
-    app.load_resource::<PlayerAssets>();
+
     app.add_systems(
         Update,
         (pause_control, zoom_control)
             .chain()
             .in_set(AppSet::Update)
-            .run_if(in_state(AppState::Gameplay)),
+            .run_if(in_state(AppState::InGame)),
     );
     app.add_systems(
         Update,
@@ -55,7 +36,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::Gameplay)),
+            .distributive_run_if(in_state(AppState::InGame)),
     );
 }
 
@@ -106,83 +87,33 @@ impl Command for SpawnPlayer {
     }
 }
 
-// Bundles
-#[derive(Bundle, Default)]
-pub struct ShipBundle {
-    pub physics: Physics,
-    pub engine: Engine,
-    pub health: Health,
-    pub collider: Collider,
-    pub targettable: Targettable,
-    pub will_target: WillTarget,
-    pub despawn_with_scene: DespawnWithScene,
-    pub explodes_on_despawn: ExplodesOnDespawn,
-    pub hit_flash: HitFlash,
-}
-
 // Simple components
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 #[reflect(Component)]
 pub struct IsPlayer;
 
-#[derive(Resource, Asset, Reflect, Clone)]
-pub struct PlayerAssets {
-    // This #[dependency] attribute marks the field as a dependency of the Asset.
-    // This means that it will not finish loading until the labeled asset is also loaded.
-    #[dependency]
-    pub ufo: Handle<Image>,
-    #[dependency]
-    pub steps: Vec<Handle<AudioSource>>,
-}
-
-impl PlayerAssets {
-    pub const PATH_UFO: &'static str = "images/ufo.png";
-    pub const PATH_STEP_1: &'static str = "audio/sound_effects/step1.ogg";
-    pub const PATH_STEP_2: &'static str = "audio/sound_effects/step2.ogg";
-    pub const PATH_STEP_3: &'static str = "audio/sound_effects/step3.ogg";
-    pub const PATH_STEP_4: &'static str = "audio/sound_effects/step4.ogg";
-}
-
-impl FromWorld for PlayerAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            ufo: assets.load_with_settings(
-                PlayerAssets::PATH_UFO,
-                |settings: &mut ImageLoaderSettings| {
-                    // Use `nearest` image sampling to preserve the pixel art style.
-                    settings.sampler = ImageSampler::nearest();
-                },
-            ),
-            steps: vec![
-                assets.load(PlayerAssets::PATH_STEP_1),
-                assets.load(PlayerAssets::PATH_STEP_2),
-                assets.load(PlayerAssets::PATH_STEP_3),
-                assets.load(PlayerAssets::PATH_STEP_4),
-            ],
-        }
-    }
-}
-
 // Spawn the player
-fn spawn_player(
-    In(config): In<SpawnPlayer>,
-    mut commands: Commands,
-    player_assets: Res<PlayerAssets>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-) {
-    // A texture atlas is a way to split one image with a grid into multiple
-    // sprites. By attaching it to a [`SpriteBundle`] and providing an index, we
-    // can specify which section of the image we want to see. We will use this
-    // to animate our player character. You can learn more about texture atlases in
-    // this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs Some(UVec2::splat(1))
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(91), 4, 1, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices = AnimationIndices { first: 0, last: 3 };
-
+fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_assets: Res<Fonts>) {
     commands.spawn((
         Name::new("Player"),
         ShipBundle {
+            glyph: Text2dBundle {
+                text: Text::from_section(
+                    "V",
+                    TextStyle {
+                        font: player_assets.primary.clone(),
+                        font_size: 20.0,
+                        color: Colour::PLAYER,
+                    },
+                )
+                .with_justify(JustifyText::Center),
+                transform: Transform::from_translation(Vec3 {
+                    x: 100.0,
+                    y: 100.0,
+                    z: RenderLayer::Player.as_z(),
+                }),
+                ..default()
+            },
             physics: Physics::new(config.drag),
             engine: Engine::new_with_steering(
                 config.power,
@@ -197,30 +128,15 @@ fn spawn_player(
             will_target: WillTarget(vec![Allegiance::ENEMY]),
             ..default()
         },
-        SpriteBundle {
-            texture: player_assets.ufo.clone(),
-            transform: Transform::from_translation(Vec3 {
-                x: 90.0,
-                y: 90.0,
-                z: RenderLayer::Player.as_z(),
-            }),
-            ..default()
-        },
-        TextureAtlas {
-            layout: texture_atlas_layout,
-            index: animation_indices.first,
-        },
-        animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         BaseGlyphRotation {
             rotation: Quat::from_rotation_z(PI / 2.0),
         },
         IsPlayer,
         Cargo::default(),
         Magnet::default(),
-        StateScoped(AppState::Gameplay),
+        StateScoped(AppState::InGame),
     ));
-    println!("spawning Player");
+    // println!("spawning Player");
 }
 
 pub fn player_control(
@@ -277,7 +193,7 @@ pub fn level_up_system(
         if cargo.amount >= level.required_cargo_to_level() {
             cargo.amount -= level.required_cargo_to_level();
             level.value += 1;
-            // next_state.set(GameState::Selection);
+            next_state.set(GameState::Selection);
         }
     }
 }

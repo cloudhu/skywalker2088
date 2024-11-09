@@ -1,12 +1,10 @@
+use crate::components::common::Seeker;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::Physics;
 use crate::screens::AppState;
 use crate::AppSet;
 use bevy::prelude::*;
 use std::f32::consts::PI;
-
-#[derive(Component)]
-pub struct Seeker(pub Entity);
 
 #[derive(Component)]
 pub struct Engine {
@@ -73,7 +71,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::Gameplay)),
+            .distributive_run_if(in_state(AppState::InGame)),
     );
 }
 
@@ -131,12 +129,12 @@ fn orbit(current: Vec2, target: Vec2, distance: f32) -> Vec2 {
     let distance_from_centre = current.distance(target);
     let towards_target = approach(current, target);
     if (distance_from_centre - distance_and_tolerance).abs() > ORBIT_TOLERANCE {
-        return keep_at_distance(current, target, distance);
+        keep_at_distance(current, target, distance)
     } else {
         // Circle around
         let tangental = Quat::from_rotation_z(PI / 2.0).mul_vec3(towards_target.extend(0.0));
         let new_target = current + tangental.truncate();
-        return approach(current, new_target);
+        approach(current, new_target)
     }
 }
 

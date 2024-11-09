@@ -6,16 +6,16 @@ use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::{asset_tracking::LoadResource, audio::Music, screens::AppState};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::Gameplay), spawn_level);
+    app.add_systems(OnEnter(AppState::InGame), spawn_level);
 
     app.load_resource::<GameplayMusic>();
-    app.add_systems(OnEnter(AppState::Gameplay), play_gameplay_music);
-    app.add_systems(OnExit(AppState::Gameplay), stop_music);
+    app.add_systems(OnEnter(AppState::InGame), play_gameplay_music);
+    app.add_systems(OnExit(AppState::InGame), stop_music);
 
     app.add_systems(
         Update,
         return_to_title_screen
-            .run_if(in_state(AppState::Gameplay).and_then(input_just_pressed(KeyCode::Escape))),
+            .run_if(in_state(AppState::InGame).and_then(input_just_pressed(KeyCode::Escape))),
     );
 }
 

@@ -29,5 +29,5 @@ pub enum AppState {
     Loading,
     Title,
     Credits,
-    Gameplay,
+    InGame,
 }

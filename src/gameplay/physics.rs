@@ -46,14 +46,19 @@ impl Default for Physics {
     }
 }
 
+#[derive(Component)]
+pub struct Rotator {
+    pub speed: f32,
+}
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (physics_system,)
+        (physics_system, rotator_system)
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::Gameplay)),
+            .distributive_run_if(in_state(AppState::InGame)),
     );
 }
 
@@ -82,5 +87,11 @@ pub fn physics_system(
         if let Some(base_rotation) = base_rotation {
             transform.rotation *= base_rotation.rotation; // Multiplication is like combining rotations together
         }
+    }
+}
+
+pub fn rotator_system(time: Res<Time>, mut query: Query<(&mut Transform, &Rotator)>) {
+    for (mut transform, rotator) in &mut query {
+        transform.rotate(Quat::from_rotation_z(rotator.speed * time.delta_seconds()));
     }
 }

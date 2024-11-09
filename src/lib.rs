@@ -4,6 +4,7 @@ mod components;
 // mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod enemy;
 mod gameplay;
 mod player;
 mod screens;
@@ -80,6 +81,7 @@ impl Plugin for AppPlugin {
             player::plugin,
             gameplay::plugin,
             ship::plugin,
+            enemy::plugin,
         ));
 
         // Enable dev tools for dev builds.

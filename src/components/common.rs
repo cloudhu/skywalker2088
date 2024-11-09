@@ -1,6 +1,12 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
+pub struct Seeker(pub Entity);
+
+#[derive(Reflect, Component)]
+pub struct Owner(pub Entity);
+
+#[derive(Component)]
 pub struct Health {
     pub health: i32,
     pub shield: i32,
