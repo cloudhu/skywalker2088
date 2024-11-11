@@ -144,7 +144,7 @@ pub fn seeker_system(
     target_query: Query<&Transform, With<Transform>>,
 ) {
     for (seeker, mut engine) in &mut query {
-        if let Some(_) = commands.get_entity(seeker.0) {
+        if commands.get_entity(seeker.0).is_some() {
             if let Ok(target) = target_query.get(seeker.0) {
                 engine.target = Some(target.translation.truncate());
             }

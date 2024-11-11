@@ -125,8 +125,8 @@ fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_asse
             collider: Collider {
                 radius: config.radius,
             },
-            targettable: Targettable(Allegiance::PLAYER),
-            will_target: WillTarget(vec![Allegiance::ENEMY]),
+            targettable: Targettable(Allegiance::Friend),
+            will_target: WillTarget(vec![Allegiance::Enemy]),
             ..default()
         },
         BaseGlyphRotation {

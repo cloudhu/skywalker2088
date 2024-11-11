@@ -97,13 +97,7 @@ pub fn bullet_system(
             if let Some(aoe_damage) = aoe_damage {
                 let potentials = potential_query
                     .iter()
-                    .filter_map(|potential| {
-                        if potential.2 == owner.0 {
-                            // Source of bullet cannot be hit
-                            return None;
-                        }
-                        Some(potential)
-                    })
+                    .filter(|&potential| potential.2 != owner.0)
                     .collect::<Vec<_>>();
                 do_aoe_damage(
                     potentials,
@@ -146,13 +140,7 @@ pub fn bullet_collision_system(
         // Get all potentials
         let potentials = potential_query
             .iter()
-            .filter_map(|potential| {
-                if potential.2 == owner.0 {
-                    // Source of bullet cannot be hit
-                    return None;
-                }
-                Some(potential)
-            })
+            .filter(|&potential| potential.2 != owner.0)
             .collect::<Vec<_>>();
 
         // Sort by distance to bullet

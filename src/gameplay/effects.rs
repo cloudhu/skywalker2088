@@ -86,10 +86,8 @@ pub fn hit_flash_system(time: Res<Time>, mut query: Query<(&mut Text, &mut HitFl
         if !hit_flash.timer.paused() && hit_flash.timer.elapsed().is_zero() {
             // Store the actual colour once
             if hit_flash.original_colour.is_none() {
-                hit_flash.original_colour = text
-                    .sections
-                    .first()
-                    .and_then(|section| Some(section.style.color));
+                hit_flash.original_colour =
+                    text.sections.first().map(|section| section.style.color);
             }
             // Set to flash colour
             text.sections

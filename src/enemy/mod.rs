@@ -152,7 +152,7 @@ fn ai_system(
     }
 }
 
-fn separation(position: Vec2, neighbours: &Vec<Vec2>) -> Vec2 {
+fn separation(position: Vec2, neighbours: &[Vec2]) -> Vec2 {
     if neighbours.is_empty() {
         return Vec2::ZERO;
     }
@@ -170,19 +170,17 @@ fn spawn_final_boss_system(
     query: Query<(), With<FinalBoss>>,
     player_query: Query<&Transform, With<IsPlayer>>,
 ) {
-    if game_time.0.elapsed_secs() > 60.0 * 10.0 {
-        if query.is_empty() {
-            // Spawn final boss
-            let pos = player_query
-                .get_single()
-                .map(|transform| transform.translation.truncate())
-                .unwrap_or_default();
-            let spawn_point = pos + Math::random_2d_unit_vector() * 1000.0;
-            spawn_final_boss(
-                &mut commands,
-                &fonts,
-                spawn_point.extend(RenderLayer::Enemy.as_z()),
-            )
-        }
+    if (game_time.0.elapsed_secs() > 60.0 * 10.0) & query.is_empty() {
+        // Spawn final boss
+        let pos = player_query
+            .get_single()
+            .map(|transform| transform.translation.truncate())
+            .unwrap_or_default();
+        let spawn_point = pos + Math::random_2d_unit_vector() * 1000.0;
+        spawn_final_boss(
+            &mut commands,
+            &fonts,
+            spawn_point.extend(RenderLayer::Enemy.as_z()),
+        )
     }
 }

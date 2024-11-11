@@ -30,7 +30,7 @@ impl Physics {
         }
     }
 
-    pub fn add_force(&mut self, force: Vec2) -> () {
+    pub fn add_force(&mut self, force: Vec2) {
         self.acceleration += force;
     }
 }
@@ -71,8 +71,8 @@ pub fn physics_system(
 ) {
     for (mut transform, mut physics, base_rotation) in &mut query {
         // Not sure how to avoid cloning here
-        let current_acceleration = physics.acceleration.clone();
-        let drag = physics.drag.clone();
+        let current_acceleration = physics.acceleration;
+        let drag = physics.drag;
         physics.velocity += current_acceleration;
         transform.translation += physics.velocity.extend(0.0) * time.delta_seconds();
         // println!("Player translate at {:?}", transform.translation);

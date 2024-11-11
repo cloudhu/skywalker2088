@@ -156,7 +156,7 @@ fn bar(current: i32, max: i32, width: i32) -> String {
     }
     let bars: usize = (current.clamp(0, max) * width / max)
         .try_into()
-        .unwrap_or_else(|_| 0);
+        .unwrap_or(0);
     format!(
         "{}{}",
         String::from('|').repeat(bars),

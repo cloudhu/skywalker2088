@@ -32,10 +32,7 @@ impl PlayerUpgrades {
     pub fn reached_max_passives(&self) -> bool {
         self.0
             .iter()
-            .filter(|(upgrade, _)| match upgrade {
-                UpgradeEvent::Passive(_) => true,
-                _ => false,
-            })
+            .filter(|(upgrade, _)| matches!(upgrade, UpgradeEvent::Passive(_)))
             .count()
             >= 6
     }
@@ -43,10 +40,7 @@ impl PlayerUpgrades {
     pub fn reached_max_weapons(&self) -> bool {
         self.0
             .iter()
-            .filter(|(upgrade, _)| match upgrade {
-                UpgradeEvent::Weapon(_) => true,
-                _ => false,
-            })
+            .filter(|(upgrade, _)| matches!(upgrade, UpgradeEvent::Weapon(_)))
             .count()
             >= 4
     }
@@ -209,89 +203,80 @@ fn upgrade_weapon_event(
     mut existing_mine_launcher: Query<&mut EffectSize>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Weapon(weapon) => {
-                // Get player
-                for (player_entity, children) in &player_query {
-                    // Search for existing
-                    let existing = match children {
-                        Some(children) => children.iter().find(|child| {
-                            if let Ok(turret) = turret_query.get(**child) {
-                                return turret == weapon;
-                            }
-                            return false;
-                        }),
-                        None => None,
-                    };
+        if let UpgradeEvent::Weapon(weapon) = ev {
+            // Get player
+            for (player_entity, children) in &player_query {
+                // Search for existing
+                let existing = match children {
+                    Some(children) => children.iter().find(|child| {
+                        if let Ok(turret) = turret_query.get(**child) {
+                            return turret == weapon;
+                        }
+                        false
+                    }),
+                    None => None,
+                };
 
-                    match existing {
-                        Some(entity) => {
-                            // TODO split up logic into systems
-                            match weapon {
-                                TurretClass::AutoCannon => {
-                                    let mut fire_rate =
-                                        existing_auto_cannon.get_mut(*entity).unwrap();
-                                    let new_rate = fire_rate.rate * 2.0;
-                                    fire_rate.set_rate_in_seconds(new_rate);
-                                }
-                                TurretClass::BlastLaser => {
-                                    let mut fire_rate =
-                                        existing_auto_cannon.get_mut(*entity).unwrap();
-                                    let new_rate = fire_rate.rate * 2.0;
-                                    fire_rate.set_rate_in_seconds(new_rate);
-                                }
-                                TurretClass::RocketLauncher => {
-                                    let mut shots =
-                                        existing_rocket_launcher.get_mut(*entity).unwrap();
-                                    shots.amount += 1;
-                                }
-                                TurretClass::ShrapnelCannon => {
-                                    let mut damage =
-                                        existing_shrapnel_cannon.get_mut(*entity).unwrap();
-                                    damage.amount += 1;
-                                }
-                                TurretClass::MineLauncher => {
-                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
-                                    size.0 *= 1.5;
-                                }
-                                TurretClass::ChainLaser => {
-                                    let mut shots =
-                                        existing_rocket_launcher.get_mut(*entity).unwrap();
-                                    shots.amount += 1;
-                                }
-                                TurretClass::PierceLaser => {
-                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
-                                    size.0 += 2.0;
-                                }
-                                TurretClass::Emp => {
-                                    let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
-                                    size.0 += 20.0;
-                                }
+                match existing {
+                    Some(entity) => {
+                        // TODO split up logic into systems
+                        match weapon {
+                            TurretClass::AutoCannon => {
+                                let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                let new_rate = fire_rate.rate * 2.0;
+                                fire_rate.set_rate_in_seconds(new_rate);
+                            }
+                            TurretClass::BlastLaser => {
+                                let mut fire_rate = existing_auto_cannon.get_mut(*entity).unwrap();
+                                let new_rate = fire_rate.rate * 2.0;
+                                fire_rate.set_rate_in_seconds(new_rate);
+                            }
+                            TurretClass::RocketLauncher => {
+                                let mut shots = existing_rocket_launcher.get_mut(*entity).unwrap();
+                                shots.amount += 1;
+                            }
+                            TurretClass::ShrapnelCannon => {
+                                let mut damage = existing_shrapnel_cannon.get_mut(*entity).unwrap();
+                                damage.amount += 1;
+                            }
+                            TurretClass::MineLauncher => {
+                                let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                size.0 *= 1.5;
+                            }
+                            TurretClass::ChainLaser => {
+                                let mut shots = existing_rocket_launcher.get_mut(*entity).unwrap();
+                                shots.amount += 1;
+                            }
+                            TurretClass::PierceLaser => {
+                                let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                size.0 += 2.0;
+                            }
+                            TurretClass::Emp => {
+                                let mut size = existing_mine_launcher.get_mut(*entity).unwrap();
+                                size.0 += 20.0;
                             }
                         }
-                        None => {
-                            commands.entity(player_entity).with_children(|parent| {
-                                let mut bundle = TurretBundle::from_class(weapon);
+                    }
+                    None => {
+                        commands.entity(player_entity).with_children(|parent| {
+                            let mut bundle = TurretBundle::from_class(weapon);
 
-                                // Apply existing upgrades
-                                for (upgrade, level) in upgrades.0.iter() {
-                                    match upgrade {
-                                        UpgradeEvent::Passive(passive) => apply_turret_upgrade(
-                                            (&mut bundle.fire_rate, &mut bundle.damage),
-                                            passive,
-                                            *level,
-                                        ),
-                                        _ => (),
-                                    }
+                            // Apply existing upgrades
+                            for (upgrade, level) in upgrades.0.iter() {
+                                if let UpgradeEvent::Passive(passive) = upgrade {
+                                    apply_turret_upgrade(
+                                        (&mut bundle.fire_rate, &mut bundle.damage),
+                                        passive,
+                                        *level,
+                                    )
                                 }
+                            }
 
-                                parent.spawn(bundle);
-                            });
-                        }
+                            parent.spawn(bundle);
+                        });
                     }
                 }
             }
-            _ => (),
         }
     }
 }
@@ -301,14 +286,11 @@ fn upgrade_magnet_event(
     mut query: Query<&mut Magnet, With<IsPlayer>>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Passive(Passive::Magnet) => {
-                for mut magnet in &mut query {
-                    magnet.range += 200.0;
-                    magnet.strength += 2.0;
-                }
+        if let UpgradeEvent::Passive(Passive::Magnet) = ev {
+            for mut magnet in &mut query {
+                magnet.range += 200.0;
+                magnet.strength += 2.0;
             }
-            _ => (),
         }
     }
 }
@@ -318,14 +300,11 @@ fn upgrade_speed_event(
     mut query: Query<&mut Engine, With<IsPlayer>>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Passive(Passive::Speed) => {
-                for mut engine in &mut query {
-                    engine.power += 2.0;
-                    engine.max_speed += 4.0;
-                }
+        if let UpgradeEvent::Passive(Passive::Speed) = ev {
+            for mut engine in &mut query {
+                engine.power += 2.0;
+                engine.max_speed += 4.0;
             }
-            _ => (),
         }
     }
 }
@@ -371,13 +350,10 @@ fn upgrade_experience_event(
     mut query: Query<&mut Cargo, With<IsPlayer>>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Passive(Passive::Experience) => {
-                for mut cargo in &mut query {
-                    cargo.bonus_chance += 0.1;
-                }
+        if let UpgradeEvent::Passive(Passive::Experience) = ev {
+            for mut cargo in &mut query {
+                cargo.bonus_chance += 0.1;
             }
-            _ => (),
         }
     }
 }
@@ -387,13 +363,10 @@ fn upgrade_heal_event(
     mut query: Query<&mut Health, With<IsPlayer>>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Heal => {
-                for mut health in &mut query {
-                    health.heal(50);
-                }
+        if let UpgradeEvent::Heal = ev {
+            for mut health in &mut query {
+                health.heal(50);
             }
-            _ => (),
         }
     }
 }
@@ -404,16 +377,13 @@ fn upgrade_fire_rate_events(
     mut turret_query: Query<(&mut FireRate, &mut DoesDamage)>,
 ) {
     for ev in upgrade_event.read() {
-        match ev {
-            UpgradeEvent::Passive(passive) => {
-                let turrets = player_query.iter().flat_map(|children| children.iter());
-                for turret in turrets {
-                    if let Ok((mut fire_rate, mut damage)) = turret_query.get_mut(*turret) {
-                        apply_turret_upgrade((&mut fire_rate, &mut damage), passive, 1);
-                    }
+        if let UpgradeEvent::Passive(passive) = ev {
+            let turrets = player_query.iter().flat_map(|children| children.iter());
+            for turret in turrets {
+                if let Ok((mut fire_rate, mut damage)) = turret_query.get_mut(*turret) {
+                    apply_turret_upgrade((&mut fire_rate, &mut damage), passive, 1);
                 }
             }
-            _ => (),
         }
     }
 }

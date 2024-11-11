@@ -216,7 +216,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
             });
             parent.spawn(TextBundle {
                 text: Text::from_section(
-                    format!("{}", upgrade.describe()),
+                    upgrade.describe().to_string(),
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 14.0,

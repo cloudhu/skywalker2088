@@ -75,8 +75,8 @@ pub struct TakeDamageEvent {
 
 #[derive(PartialEq)]
 pub enum Allegiance {
-    PLAYER,
-    ENEMY,
+    Friend,
+    Enemy,
 }
 
 #[derive(Component)]
@@ -84,7 +84,7 @@ pub struct Targettable(pub Allegiance);
 
 impl Default for Targettable {
     fn default() -> Self {
-        Targettable(Allegiance::ENEMY)
+        Targettable(Allegiance::Enemy)
     }
 }
 
@@ -93,7 +93,7 @@ pub struct WillTarget(pub Vec<Allegiance>);
 
 impl Default for WillTarget {
     fn default() -> Self {
-        WillTarget(vec![Allegiance::PLAYER])
+        WillTarget(vec![Allegiance::Friend])
     }
 }
 
@@ -293,7 +293,7 @@ pub fn death_system(
             points.value += worth_points.value;
         }
 
-        if let Some(_) = is_player {
+        if is_player.is_some() {
             game_state.set(GameState::GameOver);
         }
     }
