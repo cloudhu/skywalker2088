@@ -1,8 +1,8 @@
 use crate::components::common::Health;
 use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
+use crate::gameplay::player::IsPlayer;
 use crate::gameplay::upgrade::PlayerUpgrades;
-use crate::player::batman::IsPlayer;
 use crate::screens::AppState;
 use crate::ship::engine::Engine;
 use crate::ship::platform::Fonts;

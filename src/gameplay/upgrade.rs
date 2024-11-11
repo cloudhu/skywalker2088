@@ -1,6 +1,6 @@
 use crate::components::common::Health;
 use crate::gameplay::loot::{Cargo, Magnet};
-use crate::player::batman::IsPlayer;
+use crate::gameplay::player::IsPlayer;
 use crate::screens::AppState;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, EffectSize, FireRate, MultiShot, TurretBundle, TurretClass};

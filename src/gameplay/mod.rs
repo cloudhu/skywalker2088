@@ -5,12 +5,11 @@ pub mod gamelogic;
 mod hud;
 pub mod level;
 pub mod loot;
-mod menu;
 mod object;
 pub mod physics;
+pub mod player;
 mod selection;
 mod upgrade;
-
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -24,8 +23,9 @@ pub(super) fn plugin(app: &mut App) {
         loot::plugin,
         selection::plugin,
         upgrade::plugin,
-        menu::plugin,
         object::plugin,
+        hud::plugin,
+        player::plugin,
     ));
 }
 

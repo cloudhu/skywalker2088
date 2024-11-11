@@ -1,13 +1,12 @@
 //! Spawn the main level.
-
-use crate::player::batman::SpawnPlayer;
+use crate::gameplay::player::SpawnPlayer;
 use bevy::{ecs::world::Command, prelude::*};
 
-pub(crate) fn plugin(_app: &mut App) {
-    // No setup required for this plugin.
-    // It's still good to have a function here so that we can add some setup
-    // later if needed.
-}
+// pub(crate) fn plugin(_app: &mut App) {
+//     // No setup required for this plugin.
+//     // It's still good to have a function here so that we can add some setup
+//     // later if needed.
+// }
 
 /// A [`Command`] to spawn the level.
 /// Functions that accept only `&mut World` as their parameter implement [`Command`].

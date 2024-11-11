@@ -14,13 +14,12 @@ use crate::enemy::final_boss::spawn_final_boss;
 use crate::enemy::mothership::spawn_mothership;
 use crate::gameplay::gamelogic::{game_not_paused, GameTime};
 use crate::gameplay::physics::Physics;
+use crate::gameplay::player::IsPlayer;
 use crate::gameplay::GameState;
-use crate::player::batman::IsPlayer;
 use crate::screens::AppState;
 use crate::ship::engine::{Engine, EngineMethod};
 use crate::ship::platform::Fonts;
 use crate::util::{Math, RenderLayer};
-use bevy::prelude::*;
 use rand::Rng;
 
 #[derive(Resource)]

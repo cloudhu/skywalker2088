@@ -1,8 +1,6 @@
-use crate::asset_tracking::LoadResource;
 use crate::components::common::Health;
-use crate::gameplay::effects::HitFlash;
 use crate::gameplay::gamelogic::{
-    game_not_paused, Allegiance, DespawnWithScene, ExplodesOnDespawn, PlayerLevel, Targettable,
+    game_not_paused, Allegiance, PlayerLevel, Targettable,
     WillTarget,
 };
 use crate::gameplay::loot::{Cargo, Magnet};
@@ -17,7 +15,6 @@ use bevy::app::App;
 use bevy::ecs::system::RunSystemOnce;
 use bevy::ecs::world::Command;
 use bevy::prelude::*;
-use bevy::render::texture::{ImageLoaderSettings, ImageSampler};
 use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
@@ -168,7 +165,7 @@ pub fn pause_control(
     mut change_game_state: ResMut<NextState<GameState>>,
     mut query: Query<&mut CameraShake>,
 ) {
-    if key_input.just_pressed(KeyCode::Escape) {
+    if key_input.just_pressed(KeyCode::Space) {
         match game_state.get() {
             GameState::Running => change_game_state.set(GameState::Paused),
             GameState::Paused => change_game_state.set(GameState::Running),

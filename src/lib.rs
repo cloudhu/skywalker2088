@@ -6,7 +6,7 @@ mod components;
 mod dev_tools;
 mod enemy;
 mod gameplay;
-mod player;
+
 mod screens;
 mod ship;
 mod theme;
@@ -78,7 +78,6 @@ impl Plugin for AppPlugin {
             // demo::plugin,
             screens::plugin,
             theme::plugin,
-            player::plugin,
             gameplay::plugin,
             ship::plugin,
             enemy::plugin,
@@ -156,7 +155,7 @@ fn spawn_camera(mut commands: Commands, mut create_parallax: EventWriter<CreateP
         layers_data: vec![
             LayerData {
                 speed: LayerSpeed::Bidirectional(0.95, 0.95),
-                path: "background/nebula-tile.png".to_string(),
+                path: "background/black.png".to_string(),
                 tile_size: UVec2::new(1024, 1024),
                 scale: Vec2::splat(5.0),
                 z: RenderLayer::Background.as_z_with_offset(-10.),
