@@ -132,8 +132,8 @@ fn orbit(current: Vec2, target: Vec2, distance: f32) -> Vec2 {
         keep_at_distance(current, target, distance)
     } else {
         // Circle around
-        let tangental = Quat::from_rotation_z(PI / 2.0).mul_vec3(towards_target.extend(0.0));
-        let new_target = current + tangental.truncate();
+        let tangential = Quat::from_rotation_z(PI / 2.0).mul_vec3(towards_target.extend(0.0));
+        let new_target = current + tangential.truncate();
         approach(current, new_target)
     }
 }

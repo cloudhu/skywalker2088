@@ -33,7 +33,7 @@ pub fn generate_object_geometry(sides: i32, min_radius: f32, max_radius: f32) ->
 fn spawn_space_object(commands: &mut Commands) {
     let mut rng = thread_rng();
     let position = util::Math::random_2d_unit_vector() * 500.0;
-    let size: f32 = rng.gen_range(20.0..40.0);
+    let size: f32 = rng.gen_range(20.0..50.0);
     commands.spawn((
         SpaceObject,
         Collider { radius: size },
@@ -45,7 +45,7 @@ fn spawn_space_object(commands: &mut Commands) {
         Rotator {
             speed: rng.gen_range(-0.4..0.4),
         },
-        Health::new(50, 0),
+        Health::new(size as i32, 0),
         Stroke::new(Colour::WHITE, 2.0),
         ShapeBundle {
             path: generate_object_geometry(10, size - 10., size + 10.),
@@ -55,8 +55,8 @@ fn spawn_space_object(commands: &mut Commands) {
             ..default()
         },
         ExplodesOnDespawn {
-            size_min: 50.0,
-            size_max: 100.0,
+            size_min: size,
+            size_max: size + 20.0,
             ..Default::default()
         },
     ));

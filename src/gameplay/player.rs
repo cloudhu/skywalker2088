@@ -1,20 +1,24 @@
-use crate::components::common::Health;
-use crate::gameplay::gamelogic::{
-    game_not_paused, Allegiance, PlayerLevel, Targettable,
-    WillTarget,
+use crate::{
+    components::common::Health,
+    gameplay::{
+        gamelogic::{game_not_paused, Allegiance, PlayerLevel, Targettable, WillTarget},
+        loot::{Cargo, Magnet},
+        physics::{BaseGlyphRotation, Collider, Physics},
+        GameState,
+    },
+    screens::AppState,
+    ship::{
+        engine::Engine,
+        platform::{Fonts, ShipBundle},
+    },
+    util::{Colour, RenderLayer},
+    AppSet, CameraShake, MainCamera,
 };
-use crate::gameplay::loot::{Cargo, Magnet};
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
-use crate::gameplay::GameState;
-use crate::screens::AppState;
-use crate::ship::engine::Engine;
-use crate::ship::platform::{Fonts, ShipBundle};
-use crate::util::{Colour, RenderLayer};
-use crate::{AppSet, CameraShake, MainCamera};
-use bevy::app::App;
-use bevy::ecs::system::RunSystemOnce;
-use bevy::ecs::world::Command;
-use bevy::prelude::*;
+use bevy::{
+    app::App,
+    ecs::{system::RunSystemOnce, world::Command},
+    prelude::*,
+};
 use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {

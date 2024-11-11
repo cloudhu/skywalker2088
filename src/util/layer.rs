@@ -17,7 +17,7 @@ impl RenderLayer {
             panic!("Layer offset can not be 100 or more");
         }
         let base = self as u16 as f32;
-        return (base + offset) as f32;
+        base + offset
     }
 
     pub const fn as_z(self) -> f32 {
