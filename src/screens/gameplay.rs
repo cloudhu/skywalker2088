@@ -3,7 +3,6 @@
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
 use crate::gameplay::GameState;
-use crate::ship::platform::Fonts;
 use crate::theme::interaction::OnPress;
 use crate::{asset_tracking::LoadResource, audio::Music, screens::AppState, theme::prelude::*};
 use bevy::input::common_conditions::input_just_pressed;
@@ -68,20 +67,13 @@ fn return_to_title_screen(mut next_screen: ResMut<NextState<AppState>>) {
     next_screen.set(AppState::Title);
 }
 
-fn setup_game_over(mut commands: Commands, fonts: Res<Fonts>, points: Res<Points>) {
+fn setup_game_over(mut commands: Commands, points: Res<Points>) {
     commands
         .ui_root()
         .insert(StateScoped(GameState::GameOver))
-        .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                format!("{} points!", points.into_inner()),
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 30.0,
-                    color: Color::srgb(0.9, 0.9, 0.9),
-                },
-            ));
-            parent
+        .with_children(|children| {
+            children.label(format!("{} points!", points.into_inner()));
+            children
                 .button("Return To Title")
                 .observe(return_title_screen);
         });

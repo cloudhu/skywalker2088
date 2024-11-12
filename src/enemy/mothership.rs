@@ -18,7 +18,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
             ShipBundle {
                 glyph: Text2dBundle {
                     text: Text::from_section(
-                        "@",
+                        "王",
                         TextStyle {
                             font: fonts.primary.clone(),
                             font_size: 60.0,

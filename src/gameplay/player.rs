@@ -100,7 +100,7 @@ fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_asse
         ShipBundle {
             glyph: Text2dBundle {
                 text: Text::from_section(
-                    "V",
+                    "中",
                     TextStyle {
                         font: player_assets.primary.clone(),
                         font_size: 20.0,

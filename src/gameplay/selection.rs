@@ -1,8 +1,10 @@
+use crate::audio::SoundEffect;
 use crate::gameplay::gamelogic::PlayerLevel;
 use crate::gameplay::upgrade::{PlayerUpgrades, UpgradeEvent};
 use crate::gameplay::GameState;
 use crate::ship::platform::Fonts;
 use crate::ship::turret::TurretClass;
+use crate::theme::interaction::InteractionAssets;
 use crate::util::Colour;
 use bevy::prelude::*;
 use rand::Rng;
@@ -126,8 +128,11 @@ fn menu(
         (Changed<Interaction>, With<Button>, With<SelectionButton>),
     >,
     mut upgrade_event: EventWriter<UpgradeEvent>,
+    interaction_assets: Res<InteractionAssets>,
+    mut commands: Commands,
 ) {
     for (interaction, mut color, button) in &mut interaction_query {
+        let mut source = interaction_assets.press.clone();
         match *interaction {
             Interaction::Pressed => {
                 upgrade_event.send(button.0);
@@ -135,11 +140,19 @@ fn menu(
             }
             Interaction::Hovered => {
                 *color = HOVERED_BUTTON.into();
+                source = interaction_assets.hover.clone();
             }
             Interaction::None => {
                 *color = NORMAL_BUTTON.into();
             }
         }
+        commands.spawn((
+            AudioBundle {
+                source,
+                settings: PlaybackSettings::DESPAWN,
+            },
+            SoundEffect,
+        ));
     }
 }
 

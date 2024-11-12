@@ -18,7 +18,7 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
             ShipBundle {
                 glyph: Text2dBundle {
                     text: Text::from_section(
-                        "w",
+                        "W",
                         TextStyle {
                             font: fonts.primary.clone(),
                             font_size: 18.0,

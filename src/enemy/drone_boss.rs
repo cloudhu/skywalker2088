@@ -17,7 +17,7 @@ pub fn spawn_drone_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
             ShipBundle {
                 glyph: Text2dBundle {
                     text: Text::from_section(
-                        "C",
+                        "冞",
                         TextStyle {
                             font: fonts.primary.clone(),
                             font_size: 32.0,

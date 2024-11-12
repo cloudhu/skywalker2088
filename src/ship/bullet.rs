@@ -2,6 +2,7 @@ use crate::components::common::*;
 use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
 use crate::gameplay::physics::Collider;
 use crate::screens::AppState;
+use crate::ship::platform::{play_sound_effects, SoundAssets};
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, Path, Stroke};
@@ -209,12 +210,16 @@ fn do_aoe_damage(
 }
 
 pub fn laser_render_system(
+    mut commands: Commands,
     mut query: Query<(&Bullet, &mut Stroke), (With<LaserRender>, With<Bullet>, With<Stroke>)>,
+    sound_assets: Res<SoundAssets>,
 ) {
     for (bullet, mut stroke) in &mut query {
         stroke
             .color
             .set_alpha(bullet.time2live.fraction_remaining());
+        //播放laser音效
+        play_sound_effects(&mut commands, sound_assets.laser1.clone());
     }
 }
 
@@ -225,10 +230,12 @@ pub fn explosion_render_system(
         (&mut ExplosionRender, &mut Path, Entity, &mut Stroke),
         Without<ShouldDespawn>,
     >,
+    sound_assets: Res<SoundAssets>,
 ) {
     for (mut explosion, mut path, entity, mut stroke) in &mut query {
         explosion.ttl.tick(time.delta());
-
+        //播放爆炸音效
+        play_sound_effects(&mut commands, sound_assets.big_explosion.clone());
         let shape = shapes::Circle {
             center: explosion.origin,
             radius: explosion.radius * explosion.ttl.fraction(),

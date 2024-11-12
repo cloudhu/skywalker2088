@@ -9,7 +9,7 @@ use crate::ship::bullet::{
     AoeDamage, Bullet, DirectDamage, ExpandingCollider, ExplosionRender, LaserRender,
 };
 use crate::ship::engine::Engine;
-use crate::ship::platform::Fonts;
+use crate::ship::platform::{play_sound_effects, Fonts, SoundAssets};
 use crate::util::{Colour, Math, RenderLayer};
 use bevy::ecs::query::QueryEntityError;
 use bevy::prelude::*;
@@ -676,6 +676,7 @@ pub fn fire_mine_launcher(
     turret_query: Query<(&Parent, &DoesDamage, &EffectSize, &EffectColour, &MultiShot)>,
     parent_query: Query<&Transform>,
     fonts: Res<Fonts>,
+    sound_assets: Res<SoundAssets>,
 ) {
     for ev in fire_event.read() {
         if ev.class == TurretClass::MineLauncher {
@@ -691,6 +692,8 @@ pub fn fire_mine_launcher(
 
             // Spawn mine
             let origin = parent_transform.translation.truncate();
+            //播放音效
+            play_sound_effects(&mut commands, sound_assets.zap.clone());
             commands.spawn((
                 Bullet::new(30.0),
                 Text2dBundle {
@@ -807,6 +810,7 @@ pub fn fire_rocket_launcher(
     turret_query: Query<(&Parent, &Targets, &DoesDamage, &MultiShot, &EffectColour)>,
     parent_query: Query<&Transform>,
     fonts: Res<Fonts>,
+    sound_assets: Res<SoundAssets>,
 ) {
     for ev in fire_event.read() {
         if ev.class == TurretClass::RocketLauncher {
@@ -828,6 +832,8 @@ pub fn fire_rocket_launcher(
             // Spawn rocket
             let origin = parent_transform.translation.truncate();
             for _ in 0..shots.amount {
+                //播放音效
+                play_sound_effects(&mut commands, sound_assets.player_fire.clone());
                 commands.spawn((
                     Bullet::new(3.0),
                     Text2dBundle {
@@ -879,6 +885,7 @@ pub fn fire_shrapnel_cannon(
     parent_query: Query<&Transform>,
     target_query: Query<&Transform>,
     fonts: Res<Fonts>,
+    sound_assets: Res<SoundAssets>,
 ) {
     for ev in fire_event.read() {
         if ev.class == TurretClass::ShrapnelCannon {
@@ -910,7 +917,8 @@ pub fn fire_shrapnel_cannon(
             let origin = parent_transform.translation.truncate();
             let destination = target_transform.translation.truncate();
             let direction = (destination - origin).normalize();
-
+            //播放音效
+            play_sound_effects(&mut commands, sound_assets.bullet_explosion.clone());
             let mut rng: rand::rngs::ThreadRng = rand::thread_rng();
             for _ in 0..shots.amount {
                 let random_angle = rng.gen_range(-SPREAD / 2.0..SPREAD / 2.0);
