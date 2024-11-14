@@ -967,9 +967,11 @@ dependencies = [
  "hexasphere",
  "image",
  "js-sys",
+ "ktx2",
  "naga",
  "naga_oil",
  "nonmax",
+ "ruzstd",
  "send_wrapper",
  "serde",
  "smallvec",
@@ -2431,6 +2433,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ktx2"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87d65e08a9ec02e409d27a0139eaa6b9756b4d81fe7cde71f6941a83730ce838"
+dependencies = [
+ "bitflags 1.3.2",
+]
+
+[[package]]
 name = "kurbo"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3561,6 +3572,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruzstd"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99c3938e133aac070997ddc684d4b393777d293ba170f2988c8fd5ea2ad4ce21"
+dependencies = [
+ "twox-hash",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3982,6 +4002,16 @@ name = "ttf-parser"
 version = "0.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5902c5d130972a0000f60860bfbf46f7ca3db5391eddfedd1b8728bd9dc96c0e"
+
+[[package]]
+name = "twox-hash"
+version = "1.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
+dependencies = [
+ "cfg-if",
+ "static_assertions",
+]
 
 [[package]]
 name = "typeid"

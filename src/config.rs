@@ -15,7 +15,7 @@ impl Default for GameConfig {
         Self {
             online: false,
             bgm_volume: 0.3,
-            sfx_volume: 0.8,
+            sfx_volume: 0.6,
             player_name: "".to_string(),
         }
     }

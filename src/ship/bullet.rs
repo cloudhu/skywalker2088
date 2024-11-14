@@ -242,10 +242,7 @@ pub fn explosion_render_system(
 ) {
     for (mut explosion, mut path, entity, mut stroke) in &mut query {
         explosion.ttl.tick(time.delta());
-        //播放爆炸音效
-        audio
-            .play(sound_assets.bullet_explosion.clone())
-            .with_volume(Volume::Amplitude(config.sfx_volume as f64));
+
         let shape = shapes::Circle {
             center: explosion.origin,
             radius: explosion.radius * explosion.ttl.fraction(),
@@ -257,6 +254,10 @@ pub fn explosion_render_system(
         }
 
         if explosion.ttl.finished() {
+            //播放爆炸音效
+            audio
+                .play(sound_assets.big_explosion.clone())
+                .with_volume(Volume::Amplitude(config.sfx_volume as f64)).handle();
             commands.entity(entity).insert(ShouldDespawn);
         }
     }

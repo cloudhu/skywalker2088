@@ -51,12 +51,12 @@ features = [
     "bevy_ui",
     "bevy_winit",
     "default_font",
-    "hdr",
+#    "hdr",
     "multi_threaded",
     "png",
     # "smaa_luts",
     "sysinfo_plugin",
-    # "tonemapping_luts",
+     "tonemapping_luts",
     # "vorbis", bevy_kira_audio使用ogg不需要
     # "webgl2",
 

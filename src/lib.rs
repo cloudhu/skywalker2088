@@ -16,7 +16,7 @@ mod util;
 use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::{asset::AssetMetaCheck, prelude::*};
-use bevy_kira_audio::AudioPlugin;
+use bevy_kira_audio::{AudioPlugin, AudioSettings};
 use bevy_parallax::{
     CreateParallaxEvent, LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin,
 };
@@ -32,7 +32,11 @@ impl Plugin for AppPlugin {
         app.configure_sets(
             Update,
             (AppSet::TickTimers, AppSet::RecordInput, AppSet::Update).chain(),
-        );
+        )
+        .insert_resource(AudioSettings {
+            sound_capacity: 8192,
+            command_capacity: 4096,
+        });
 
         // Add Bevy plugins.
         app.add_plugins(
