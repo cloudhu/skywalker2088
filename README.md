@@ -40,6 +40,8 @@ ______
 - [x] WASM支持
 - [x] 敌人AI实现
 - [x] 游戏音效
+- [x] 使用[bevy_asset_loader](https://github.com/NiklasEi/bevy_asset_loader)优化资源加载
+- [x] 使用[bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio)优化音效播放逻辑和性能
 
 ## 3.2 TODO List
 - [ ] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）
@@ -51,12 +53,20 @@ ______
 - [ ] 利用物理引擎进行碰撞检测
 - [ ] 玩家出生、护盾、爆炸、水波等精灵动画
 - [ ] 游戏UI
-- [ ] 游戏存档、读档、自动保存
+- [ ] 游戏存档、读档、自动保存(考虑使用[bevy_pkv](https://github.com/johanhelsing/bevy_pkv)插件开发)
 - [ ] 本地多人模式
 
 # 4. 开发指南
-游戏引擎：[Bevy](https://bevyengine.org/)
-常用命令列表：
+## 4.1 游戏引擎：[Bevy](https://bevyengine.org/)
+
+## 4.2 游戏模板
+- 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板
+- 从[ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)开源项目Copy核心逻辑代码
+
+## 4.3 编译优化
+- 使用[Sccache](https://github.com/mozilla/sccache)作为编译缓存工具，安装命令：`cargo install sccache --locked`
+
+## 4.4 常用命令列表
 - Rust格式化： `cargo fmt`
 - clippy提交检查：`cargo clippy --locked --workspace --all-targets --all-features -- --deny warnings`
 - 本地开发运行：`cargo run`

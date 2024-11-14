@@ -7,6 +7,7 @@ use bevy::prelude::*;
 
 use std::{cmp::min, time::Duration};
 
+use crate::assets::Fonts;
 use crate::enemy::drone::spawn_drone;
 use crate::enemy::drone_boss::spawn_drone_boss;
 use crate::enemy::fighter::spawn_fighter;
@@ -18,7 +19,6 @@ use crate::gameplay::player::IsPlayer;
 use crate::gameplay::GameState;
 use crate::screens::AppState;
 use crate::ship::engine::{Engine, EngineMethod};
-use crate::ship::platform::Fonts;
 use crate::util::{Math, RenderLayer};
 use rand::Rng;
 

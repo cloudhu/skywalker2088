@@ -1,10 +1,11 @@
+use crate::assets::AudioAssets;
+use crate::config::GameConfig;
 use bevy::prelude::*;
-
-use crate::{asset_tracking::LoadResource, audio::SoundEffect};
+use bevy_kira_audio::prelude::Volume;
+use bevy_kira_audio::{Audio, AudioControl};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();
-    app.load_resource::<InteractionAssets>();
     app.add_systems(
         Update,
         (
@@ -12,7 +13,7 @@ pub(super) fn plugin(app: &mut App) {
             apply_interaction_palette,
             trigger_interaction_sound_effect,
         )
-            .run_if(resource_exists::<InteractionAssets>),
+            .run_if(resource_exists::<AudioAssets>),
     );
 }
 
@@ -59,33 +60,11 @@ fn apply_interaction_palette(
     }
 }
 
-#[derive(Resource, Asset, Reflect, Clone)]
-pub struct InteractionAssets {
-    #[dependency]
-    pub(crate) hover: Handle<AudioSource>,
-    #[dependency]
-    pub(crate) press: Handle<AudioSource>,
-}
-
-impl InteractionAssets {
-    pub const PATH_BUTTON_HOVER: &'static str = "audio/sound_effects/button_hover.ogg";
-    pub const PATH_BUTTON_PRESS: &'static str = "audio/sound_effects/button_press.ogg";
-}
-
-impl FromWorld for InteractionAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            hover: assets.load(Self::PATH_BUTTON_HOVER),
-            press: assets.load(Self::PATH_BUTTON_PRESS),
-        }
-    }
-}
-
 fn trigger_interaction_sound_effect(
     interaction_query: Query<&Interaction, Changed<Interaction>>,
-    interaction_assets: Res<InteractionAssets>,
-    mut commands: Commands,
+    interaction_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for interaction in &interaction_query {
         let source = match interaction {
@@ -93,12 +72,8 @@ fn trigger_interaction_sound_effect(
             Interaction::Pressed => interaction_assets.press.clone(),
             _ => continue,
         };
-        commands.spawn((
-            AudioBundle {
-                source,
-                settings: PlaybackSettings::DESPAWN,
-            },
-            SoundEffect,
-        ));
+        audio
+            .play(source)
+            .with_volume(Volume::Amplitude(config.sfx_volume as f64));
     }
 }

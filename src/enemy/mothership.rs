@@ -1,16 +1,19 @@
-use std::f32::consts::PI;
-
-use bevy::prelude::*;
-
 use super::AI;
-use crate::components::common::Health;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
-use crate::ship::engine::{Engine, EngineMethod};
-use crate::ship::platform::{Fonts, ShipBundle};
-use crate::ship::turret::{DoesDamage, FireRate, MultiShot, Range, TurretBundle, TurretClass};
-use crate::util::Colour;
+use crate::ship::turret::MultiShot;
+use crate::{
+    assets::Fonts,
+    components::common::{Health, ShipBundle},
+    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    ship::{
+        engine::{Engine, EngineMethod},
+        turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass},
+    },
+    util::Colour,
+};
+use bevy::prelude::*;
+use std::f32::consts::PI;
 
 pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     commands

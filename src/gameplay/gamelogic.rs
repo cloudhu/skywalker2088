@@ -1,4 +1,6 @@
+use crate::assets::{AudioAssets, Fonts};
 use crate::components::common::Health;
+use crate::config::GameConfig;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
@@ -6,12 +8,13 @@ use crate::gameplay::player::IsPlayer;
 use crate::gameplay::GameState;
 use crate::screens::AppState;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
-use crate::ship::platform::{play_sound_effects, Fonts, SoundAssets};
 use crate::util::{Colour, Math, RenderLayer};
 use crate::{AppSet, CameraShake, MainCamera};
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
+use bevy_kira_audio::prelude::Volume;
+use bevy_kira_audio::{Audio, AudioControl};
 use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
@@ -184,7 +187,9 @@ pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
-    sound_assets: Res<SoundAssets>,
+    sound_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for (mut health, entity) in &mut query {
         if health.health <= 0 {
@@ -202,7 +207,10 @@ pub fn combat_system(
                 }
                 health.shield += 1;
                 //播放增加护盾的音效
-                play_sound_effects(&mut commands, sound_assets.shield_up.clone());
+                // play_sound_effects(&audio,&config, sound_assets.shield_up.clone(),position.translation.truncate());
+                audio
+                    .play(sound_assets.shield_up.clone())
+                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
             }
         }
     }
@@ -219,7 +227,9 @@ pub fn take_damage_events(
         Option<&mut HitFlash>,
     )>,
     mut camera: Query<&mut CameraShake>,
-    sound_assets: Res<SoundAssets>,
+    sound_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for ev in take_damage_events.read() {
         if let Ok((transform, mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
@@ -231,10 +241,14 @@ pub fn take_damage_events(
                     shake.trauma = ev.damage.amount.clamp(0, 5) as f32;
                 }
                 //播放玩家被击中音效
-                play_sound_effects(&mut commands, sound_assets.bullet_hit_1.clone());
+                audio
+                    .play(sound_assets.bullet_hit_1.clone())
+                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
             } else {
                 //播放敌人被击中音效
-                play_sound_effects(&mut commands, sound_assets.bullet_hit_2.clone());
+                audio
+                    .play(sound_assets.bullet_hit_2.clone())
+                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
                 // Floating Text
                 commands.spawn((
                     FloatingText::default(),
@@ -285,7 +299,9 @@ pub fn death_system(
     >,
     mut game_state: ResMut<NextState<GameState>>,
     mut points: ResMut<Points>,
-    sound_assets: Res<SoundAssets>,
+    sound_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for (entity, drops_loot, transform, is_player, explodes, worth_points) in &mut query {
         commands.entity(entity).despawn_recursive();
@@ -305,7 +321,9 @@ pub fn death_system(
 
         if is_player.is_some() {
             //播放失败音效
-            play_sound_effects(&mut commands, sound_assets.lose.clone());
+            audio
+                .play(sound_assets.game_over.clone())
+                .with_volume(Volume::Amplitude(config.sfx_volume as f64));
             game_state.set(GameState::GameOver);
         }
     }

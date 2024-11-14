@@ -1,12 +1,13 @@
-mod asset_tracking;
 pub mod audio;
 mod components;
+mod config;
 // mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod enemy;
 mod gameplay;
 
+pub mod assets;
 mod screens;
 mod ship;
 mod theme;
@@ -14,11 +15,8 @@ mod util;
 
 use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 use bevy::core_pipeline::tonemapping::Tonemapping;
-use bevy::{
-    asset::AssetMetaCheck,
-    audio::{AudioPlugin, Volume},
-    prelude::*,
-};
+use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy_kira_audio::AudioPlugin;
 use bevy_parallax::{
     CreateParallaxEvent, LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin,
 };
@@ -57,30 +55,27 @@ impl Plugin for AppPlugin {
                     .into(),
                     ..default()
                 })
-                .set(ImagePlugin::default_nearest())
-                .set(AudioPlugin {
-                    global_volume: GlobalVolume {
-                        volume: Volume::new(0.3),
-                    },
-                    ..default()
-                }),
+                .set(ImagePlugin::default_nearest()),
         )
         .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
-        .add_plugins(ParallaxPlugin);
+        .add_plugins(ParallaxPlugin)
+        .add_plugins(AudioPlugin);
 
         // Spawn the main camera.
         app.add_systems(Startup, spawn_camera);
 
         // Add other plugins.
         app.add_plugins((
-            asset_tracking::plugin,
+            config::plugin,
+            assets::plugin,
             // demo::plugin,
             screens::plugin,
             theme::plugin,
             gameplay::plugin,
             ship::plugin,
             enemy::plugin,
+            audio::plugin,
         ));
 
         // Enable dev tools for dev builds.

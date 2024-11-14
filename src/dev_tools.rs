@@ -24,7 +24,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
+const TOGGLE_KEY: KeyCode = KeyCode::Backspace;
 
 fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>) {
     options.toggle();

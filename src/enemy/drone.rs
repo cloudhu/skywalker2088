@@ -3,12 +3,12 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 
 use super::AI;
-use crate::components::common::Health;
+use crate::assets::Fonts;
+use crate::components::common::{Health, ShipBundle};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
 use crate::ship::engine::Engine;
-use crate::ship::platform::{Fonts, ShipBundle};
 use crate::ship::turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass};
 use crate::util::Colour;
 

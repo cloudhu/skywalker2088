@@ -1,5 +1,6 @@
 use crate::{
-    components::common::Health,
+    assets::Fonts,
+    components::{common::Health, common::ShipBundle},
     gameplay::{
         gamelogic::{game_not_paused, Allegiance, PlayerLevel, Targettable, WillTarget},
         loot::{Cargo, Magnet},
@@ -7,10 +8,7 @@ use crate::{
         GameState,
     },
     screens::AppState,
-    ship::{
-        engine::Engine,
-        platform::{Fonts, ShipBundle},
-    },
+    ship::engine::Engine,
     util::{Colour, RenderLayer},
     AppSet, CameraShake, MainCamera,
 };

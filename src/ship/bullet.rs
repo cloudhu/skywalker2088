@@ -1,10 +1,13 @@
+use crate::assets::AudioAssets;
 use crate::components::common::*;
+use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
 use crate::gameplay::physics::Collider;
 use crate::screens::AppState;
-use crate::ship::platform::{play_sound_effects, SoundAssets};
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
+use bevy_kira_audio::prelude::Volume;
+use bevy_kira_audio::{Audio, AudioControl};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, Path, Stroke};
 use bevy_prototype_lyon::shapes;
 
@@ -210,16 +213,19 @@ fn do_aoe_damage(
 }
 
 pub fn laser_render_system(
-    mut commands: Commands,
     mut query: Query<(&Bullet, &mut Stroke), (With<LaserRender>, With<Bullet>, With<Stroke>)>,
-    sound_assets: Res<SoundAssets>,
+    sound_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for (bullet, mut stroke) in &mut query {
         stroke
             .color
             .set_alpha(bullet.time2live.fraction_remaining());
         //播放laser音效
-        play_sound_effects(&mut commands, sound_assets.laser1.clone());
+        audio
+            .play(sound_assets.laser1.clone())
+            .with_volume(Volume::Amplitude(config.sfx_volume as f64));
     }
 }
 
@@ -230,12 +236,16 @@ pub fn explosion_render_system(
         (&mut ExplosionRender, &mut Path, Entity, &mut Stroke),
         Without<ShouldDespawn>,
     >,
-    sound_assets: Res<SoundAssets>,
+    sound_assets: Res<AudioAssets>,
+    audio: Res<Audio>,
+    config: Res<GameConfig>,
 ) {
     for (mut explosion, mut path, entity, mut stroke) in &mut query {
         explosion.ttl.tick(time.delta());
         //播放爆炸音效
-        play_sound_effects(&mut commands, sound_assets.big_explosion.clone());
+        audio
+            .play(sound_assets.bullet_explosion.clone())
+            .with_volume(Volume::Amplitude(config.sfx_volume as f64));
         let shape = shapes::Circle {
             center: explosion.origin,
             radius: explosion.radius * explosion.ttl.fraction(),

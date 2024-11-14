@@ -1,14 +1,16 @@
-use std::f32::consts::PI;
-
-use bevy::prelude::*;
-
 use super::{FinalBoss, AI};
-use crate::components::common::Health;
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
-use crate::ship::engine::{Engine, EngineMethod};
-use crate::ship::platform::{Fonts, ShipBundle};
-use crate::ship::turret::{DoesDamage, EffectSize, FireRate, Range, TurretBundle, TurretClass};
-use crate::util::Colour;
+use crate::{
+    assets::Fonts,
+    components::common::{Health, ShipBundle},
+    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    ship::{
+        engine::{Engine, EngineMethod},
+        turret::{DoesDamage, EffectSize, FireRate, Range, TurretBundle, TurretClass},
+    },
+    util::Colour,
+};
+use bevy::prelude::*;
+use std::f32::consts::PI;
 
 pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     commands

@@ -1,4 +1,23 @@
+use crate::gameplay::effects::HitFlash;
+use crate::gameplay::gamelogic::{DespawnWithScene, ExplodesOnDespawn, Targettable, WillTarget};
+use crate::gameplay::physics::{Collider, Physics};
+use crate::ship::engine::Engine;
 use bevy::prelude::*;
+
+// Bundles
+#[derive(Bundle, Default)]
+pub struct ShipBundle {
+    pub glyph: Text2dBundle,
+    pub physics: Physics,
+    pub engine: Engine,
+    pub health: Health,
+    pub collider: Collider,
+    pub targettable: Targettable,
+    pub will_target: WillTarget,
+    pub despawn_with_scene: DespawnWithScene,
+    pub explodes_on_despawn: ExplodesOnDespawn,
+    pub hit_flash: HitFlash,
+}
 
 #[derive(Component)]
 pub struct Seeker(pub Entity);

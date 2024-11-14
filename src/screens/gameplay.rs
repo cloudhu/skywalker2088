@@ -1,17 +1,17 @@
 //! The screen state for the main gameplay.
 
+use crate::assets::Music;
+use crate::audio::NextBgm;
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
 use crate::gameplay::GameState;
 use crate::theme::interaction::OnPress;
-use crate::{asset_tracking::LoadResource, audio::Music, screens::AppState, theme::prelude::*};
+use crate::{screens::AppState, theme::prelude::*};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::InGame), spawn_level);
-
-    app.load_resource::<GameplayMusic>();
     app.add_systems(OnEnter(AppState::InGame), play_gameplay_music);
     app.add_systems(OnExit(AppState::InGame), stop_music);
     app.add_systems(OnEnter(GameState::GameOver), setup_game_over);
@@ -26,41 +26,12 @@ fn spawn_level(mut commands: Commands) {
     commands.add(spawn_level_command);
 }
 
-#[derive(Resource, Asset, Reflect, Clone)]
-pub struct GameplayMusic {
-    #[dependency]
-    handle: Handle<AudioSource>,
-    entity: Option<Entity>,
+fn play_gameplay_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {
+    *next_bgm = NextBgm(Some(music.gameplay.clone()));
 }
 
-impl FromWorld for GameplayMusic {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            handle: assets.load("audio/music/Fluffing A Duck.ogg"),
-            entity: None,
-        }
-    }
-}
-
-fn play_gameplay_music(mut commands: Commands, mut music: ResMut<GameplayMusic>) {
-    music.entity = Some(
-        commands
-            .spawn((
-                AudioBundle {
-                    source: music.handle.clone(),
-                    settings: PlaybackSettings::LOOP,
-                },
-                Music,
-            ))
-            .id(),
-    );
-}
-
-fn stop_music(mut commands: Commands, mut music: ResMut<GameplayMusic>) {
-    if let Some(entity) = music.entity.take() {
-        commands.entity(entity).despawn_recursive();
-    }
+fn stop_music(mut next_bgm: ResMut<NextBgm>) {
+    *next_bgm = NextBgm(None);
 }
 
 fn return_to_title_screen(mut next_screen: ResMut<NextState<AppState>>) {
