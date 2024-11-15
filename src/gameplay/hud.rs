@@ -9,6 +9,7 @@ use crate::ship::engine::Engine;
 use crate::ship::turret::{FireRate, TurretClass};
 use crate::util::Colour;
 use bevy::prelude::*;
+use crate::theme::localize::Localize;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::InGame), setup_hud)
@@ -172,6 +173,7 @@ pub fn hud_system(
     mut q_child: Query<&mut Text>,
     level: Res<PlayerLevel>,
     game_time: Res<GameTime>,
+    localize: Res<Localize>
 ) {
     if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
         // Loop over children and update display values
@@ -180,19 +182,19 @@ pub fn hud_system(
                 UINode::Status => vec![
                     format!(
                         "{:<8} {} {}",
-                        "Armor",
+                        localize.get("Armor"),
                         bar(health.health, health.max_health, 10),
                         health.health
                     ),
                     format!(
                         "{:<8} {} {}",
-                        "Shield",
+                        localize.get("Shield"),
                         bar(health.shield, health.max_shield, 10),
                         health.shield
                     ),
                     format!(
                         "{:<8} {} {:0>2}",
-                        "Level",
+                        localize.get("Level"),
                         bar(
                             cargo.amount as i32,
                             level.required_cargo_to_level() as i32,
@@ -200,10 +202,10 @@ pub fn hud_system(
                         ),
                         level.value
                     ),
-                    format!("{:<8} {} m/s", "Speed", engine.speed.round()),
+                    format!("{:<8} {} m/s", localize.get("Speed"), engine.speed.round()),
                     format!(
                         "{:<8} {:0>2}:{:0>2}",
-                        "Time",
+                        localize.get("Time"),
                         game_time.0.elapsed().as_secs() / 60,
                         game_time.0.elapsed().as_secs() % 60
                     ),

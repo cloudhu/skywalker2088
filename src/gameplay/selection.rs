@@ -6,6 +6,7 @@ use crate::ship::turret::TurretClass;
 use crate::util::Colour;
 use bevy::prelude::*;
 use rand::Rng;
+use crate::theme::localize::Localize;
 
 #[derive(Resource)]
 struct SelectionData(pub Vec<Entity>);
@@ -89,6 +90,7 @@ fn setup_selection(
     mut menu_data: ResMut<SelectionData>,
     player_level: Res<PlayerLevel>,
     upgrades: Res<PlayerUpgrades>,
+    localize: Res<Localize>
 ) {
     // Roll for options
     let options = match player_level.value {
@@ -112,7 +114,7 @@ fn setup_selection(
         })
         .with_children(|parent| {
             for option in options {
-                button(parent, &fonts, option);
+                button(parent, &fonts, option,&localize);
             }
         })
         .id();
@@ -152,17 +154,18 @@ fn cleanup(mut commands: Commands, mut menu_data: ResMut<SelectionData>) {
     menu_data.0.clear();
 }
 
-fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) {
+fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent,localize:&Res<Localize>) {
     let type_text = match upgrade {
-        UpgradeEvent::Weapon(_) => "Weapon".to_string(),
-        UpgradeEvent::Passive(_) => "Passive".to_string(),
-        UpgradeEvent::Heal => "Consumable".to_string(),
+        UpgradeEvent::Weapon(_) => localize.get("Weapon"),
+        UpgradeEvent::Passive(_) => localize.get("Passive"),
+        UpgradeEvent::Heal => localize.get("Consumable"),
     };
     let type_color = match upgrade {
         UpgradeEvent::Weapon(_) => Colour::RED,
         UpgradeEvent::Passive(_) => Colour::SHIELD,
         UpgradeEvent::Heal => Colour::GREEN,
     };
+    println!(format!("{}", upgrade));
     parent
         .spawn((
             ButtonBundle {
@@ -216,7 +219,7 @@ fn button(parent: &mut ChildBuilder, fonts: &Res<Fonts>, upgrade: UpgradeEvent) 
             });
             parent.spawn(TextBundle {
                 text: Text::from_section(
-                    upgrade.describe().to_string(),
+                    localize.get(&*upgrade.describe()),
                     TextStyle {
                         font: fonts.primary.clone(),
                         font_size: 14.0,

@@ -11,3 +11,46 @@ Developer,开发者,CloudHu - Developer & CEO of CloudGames Studio,胡良云
 logo,商标,Bevy logo - All rights reserved by the Bevy Foundation. Permission granted for splash screen use when unmodified.,引擎商标所有权归Bevy基金会所有
 Assets,资源列表,Assets,美术资产
 points,积分,points,分
+Armor,防御属性,Armor,护甲
+Shield,防护盾,Shield,护盾
+Level,玩家等级,Level,等级
+Speed,移动速度,Speed,速度
+Time,计时单位,Time,时间
+Weapon,武器,Weapon,武器
+Passive,被动,Passive,被动效果
+Consumable,消耗,Consumable,消耗品
+AutoCannonDes,自动炮描述,Rapidly fires bullets towards the target.,自动向目标快速发射子弹
+BlastLaserDes,镭射炮,Always hits. Deals low damage.,镭射光子炮可以百分百命中目标，但是伤害较低。
+ChainLaser,链击镭射光,ChainLaser,链式镭射炮
+AutoCannon,自动炮描述,AutoCannon,自动追踪炮
+BlastLaser,镭射炮,BlastLaser,镭射光子炮
+ChainLaserDes,链击镭射光,Shoots a laser that jumps to nearby enemies.,发射激光，命中后跳向目标附近的敌人，对群体目标造成少量伤害。
+Emp,电磁脉冲（electromagnetic pulse）,Emp,电磁脉冲
+EmpDes,电磁脉冲（electromagnetic pulse）,Creates a shockwave around you that deals damage to enemies.,在你周围制造冲击波，对敌人造成伤害。
+MineLauncher,地雷陷阱,MineLauncher,太空地雷
+MineLauncherDes,地雷陷阱,Drops mines that explode when enemies are in close proximity.,投下地雷，当敌人靠近时爆炸。
+PierceLaser,Pierce Laser,PierceLaser,激光镭射
+PierceLaserDes,穿透攻击镭射激光,Shoots a heavy damaging laser that pierces through enemies.,发射强烈的破坏性激光穿透敌人。
+RocketLauncher,火箭攻击,RocketLauncher,火箭导弹
+RocketLauncherDes,火箭攻击,Shoots a seeking missile that explodes on impact.,发射一枚追踪导弹并在撞击时爆炸。
+ShrapnelCannon,Shrapnel Cannon,ShrapnelCannon,弹片加农炮
+ShrapnelCannonDes,Shrapnel Cannon,Shoots a spray of bullets in a cone towards the target.,向目标射出锥形的子弹喷雾。
+ArmorDes,描述,Increase armor by 25.,增加25护甲。
+Crit,暴击率属性,Crit,暴击率
+CritDes,描述,Increase chance to deal double damage by 12.5%.,增加12.5%的暴击率。
+Experience,经验属性,Experience,经验
+ExperienceDes,描述,Increase chance to triple experience by 10%.,增加10%获得三倍经验的几率。
+FireRate,属性,FireRate,发射频率
+FireRateDes,描述,Increase turret fire rate by 10%.,增加炮塔射速：10%。
+Magnet,属性,Magnet,磁吸
+MagnetDes,描述,Increase range and speed of experience magnetism.,增加磁力吸收经验的范围和速度。
+ShieldRecharge,属性,ShieldRecharge,护盾充能
+ShieldRechargeDes,描述,Decrease shield hit and regeneration cooldown.,减少护盾充能回复冷却时间。
+SpeedDes,移动速度,Increase engine power and max speed.,增加发动机功率和最大转速。
+HealDes,描述,Restore 50 armor or shields.,恢复50个护甲或护盾。
+Heal,属性,Heal,治疗
+Shield Boost,属性,Shield Boost,护盾充能
+Reinforced Armor,描述,Reinforced Armor,护甲增强
+Rapid Fire,属性,Rapid Fire,超频射击
+Critical Strikes,描述,Critical Strikes,致命一击
+Experience Booster,描述,Experience Booster,经验加速器
