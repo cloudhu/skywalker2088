@@ -1,6 +1,6 @@
 //! The screen state for the main gameplay.
 
-use crate::assets::Music;
+use crate::assets::{Fonts, Music};
 use crate::audio::NextBgm;
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
@@ -38,14 +38,15 @@ fn return_to_title_screen(mut next_screen: ResMut<NextState<AppState>>) {
     next_screen.set(AppState::Title);
 }
 
-fn setup_game_over(mut commands: Commands, points: Res<Points>) {
+fn setup_game_over(mut commands: Commands, points: Res<Points>, fonts: Res<Fonts>) {
     commands
         .ui_root()
         .insert(StateScoped(GameState::GameOver))
         .with_children(|children| {
-            children.label(format!("{} points!", points.into_inner()));
+            children.content(format!("{}", points.into_inner()));
+            children.label("points", fonts.primary.clone());
             children
-                .button("Return To Title")
+                .button("Return To Title", fonts.primary.clone())
                 .observe(return_title_screen);
         });
 }

@@ -12,6 +12,8 @@ use crate::{
     util::{Colour, RenderLayer},
     AppSet, CameraShake, MainCamera,
 };
+use bevy::input::mouse::MouseWheel;
+use bevy::window::WindowMode;
 use bevy::{
     app::App,
     ecs::{system::RunSystemOnce, world::Command},
@@ -24,7 +26,12 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        (pause_control, zoom_control)
+        (
+            pause_control,
+            zoom_control,
+            handle_mouse_wheel_input,
+            toggle_fullscreen,
+        )
             .chain()
             .in_set(AppSet::Update)
             .run_if(in_state(AppState::InGame)),
@@ -206,15 +213,42 @@ pub fn zoom_control(
 ) {
     let scale_factor = 0.25;
 
-    if key_input.just_pressed(KeyCode::NumpadAdd) {
+    if key_input.just_pressed(KeyCode::PageUp) {
         if let Ok(mut projection) = camera_q.get_single_mut() {
             projection.scale = (projection.scale - scale_factor).max(1.);
         }
     }
 
-    if key_input.just_pressed(KeyCode::NumpadSubtract) {
+    if key_input.just_pressed(KeyCode::PageDown) {
         if let Ok(mut projection) = camera_q.get_single_mut() {
             projection.scale = (projection.scale + scale_factor).min(3.);
         }
+    }
+}
+
+/// 处理鼠标滚轮事件
+fn handle_mouse_wheel_input(
+    mut mouse_wheel_input: EventReader<MouseWheel>,
+    mut camera_q: Query<
+        &mut OrthographicProjection,
+        (With<OrthographicProjection>, With<MainCamera>),
+    >,
+) {
+    for event in mouse_wheel_input.read() {
+        if let Ok(mut projection) = camera_q.get_single_mut() {
+            projection.scale = (projection.scale + event.y).clamp(1., 3.);
+        }
+    }
+}
+
+fn toggle_fullscreen(mut window_query: Query<&mut Window>, keys: Res<ButtonInput<KeyCode>>) {
+    if keys.just_pressed(KeyCode::F11) {
+        let mut window = window_query.single_mut();
+        window.mode = match window.mode {
+            WindowMode::Windowed => WindowMode::SizedFullscreen,
+            WindowMode::BorderlessFullscreen => WindowMode::Windowed,
+            WindowMode::SizedFullscreen => WindowMode::Windowed,
+            WindowMode::Fullscreen => WindowMode::Windowed,
+        };
     }
 }

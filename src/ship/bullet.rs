@@ -257,7 +257,8 @@ pub fn explosion_render_system(
             //播放爆炸音效
             audio
                 .play(sound_assets.big_explosion.clone())
-                .with_volume(Volume::Amplitude(config.sfx_volume as f64)).handle();
+                .with_volume(Volume::Amplitude(config.sfx_volume as f64))
+                .handle();
             commands.entity(entity).insert(ShouldDespawn);
         }
     }

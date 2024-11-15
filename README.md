@@ -20,6 +20,8 @@ ______
 1. 移动：鼠标左键为飞船导航（TODO：键盘方向键和手柄摇杆支持）
 2. 暂停/恢复：键盘空格键（TODO：手柄Start按键）
 3. 返回主菜单：键盘ESC（todo：手柄return返回按键）
+4. 全屏/窗口切换：F11键盘按键（todo：手柄设置菜单）
+5. 缩放：鼠标滚轮/PageUp = +、PageDown = -（Todo：手柄左右Trigger缩放）
 
 ______
 # 2. 关卡设计
@@ -42,6 +44,8 @@ ______
 - [x] 游戏音效
 - [x] 使用[bevy_asset_loader](https://github.com/NiklasEi/bevy_asset_loader)优化资源加载
 - [x] 使用[bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio)优化音效播放逻辑和性能
+- [x] 支持全屏/窗口切换和鼠标滚轮缩放（2024年11月15日）
+- [x] 通过csv来配置数值和多语言（先支持中英双语）
 
 ## 3.2 TODO List
 - [ ] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）

@@ -4,6 +4,7 @@
 #![allow(dead_code)]
 
 pub mod interaction;
+pub mod localize;
 pub mod palette;
 mod widgets;
 
@@ -19,5 +20,5 @@ pub mod prelude {
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(interaction::plugin);
+    app.add_plugins((localize::plugin, interaction::plugin));
 }
