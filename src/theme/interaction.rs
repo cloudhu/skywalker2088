@@ -1,8 +1,7 @@
 use crate::assets::AudioAssets;
 use crate::config::GameConfig;
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::Volume;
-use bevy_kira_audio::{Audio, AudioControl};
+use bevy_kira_audio::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();

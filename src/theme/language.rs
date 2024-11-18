@@ -16,11 +16,11 @@ pub(super) fn plugin(app: &mut App) {
 ///
 /// 1. Load from file
 /// ```
-/// use bevy::prelude::*;
+/// //use bevy::prelude::*;
 ///
-/// pub(super) fn plugin(app: &mut App) {
+/// //pub(super) fn plugin(app: &mut App) {
 ///     //app.insert_resource(Localize::from_data(&std::fs::read_to_string("test.csv").unwrap()));
-/// }
+/// //}
 /// ```
 /// This way makes sure that the
 /// resource will be completely initialized

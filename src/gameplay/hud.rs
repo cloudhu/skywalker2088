@@ -7,9 +7,9 @@ use crate::gameplay::upgrade::PlayerUpgrades;
 use crate::screens::AppState;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{FireRate, TurretClass};
+use crate::theme::language::Localize;
 use crate::util::Colour;
 use bevy::prelude::*;
-use crate::theme::localize::Localize;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::InGame), setup_hud)
@@ -173,7 +173,7 @@ pub fn hud_system(
     mut q_child: Query<&mut Text>,
     level: Res<PlayerLevel>,
     game_time: Res<GameTime>,
-    localize: Res<Localize>
+    localize: Res<Localize>,
 ) {
     if let Ok((engine, health, cargo, turrets)) = player_query.get_single() {
         // Loop over children and update display values

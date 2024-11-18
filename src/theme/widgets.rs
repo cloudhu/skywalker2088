@@ -2,8 +2,7 @@
 
 use bevy::{ecs::system::EntityCommands, prelude::*, ui::Val::*};
 
-use crate::theme::localize::LocalizeText;
-use crate::theme::{interaction::InteractionPalette, palette::*};
+use crate::theme::{interaction::InteractionPalette, language::LocalizeText, palette::*};
 
 /// An extension trait for spawning UI widgets.
 pub trait Widgets {

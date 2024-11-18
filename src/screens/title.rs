@@ -2,7 +2,6 @@
 use crate::assets::{Fonts, Music};
 use crate::audio::NextBgm;
 use crate::config::GameConfig;
-use crate::theme::localize::Localize;
 use crate::{screens::AppState, theme::prelude::*};
 use bevy::prelude::*;
 use bevy::window::WindowMode;

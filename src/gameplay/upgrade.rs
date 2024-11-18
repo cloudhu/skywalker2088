@@ -75,42 +75,20 @@ impl Display for UpgradeEvent {
 impl UpgradeEvent {
     pub fn describe(&self) -> String {
         match self {
-            UpgradeEvent::Weapon(TurretClass::AutoCannon) => {
-                "AutoCannonDes"
-            }
+            UpgradeEvent::Weapon(TurretClass::AutoCannon) => "AutoCannonDes",
             UpgradeEvent::Weapon(TurretClass::BlastLaser) => "BlastLaserDes",
-            UpgradeEvent::Weapon(TurretClass::ChainLaser) => {
-                "ChainLaserDes"
-            }
-            UpgradeEvent::Weapon(TurretClass::Emp) => {
-                "EmpDes"
-            }
-            UpgradeEvent::Weapon(TurretClass::MineLauncher) => {
-                "MineLauncherDes"
-            }
-            UpgradeEvent::Weapon(TurretClass::PierceLaser) => {
-                "PierceLaserDes"
-            }
-            UpgradeEvent::Weapon(TurretClass::RocketLauncher) => {
-                "RocketLauncherDes"
-            }
-            UpgradeEvent::Weapon(TurretClass::ShrapnelCannon) => {
-                "ShrapnelCannonDes"
-            }
+            UpgradeEvent::Weapon(TurretClass::ChainLaser) => "ChainLaserDes",
+            UpgradeEvent::Weapon(TurretClass::Emp) => "EmpDes",
+            UpgradeEvent::Weapon(TurretClass::MineLauncher) => "MineLauncherDes",
+            UpgradeEvent::Weapon(TurretClass::PierceLaser) => "PierceLaserDes",
+            UpgradeEvent::Weapon(TurretClass::RocketLauncher) => "RocketLauncherDes",
+            UpgradeEvent::Weapon(TurretClass::ShrapnelCannon) => "ShrapnelCannonDes",
             UpgradeEvent::Passive(Passive::Armor) => "ArmorDes",
-            UpgradeEvent::Passive(Passive::Crit) => {
-                "CritDes"
-            }
-            UpgradeEvent::Passive(Passive::Experience) => {
-                "ExperienceDes"
-            }
+            UpgradeEvent::Passive(Passive::Crit) => "CritDes",
+            UpgradeEvent::Passive(Passive::Experience) => "ExperienceDes",
             UpgradeEvent::Passive(Passive::FireRate) => "FireRateDes",
-            UpgradeEvent::Passive(Passive::Magnet) => {
-                "MagnetDes"
-            }
-            UpgradeEvent::Passive(Passive::ShieldRecharge) => {
-                "ShieldRechargeDes"
-            }
+            UpgradeEvent::Passive(Passive::Magnet) => "MagnetDes",
+            UpgradeEvent::Passive(Passive::ShieldRecharge) => "ShieldRechargeDes",
             UpgradeEvent::Passive(Passive::Speed) => "SpeedDes",
             UpgradeEvent::Heal => "HealDes",
         }
