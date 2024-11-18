@@ -3,6 +3,7 @@
 // Unused utilities may trigger these lints undesirably.
 #![allow(dead_code)]
 
+pub mod csv;
 pub mod interaction;
 pub mod language;
 pub mod palette;

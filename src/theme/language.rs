@@ -8,35 +8,15 @@ use bevy::{
 pub(super) fn plugin(app: &mut App) {
     app.register_asset_loader(TranslationsAssetLoader)
         .init_asset::<Translation>()
-        .add_systems(Update, update);
+        .add_systems(Update, update_text);
     app.insert_resource(Localize::from_asset_path("configs/duolingo.csv"));
 }
 
 /// You can use this resource in two ways:
-///
 /// 1. Load from file
-/// ```
-/// //use bevy::prelude::*;
-///
-/// //pub(super) fn plugin(app: &mut App) {
-///     //app.insert_resource(Localize::from_data(&std::fs::read_to_string("test.csv").unwrap()));
-/// //}
-/// ```
-/// This way makes sure that the
-/// resource will be completely initialized
-/// and ready to translate.
-///
+///    This way makes sure that the resource will be completely initialized and ready to translate.
 /// 2. Insert it empty, then load from asset handle
-/// ```
-/// //first insert it as empty
-/// //app.insert_resource(Localize::empty());
-/// //then, in a startup system set the handle
-/// //fn setup(asset_server:Res<AssetServer>, mut localize:ResMut<Localize>){
-///     //localize.set_handle(asset_server.load("test.csv"));
-/// //}
-/// ```
-/// Using it this way will result in a slight
-/// delay until it gets initialized.
+///    Using it this way will result in a slight delay until it gets initialized.
 #[derive(Resource)]
 pub struct Localize {
     is_initialized: bool,
@@ -60,22 +40,19 @@ impl Localize {
             asset_handle: None,
         }
     }
-    /// Creates a new resource from
-    /// specified data (in a .csv format)
+    /// Creates a new resource from specified data (in a .csv format)
     pub fn from_data(translations: &str) -> Self {
         let mut localize = Self::empty();
         localize.set_data(translations);
         localize
     }
-    /// Creates a new resource from
-    /// specified asset path.
+    /// Creates a new resource from specified asset path.
     pub fn from_asset_path(path: &str) -> Self {
         let mut localize = Self::empty();
         localize.asset_handle_path = Some(path.to_string());
         localize
     }
-    /// Creates a new resource from `self` with a
-    /// given default language.
+    /// Creates a new resource from `self` with a given default language.
     pub fn with_default_language(mut self, language: impl ToString) -> Self {
         self.set_language(language);
         self
@@ -106,9 +83,7 @@ impl Localize {
         self.initialized();
     }
     /// Get a translation for a specified keyword.
-    ///
-    /// If there is no translation for the keyword,
-    /// it will return an empty string.
+    /// If there is no translation for the keyword, it will return an empty string.
     pub fn get(&self, keyword: &str) -> &str {
         match self.words.get(keyword) {
             Some(k) => {
@@ -142,41 +117,21 @@ impl Localize {
     }
 }
 /// Translates text.
-/// Use it with the [`Text`] component.
-/// ```
-/// //commands.spawn((
-///     //TextBundle::from_section(
-///        //"default value",
-///        //TextStyle {
-///           // font: asset_server.load("font.ttf"),
-///            //font_size: 100.0,
-///            //color: Color::WHITE,
-///       // },
-///     //),
-///     //The first section of the text will be
-///     //automatically translated
-///     //using the specified keyword
-///     //LocalizeText::from_section("your_keyword")
-/// //));
-/// ```
+/// Use it with the `Text` component.
 #[derive(Component)]
 pub struct LocalizeText {
     sections: Vec<String>,
     translated_language: Option<usize>,
 }
 impl LocalizeText {
-    /// The first section
-    /// of the text will be translated
-    /// using the specified keyword
+    /// The first section of the text will be translated using the specified keyword
     pub fn from_section(keyword: impl Into<String>) -> Self {
         Self {
             sections: vec![keyword.into()],
             translated_language: None,
         }
     }
-    /// All sections
-    /// of the text will be translated
-    /// using the specified keywords
+    /// All sections of the text will be translated using the specified keywords
     pub fn from_sections(keywords: impl IntoIterator<Item = String>) -> Self {
         Self {
             sections: keywords.into_iter().collect(),
@@ -185,7 +140,7 @@ impl LocalizeText {
     }
 }
 
-fn update(
+fn update_text(
     localize: Option<ResMut<Localize>>,
     translation_assets: ResMut<Assets<Translation>>,
     mut ev_asset: EventReader<AssetEvent<Translation>>,
