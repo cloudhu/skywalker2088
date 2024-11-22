@@ -64,7 +64,7 @@ pub enum CsvLoaderError {
     /// An [IO Error](std::io::Error)
     #[error("Could not read the file: {0}")]
     Io(#[from] std::io::Error),
-    /// A [CSV Error](serde_csv::Error)
+    /// A [CSV Error](csv::Error)
     #[error("Could not parse CSV: {0}")]
     CsvError(#[from] csv::Error),
 }
