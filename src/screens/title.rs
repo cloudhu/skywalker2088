@@ -32,6 +32,7 @@ fn spawn_title_screen(
             children
                 .button("Duolingo", fonts.primary.clone())
                 .observe(set_lang);
+            #[cfg(not(target_family = "wasm"))]
             children
                 .button("Toggle Fullscreen", fonts.primary.clone())
                 .observe(toggle_fullscreen);
@@ -80,6 +81,7 @@ fn stop_title_music(mut next_bgm: ResMut<NextBgm>) {
     *next_bgm = NextBgm(None);
 }
 
+#[cfg(not(target_family = "wasm"))]
 fn toggle_fullscreen(_trigger: Trigger<OnPress>, mut window_query: Query<&mut Window>) {
     let mut window = window_query.single_mut();
     window.mode = match window.mode {
