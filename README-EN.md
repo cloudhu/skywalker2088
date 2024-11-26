@@ -1,6 +1,7 @@
 # skywalker2088
 Vampire survivor like game, cosmic science fiction wasteland, players drive the spaceship to roam in the universe, fight monsters to collect equipment to upgrade the spaceship, research technology tree, explore the remains of civilization.
-[中文](https://github.com/cloudhu/skywalker2088/README.md)
+______
+[中文](https://github.com/cloudhu/skywalker2088)
 ______
 # 0. Introduce
 - Game type: Vampire survivor like game

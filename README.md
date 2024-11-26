@@ -1,7 +1,9 @@
 # skywalker2088  天行者2088
 吸血鬼幸存者类型游戏，宇宙科幻废土，玩家驾驶飞船在宇宙中漫游，打怪收集装备升级飞船，研究科技，探索文明的遗迹。
+______
 Vampire survivor like game, cosmic science fiction wasteland, players drive the spaceship to roam in the universe, fight monsters to collect equipment to upgrade the spaceship, research technology tree, explore the remains of civilization.
-[English](https://github.com/cloudhu/skywalker2088/README-EN.md)
+______
+[English](https://github.com/cloudhu/skywalker2088/blob/main/README-EN.md)
 ______
 # 0. 简介 Introduce
 - 游戏类型：吸血鬼幸存者like
