@@ -5,9 +5,8 @@ mod final_boss;
 mod mothership;
 use bevy::prelude::*;
 
-use std::{cmp::min, time::Duration};
-
-use crate::assets::Fonts;
+use crate::assets::game_assets::Fonts;
+use crate::components::player::PlayerComponent;
 use crate::enemy::drone::spawn_drone;
 use crate::enemy::drone_boss::spawn_drone_boss;
 use crate::enemy::fighter::spawn_fighter;
@@ -15,12 +14,12 @@ use crate::enemy::final_boss::spawn_final_boss;
 use crate::enemy::mothership::spawn_mothership;
 use crate::gameplay::gamelogic::{game_not_paused, GameTime};
 use crate::gameplay::physics::Physics;
-use crate::gameplay::player::IsPlayer;
 use crate::gameplay::GameState;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::ship::engine::{Engine, EngineMethod};
 use crate::util::{Math, RenderLayer};
 use rand::Rng;
+use std::{cmp::min, time::Duration};
 
 #[derive(Resource)]
 pub struct Spawning {
@@ -35,19 +34,19 @@ pub struct AI;
 pub struct FinalBoss;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::InGame), spawn_startup)
+    app.add_systems(OnEnter(AppStates::InGame), spawn_startup)
         .add_systems(
             Update,
             ai_system
                 .run_if(game_not_paused)
-                .run_if(in_state(AppState::InGame)),
+                .run_if(in_state(AppStates::InGame)),
         )
         // Stop when game over
         .add_systems(
             Update,
             (spawner_system, spawn_final_boss_system)
                 .distributive_run_if(in_state(GameState::Running))
-                .distributive_run_if(in_state(AppState::InGame)),
+                .distributive_run_if(in_state(AppStates::InGame)),
         );
 }
 
@@ -66,7 +65,7 @@ fn spawner_system(
     game_time: Res<GameTime>,
     mut spawning: ResMut<Spawning>,
     enemies_query: Query<Entity, With<AI>>,
-    player_query: Query<&Transform, With<IsPlayer>>,
+    player_query: Query<&Transform, With<PlayerComponent>>,
 ) {
     let difficulty = game_time.0.elapsed_secs() as u32 / 30 + 1; // Goes from 1-20 difficulty in 10 minutes
 
@@ -110,7 +109,7 @@ fn spawner_system(
 fn ai_system(
     mut query: Query<(&Transform, &mut Engine, Entity), (With<AI>, With<Transform>, With<Engine>)>,
     other_query: Query<(&Transform, &Physics, Entity), (With<AI>, With<Transform>, With<Physics>)>,
-    player_query: Query<&Transform, (With<IsPlayer>, With<Transform>, Without<AI>)>,
+    player_query: Query<&Transform, (With<PlayerComponent>, With<Transform>, Without<AI>)>,
 ) {
     const PROXIMITY_CUTOFF: f32 = 20.0;
     const LOOK_AHEAD: f32 = 10.0;
@@ -168,7 +167,7 @@ fn spawn_final_boss_system(
     fonts: Res<Fonts>,
     game_time: Res<GameTime>,
     query: Query<(), With<FinalBoss>>,
-    player_query: Query<&Transform, With<IsPlayer>>,
+    player_query: Query<&Transform, With<PlayerComponent>>,
 ) {
     if (game_time.0.elapsed_secs() > 60.0 * 10.0) & query.is_empty() {
         // Spawn final boss

@@ -1,10 +1,10 @@
 use super::AI;
+use crate::assets::game_assets::Fonts;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::ship::turret::MultiShot;
 use crate::{
-    assets::Fonts,
-    components::common::{Health, ShipBundle},
+    components::health::{Health, ShipBundle},
     gameplay::physics::{BaseGlyphRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
@@ -39,7 +39,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     method: EngineMethod::Keep(500.0),
                     ..Default::default()
                 },
-                health: Health::new(100, 80),
+                health: Health::new(100, 80, 3.0),
                 collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 55.0,

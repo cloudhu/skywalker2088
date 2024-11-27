@@ -1,4 +1,3 @@
-use crate::assets::Fonts;
 use crate::gameplay::gamelogic::PlayerLevel;
 use crate::gameplay::upgrade::{PlayerUpgrades, UpgradeEvent};
 use crate::gameplay::GameState;
@@ -6,6 +5,8 @@ use crate::ship::turret::TurretClass;
 use crate::theme::language::Localize;
 use crate::util::Colour;
 use bevy::prelude::*;
+
+use crate::assets::game_assets::Fonts;
 use rand::Rng;
 
 #[derive(Resource)]

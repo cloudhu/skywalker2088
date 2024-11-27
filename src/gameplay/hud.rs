@@ -1,10 +1,10 @@
-use crate::assets::Fonts;
-use crate::components::common::Health;
+use crate::assets::game_assets::Fonts;
+use crate::components::health::Health;
+use crate::components::player::PlayerComponent;
 use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
-use crate::gameplay::player::IsPlayer;
 use crate::gameplay::upgrade::PlayerUpgrades;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{FireRate, TurretClass};
 use crate::theme::language::Localize;
@@ -12,9 +12,9 @@ use crate::util::Colour;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::InGame), setup_hud)
+    app.add_systems(OnEnter(AppStates::InGame), setup_hud)
         // Always run while game is running
-        .add_systems(Update, hud_system.run_if(in_state(AppState::InGame)));
+        .add_systems(Update, hud_system.run_if(in_state(AppStates::InGame)));
 }
 
 #[derive(Component)]
@@ -151,9 +151,9 @@ fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
         });
 }
 
-fn bar(current: i32, max: i32, width: i32) -> String {
+fn bar(current: usize, max: usize, width: usize) -> String {
     if max == 0 {
-        return String::from(' ').repeat(width as usize);
+        return String::from(' ').repeat(width);
     }
     let bars: usize = (current.clamp(0, max) * width / max)
         .try_into()
@@ -161,13 +161,13 @@ fn bar(current: i32, max: i32, width: i32) -> String {
     format!(
         "{}{}",
         String::from('|').repeat(bars),
-        String::from('.').repeat(width as usize - bars)
+        String::from('.').repeat(width - bars)
     )
 }
 
 pub fn hud_system(
     upgrades: Res<PlayerUpgrades>,
-    player_query: Query<(&Engine, &Health, &Cargo, &Children), With<IsPlayer>>,
+    player_query: Query<(&Engine, &Health, &Cargo, &Children), With<PlayerComponent>>,
     turret_query: Query<(&FireRate, &TurretClass)>,
     mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,
@@ -183,23 +183,19 @@ pub fn hud_system(
                     format!(
                         "{:<8} {} {}",
                         localize.get("Armor"),
-                        bar(health.health, health.max_health, 10),
-                        health.health
+                        bar(health.get_health(), health.get_max_health(), 10),
+                        health.get_health()
                     ),
                     format!(
                         "{:<8} {} {}",
                         localize.get("Shield"),
-                        bar(health.shield, health.max_shield, 10),
-                        health.shield
+                        bar(health.get_shields(), health.get_max_shields(), 10),
+                        health.get_shields()
                     ),
                     format!(
                         "{:<8} {} {:0>2}",
                         localize.get("Level"),
-                        bar(
-                            cargo.amount as i32,
-                            level.required_cargo_to_level() as i32,
-                            10
-                        ),
+                        bar(cargo.amount, level.required_cargo_to_level(), 10),
                         level.value
                     ),
                     format!("{:<8} {} m/s", localize.get("Speed"), engine.speed.round()),
@@ -218,7 +214,7 @@ pub fn hud_system(
                         .map(|(fire_rate, class)| {
                             format!(
                                 "{} {:>16}",
-                                bar((fire_rate.timer.fraction() * 10.0).round() as i32, 10, 10),
+                                bar((fire_rate.timer.fraction() * 10.0).round() as usize, 10, 10),
                                 class
                             )
                         })

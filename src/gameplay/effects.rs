@@ -1,5 +1,5 @@
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::util::Colour;
 use crate::AppSet;
 use bevy::prelude::*;
@@ -52,7 +52,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::InGame)),
     );
 }
 

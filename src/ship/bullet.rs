@@ -1,9 +1,9 @@
-use crate::assets::AudioAssets;
-use crate::components::common::*;
+use crate::assets::game_assets::AudioAssets;
+use crate::components::health::*;
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
 use crate::gameplay::physics::Collider;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_kira_audio::prelude::Volume;
@@ -80,7 +80,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::InGame)),
     );
 }
 

@@ -37,4 +37,5 @@ pub enum GameState {
     Selection,
     Paused,
     GameOver,
+    Victory,
 }

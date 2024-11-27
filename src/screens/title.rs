@@ -1,15 +1,15 @@
 //! The title screen that appears when the game starts.
-use crate::assets::{Fonts, Music};
+use crate::assets::game_assets::{Fonts, Music};
 use crate::audio::NextBgm;
 use crate::config::GameConfig;
-use crate::{screens::AppState, theme::prelude::*};
+use crate::{screens::AppStates, theme::prelude::*};
 use bevy::prelude::*;
 use bevy::window::WindowMode;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::Title), spawn_title_screen);
-    app.add_systems(OnEnter(AppState::Title), play_title_music);
-    app.add_systems(OnExit(AppState::Title), stop_title_music);
+    app.add_systems(OnEnter(AppStates::MainMenu), spawn_title_screen);
+    app.add_systems(OnEnter(AppStates::MainMenu), play_title_music);
+    app.add_systems(OnExit(AppStates::MainMenu), stop_title_music);
 }
 
 fn spawn_title_screen(
@@ -21,7 +21,7 @@ fn spawn_title_screen(
     localize.set_language(config.language.clone());
     commands
         .ui_root()
-        .insert(StateScoped(AppState::Title))
+        .insert(StateScoped(AppStates::MainMenu))
         .with_children(|children| {
             children
                 .button("Play", fonts.primary.clone())
@@ -43,12 +43,15 @@ fn spawn_title_screen(
         });
 }
 
-fn enter_gameplay_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppState>>) {
-    next_screen.set(AppState::InGame);
+fn enter_gameplay_screen(
+    _trigger: Trigger<OnPress>,
+    mut next_screen: ResMut<NextState<AppStates>>,
+) {
+    next_screen.set(AppStates::InGame);
 }
 
-fn enter_credits_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppState>>) {
-    next_screen.set(AppState::Credits);
+fn enter_credits_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppStates>>) {
+    next_screen.set(AppStates::Credits);
 }
 
 fn set_lang(

@@ -3,8 +3,8 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 
 use super::AI;
-use crate::assets::Fonts;
-use crate::components::common::{Health, ShipBundle};
+use crate::assets::game_assets::Fonts;
+use crate::components::health::{Health, ShipBundle};
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
 use crate::ship::engine::Engine;
@@ -30,7 +30,7 @@ pub fn spawn_drone_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                 },
                 physics: Physics::new(8.0),
                 engine: Engine::new(8.0, 8.0),
-                health: Health::new(10, 40),
+                health: Health::new(10, 40, 3.0),
                 collider: Collider { radius: 30.0 },
                 ..Default::default()
             },

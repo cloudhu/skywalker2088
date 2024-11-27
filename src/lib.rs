@@ -1,20 +1,25 @@
 pub mod audio;
 mod components;
 mod config;
-// mod demo;
+
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod enemy;
 mod gameplay;
 
 pub mod assets;
+mod options;
 mod screens;
 mod ship;
 mod theme;
 mod util;
 
+use crate::options::display::DisplayConfig;
+use crate::options::generate_config_files;
+use crate::screens::AppStates;
 use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
 use bevy::core_pipeline::tonemapping::Tonemapping;
+use bevy::window::WindowMode;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_kira_audio::{AudioPlugin, AudioSettings};
 use bevy_parallax::{
@@ -22,12 +27,26 @@ use bevy_parallax::{
 };
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, ShapePlugin};
 use bevy_prototype_lyon::shapes;
+use bevy_rapier2d::plugin::{RapierConfiguration, TimestepMode};
+use bevy_rapier2d::prelude::{NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
 use util::RenderLayer;
+
+/// Used by a physics engine to translate physics calculations to graphics
+const PHYSICS_PIXELS_PER_METER: f32 = 10.0;
 
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
+        // pushes rust errors to the browser console
+        #[cfg(target_arch = "wasm32")]
+        std::panic::set_hook(Box::new(console_error_panic_hook::hook));
+
+        #[cfg(not(target_arch = "wasm32"))]
+        generate_config_files();
+
+        let display_config = get_display_config();
+
         // Order new `AppStep` variants by adding them here:
         app.configure_sets(
             Update,
@@ -52,8 +71,15 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Skywalker2088".to_string(),
                         canvas: Some("#bevy".to_string()),
+                        resolution: (display_config.width, display_config.height).into(),
                         fit_canvas_to_parent: true,
                         prevent_default_event_handling: true,
+                        resizable: true,
+                        mode: if display_config.fullscreen {
+                            WindowMode::SizedFullscreen
+                        } else {
+                            WindowMode::Windowed
+                        },
                         ..default()
                     }
                     .into(),
@@ -64,16 +90,23 @@ impl Plugin for AppPlugin {
         .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
-        .add_plugins(AudioPlugin);
+        .add_plugins(AudioPlugin)
+        .add_plugins(
+            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_PIXELS_PER_METER)
+                .in_fixed_schedule(),
+        );
 
         // Spawn the main camera.
-        app.add_systems(Startup, spawn_camera);
+        app.add_systems(Startup, spawn_camera).add_systems(
+            OnEnter(AppStates::InGame),
+            setup_physics.in_set(GameEnterSet::Initialize),
+        );
 
         // Add other plugins.
         app.add_plugins((
+            options::plugin,
             config::plugin,
             assets::plugin,
-            // demo::plugin,
             screens::plugin,
             theme::plugin,
             gameplay::plugin,
@@ -85,6 +118,8 @@ impl Plugin for AppPlugin {
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
         app.add_plugins(dev_tools::plugin);
+        #[cfg(feature = "dev")]
+        app.add_plugins(RapierDebugRenderPlugin::default());
     }
 }
 
@@ -100,6 +135,52 @@ enum AppSet {
     /// Do everything else (consider splitting this into further variants).
     Update,
 }
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+pub enum GameEnterSet {
+    Initialize,
+    BuildLevel,
+    SpawnPlayer,
+    BuildUi,
+}
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+pub enum GameUpdateSet {
+    Enter,
+    Level,
+    Spawn,
+    NextLevel,
+    UpdateUi,
+    Movement,
+    Abilities,
+    SetTargetBehavior, // TODO: replace with more general set
+    ExecuteBehavior,
+    ContactCollision,
+    IntersectionCollision,
+    ApplyDisconnectedBehaviors,
+    ChangeState,
+    Cleanup,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn get_display_config() -> DisplayConfig {
+    use ron::de::from_str;
+    use std::{env::current_dir, fs::read_to_string};
+
+    let config_path = current_dir().unwrap().join("config");
+
+    from_str::<DisplayConfig>(&read_to_string(config_path.join("display.ron")).unwrap()).unwrap()
+}
+
+#[cfg(target_arch = "wasm32")]
+fn get_display_config() -> DisplayConfig {
+    DisplayConfig {
+        width: 1280.0,
+        height: 1024.0,
+        fullscreen: false,
+    }
+}
+
 #[derive(Component)]
 pub struct MainCamera;
 #[derive(Component)]
@@ -176,4 +257,15 @@ fn spawn_camera(mut commands: Commands, mut create_parallax: EventWriter<CreateP
         path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
         ..default()
     },));
+}
+
+// setup rapier
+fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
+    rapier_config.timestep_mode = TimestepMode::Fixed {
+        dt: 1.0 / 60.0,
+        substeps: 1,
+    };
+    rapier_config.physics_pipeline_active = true;
+    rapier_config.query_pipeline_active = true;
+    rapier_config.gravity = Vec2::ZERO;
 }

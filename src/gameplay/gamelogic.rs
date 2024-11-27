@@ -1,17 +1,18 @@
-use crate::assets::{AudioAssets, Fonts};
-use crate::components::common::Health;
+use crate::components::health::Health;
 use crate::config::GameConfig;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
-use crate::gameplay::player::IsPlayer;
 use crate::gameplay::GameState;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
 use crate::util::{Colour, Math, RenderLayer};
 use crate::{AppSet, CameraShake, MainCamera};
 use bevy::app::App;
 use bevy::prelude::*;
+
+use crate::assets::game_assets::{AudioAssets, Fonts};
+use crate::components::player::PlayerComponent;
 use bevy::time::Stopwatch;
 use bevy_kira_audio::prelude::Volume;
 use bevy_kira_audio::{Audio, AudioControl};
@@ -59,14 +60,14 @@ pub struct PlayerLevel {
 }
 
 impl PlayerLevel {
-    pub fn required_cargo_to_level(&self) -> u32 {
-        self.value * 4 // TODO make exponential?
+    pub fn required_cargo_to_level(&self) -> usize {
+        (self.value * 4) as usize // TODO make exponential?
     }
 }
 
 #[derive(Component, Copy, Clone)]
 pub struct Damage {
-    pub amount: i32,
+    pub amount: usize,
     pub is_crit: bool,
 }
 
@@ -102,8 +103,8 @@ impl Default for WillTarget {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TakeDamageEvent>()
-        .add_systems(OnEnter(AppState::InGame), setup_new_game);
-    app.add_systems(OnExit(AppState::InGame), reset_game);
+        .add_systems(OnEnter(AppStates::InGame), setup_new_game);
+    app.add_systems(OnExit(AppStates::InGame), reset_game);
     app.add_systems(
         Update,
         (
@@ -116,7 +117,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::TickTimers)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::InGame)),
     );
 }
 fn setup_new_game(mut commands: Commands) {
@@ -151,10 +152,10 @@ fn reset_game(
 
 pub fn camera_follow(
     time: Res<Time>,
-    player_q: Query<&Transform, (With<Transform>, With<IsPlayer>, Without<MainCamera>)>,
+    player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>, Without<MainCamera>)>,
     mut camera_q: Query<
         (Entity, &Transform, &mut CameraShake),
-        (With<Transform>, With<MainCamera>, Without<IsPlayer>),
+        (With<Transform>, With<MainCamera>, Without<PlayerComponent>),
     >,
     mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
@@ -187,12 +188,9 @@ pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
-    sound_assets: Res<AudioAssets>,
-    audio: Res<Audio>,
-    config: Res<GameConfig>,
 ) {
     for (mut health, entity) in &mut query {
-        if health.health <= 0 {
+        if health.get_health() <= 0 {
             commands.entity(entity).insert(ShouldDespawn);
             continue;
         }
@@ -200,18 +198,7 @@ pub fn combat_system(
         // Recharge shield
         health.shield_recharge_cooldown.tick(time.delta());
         if health.shield_recharge_cooldown.finished() {
-            health.shield_recharge_timer.tick(time.delta());
-            if health.shield_recharge_timer.just_finished() {
-                if health.shield == health.max_shield {
-                    return;
-                }
-                health.shield += 1;
-                //播放增加护盾的音效
-                // play_sound_effects(&audio,&config, sound_assets.shield_up.clone(),position.translation.truncate());
-                audio
-                    .play(sound_assets.shield_up.clone())
-                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
-            }
+            health.regenerate_shields(time.delta());
         }
     }
 }
@@ -223,7 +210,7 @@ pub fn take_damage_events(
     mut query: Query<(
         &Transform,
         &mut Health,
-        Option<&IsPlayer>,
+        Option<&PlayerComponent>,
         Option<&mut HitFlash>,
     )>,
     mut camera: Query<&mut CameraShake>,
@@ -291,7 +278,7 @@ pub fn death_system(
             Entity,
             Option<&DropsLoot>,
             Option<&Transform>,
-            Option<&IsPlayer>,
+            Option<&PlayerComponent>,
             Option<&ExplodesOnDespawn>,
             Option<&WorthPoints>,
         ),

@@ -1,7 +1,7 @@
-use crate::components::common::Health;
+use crate::components::health::Health;
+use crate::components::player::PlayerComponent;
 use crate::gameplay::loot::{Cargo, Magnet};
-use crate::gameplay::player::IsPlayer;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, EffectSize, FireRate, MultiShot, TurretBundle, TurretClass};
 use bevy::app::App;
@@ -150,7 +150,7 @@ pub(super) fn plugin(app: &mut App) {
                 upgrade_experience_event,
                 upgrade_heal_event,
             )
-                .distributive_run_if(in_state(AppState::InGame)),
+                .distributive_run_if(in_state(AppStates::InGame)),
         );
 }
 
@@ -173,7 +173,7 @@ fn upgrade_weapon_event(
     upgrades: Res<PlayerUpgrades>,
     mut upgrade_event: EventReader<UpgradeEvent>,
     mut commands: Commands,
-    player_query: Query<(Entity, Option<&Children>), With<IsPlayer>>,
+    player_query: Query<(Entity, Option<&Children>), With<PlayerComponent>>,
     turret_query: Query<&TurretClass>,
     mut existing_auto_cannon: Query<&mut FireRate>,
     mut existing_rocket_launcher: Query<&mut MultiShot>,
@@ -261,7 +261,7 @@ fn upgrade_weapon_event(
 
 fn upgrade_magnet_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut Magnet, With<IsPlayer>>,
+    mut query: Query<&mut Magnet, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         if let UpgradeEvent::Passive(Passive::Magnet) = ev {
@@ -275,7 +275,7 @@ fn upgrade_magnet_event(
 
 fn upgrade_speed_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut Engine, With<IsPlayer>>,
+    mut query: Query<&mut Engine, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         if let UpgradeEvent::Passive(Passive::Speed) = ev {
@@ -289,18 +289,19 @@ fn upgrade_speed_event(
 
 fn upgrade_health_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut Health, With<IsPlayer>>,
+    mut query: Query<&mut Health, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         match ev {
             UpgradeEvent::Passive(Passive::ShieldRecharge) => {
                 for mut health in &mut query {
-                    let mut new_timer = health.shield_recharge_timer.duration().as_secs_f32() - 0.5;
+                    let mut new_timer =
+                        health.shields_recharge_timer.duration().as_secs_f32() - 0.5;
                     if new_timer < 0.1 {
                         new_timer = 0.1;
                     }
                     health
-                        .shield_recharge_timer
+                        .shields_recharge_timer
                         .set_duration(Duration::from_secs_f32(new_timer));
                     let mut new_timer =
                         health.shield_recharge_cooldown.duration().as_secs_f32() - 1.0;
@@ -314,8 +315,8 @@ fn upgrade_health_events(
             }
             UpgradeEvent::Passive(Passive::Armor) => {
                 for mut health in &mut query {
-                    health.max_health += 25;
-                    health.health += 25;
+                    health.increase_max_health(25);
+                    health.full_heal();
                 }
             }
             _ => (),
@@ -325,7 +326,7 @@ fn upgrade_health_events(
 
 fn upgrade_experience_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut Cargo, With<IsPlayer>>,
+    mut query: Query<&mut Cargo, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         if let UpgradeEvent::Passive(Passive::Experience) = ev {
@@ -338,7 +339,7 @@ fn upgrade_experience_event(
 
 fn upgrade_heal_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut Health, With<IsPlayer>>,
+    mut query: Query<&mut Health, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         if let UpgradeEvent::Heal = ev {
@@ -351,7 +352,7 @@ fn upgrade_heal_event(
 
 fn upgrade_fire_rate_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    player_query: Query<&Children, With<IsPlayer>>,
+    player_query: Query<&Children, With<PlayerComponent>>,
     mut turret_query: Query<(&mut FireRate, &mut DoesDamage)>,
 ) {
     for ev in upgrade_event.read() {

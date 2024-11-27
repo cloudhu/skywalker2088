@@ -1,7 +1,7 @@
 use super::{FinalBoss, AI};
+use crate::assets::game_assets::Fonts;
 use crate::{
-    assets::Fonts,
-    components::common::{Health, ShipBundle},
+    components::health::{Health, ShipBundle},
     gameplay::physics::{BaseGlyphRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
@@ -36,7 +36,7 @@ pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     method: EngineMethod::Keep(200.0),
                     ..Default::default()
                 },
-                health: Health::new(1000, 4000),
+                health: Health::new(1000, 4000, 3.0),
                 collider: Collider { radius: 50.0 },
                 ..Default::default()
             },

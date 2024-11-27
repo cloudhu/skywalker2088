@@ -1,16 +1,15 @@
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
-
 use super::AI;
-use crate::assets::Fonts;
-use crate::components::common::{Health, ShipBundle};
+use crate::assets::game_assets::Fonts;
+use crate::components::health::{Health, ShipBundle};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass};
 use crate::util::Colour;
+use bevy::prelude::*;
 
 pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
     commands
@@ -31,7 +30,7 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                 },
                 physics: Physics::new(5.0),
                 engine: Engine::new(10.0, 10.0),
-                health: Health::new(1, 4),
+                health: Health::new(1, 4, 3.0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 15.0,

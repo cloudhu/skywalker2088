@@ -1,6 +1,6 @@
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::{Collider, Physics};
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::app::{App, Update};
 use bevy::prelude::*;
@@ -31,7 +31,7 @@ pub struct DropsLoot;
 
 #[derive(Component, Default)]
 pub struct Cargo {
-    pub amount: u32,
+    pub amount: usize,
     pub bonus_chance: f32,
 }
 
@@ -57,7 +57,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::InGame)),
     );
 }
 
