@@ -506,7 +506,9 @@ dependencies = [
  "anyhow",
  "bevy",
  "bevy_asset_loader_derive",
+ "bevy_common_assets",
  "path-slash",
+ "serde",
 ]
 
 [[package]]
@@ -545,6 +547,19 @@ dependencies = [
  "serde",
  "thiserror 1.0.65",
  "wgpu-types",
+]
+
+[[package]]
+name = "bevy_common_assets"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f631ce2863f3b6f1af3fa24143363b9fbd21c44218caad495a17b83e6968256"
+dependencies = [
+ "anyhow",
+ "bevy",
+ "ron",
+ "serde",
+ "thiserror 1.0.65",
 ]
 
 [[package]]

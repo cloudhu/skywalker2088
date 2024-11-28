@@ -192,6 +192,7 @@ fn spawn_player(
 ) {
     // check if more than one player is playing
     let is_multiplayer = players_resource.player_data.get(1).is_some();
+    println!("spawning player is_multiplayer:{},player_data:{}",is_multiplayer,players_resource.player_data.get(0).is_some());
     for (player_id, maybe_player_data) in players_resource
         .player_data
         .iter()
@@ -207,7 +208,7 @@ fn spawn_player(
                 character.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
             let collider_size_hy =
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-
+            println!("spawning Player");
             // create player component from character
             let player_bundle = PlayerBundle::from(character).with_id(player_id);
 
@@ -216,35 +217,44 @@ fn spawn_player(
             player_entity
                 .insert(SpriteBundle {
                     texture: player_assets.get_asset(&character.character_type),
+                    transform: Transform::from_translation(Vec3 {
+                        x: 100.0,
+                        y: 100.0,
+                        z: RenderLayer::Player.as_z(),
+                    }),
                     ..Default::default()
                 })
                 .insert(RigidBody::Dynamic)
                 .insert(LockedAxes::ROTATION_LOCKED_Z)
-                .insert(Transform {
-                    translation: if is_multiplayer {
-                        Vec3::new(
-                            if matches!(player_id, PlayerIDComponent::One) {
-                                -game_parameters.player_spawn_distance
-                            } else {
-                                game_parameters.player_spawn_distance
-                            },
-                            0.0,
-                            if matches!(player_id, PlayerIDComponent::One) {
-                                RenderLayer::Player.as_z()
-                            } else {
-                                RenderLayer::Player.as_z() + 0.2
-                            },
-                        )
-                    } else {
-                        Vec3::ZERO
-                    },
-                    scale: Vec3::new(
-                        game_parameters.sprite_scale,
-                        game_parameters.sprite_scale,
-                        1.0,
-                    ),
-                    ..Default::default()
-                })
+                // .insert(Transform {
+                //     translation: if is_multiplayer {
+                //         Vec3::new(
+                //             if matches!(player_id, PlayerIDComponent::One) {
+                //                 -game_parameters.player_spawn_distance-100.0
+                //             } else {
+                //                 game_parameters.player_spawn_distance+100.0
+                //             },
+                //             100.0,
+                //             if matches!(player_id, PlayerIDComponent::One) {
+                //                 RenderLayer::Player.as_z()
+                //             } else {
+                //                 RenderLayer::Player.as_z() + 0.2
+                //             },
+                //         )
+                //     } else {
+                //         Vec3 {
+                //             x: 100.0,
+                //             y: 100.0,
+                //             z: RenderLayer::Player.as_z(),
+                //         }
+                //     },
+                //     scale: Vec3::new(
+                //         game_parameters.sprite_scale*8.0,
+                //         game_parameters.sprite_scale*8.0,
+                //         1.0,
+                //     ),
+                //     ..Default::default()
+                // })
                 .insert(InputManagerBundle::<PlayerAction> {
                     action_state: ActionState::default(),
                     input_map: match player_data.input {
@@ -272,7 +282,8 @@ fn spawn_player(
                     parent.spawn_slot_1_ability(&abilities_res, &character.slot_1_ability);
                     parent.spawn_slot_2_ability(&abilities_res, &character.slot_2_ability);
                 })
-                .insert(ShipBundle {
+                .insert(
+                    ShipBundle {
                     physics: Physics::new(config.drag),
                     engine: Engine::new_with_steering(
                         config.power,
@@ -310,8 +321,8 @@ fn spawn_player(
                             ..Default::default()
                         })
                         .insert(Transform::from_translation(Vec3::new(
-                            0.0,
-                            0.0,
+                            100.0,
+                            100.0,
                             RenderLayer::Player.as_z() + 0.1,
                         )));
                 });

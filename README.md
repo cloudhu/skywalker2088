@@ -39,7 +39,7 @@ todo……
 ______
 # 2. 开发记录
 ## 2.1 已实现列表 
-- [x] 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板作为[游戏基础开发框架](https://github.com/TheBevyFlock/bevy_new_2d)；
+- [x] 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板作为[2D游戏基础开发框架bevy_new_2d](https://github.com/TheBevyFlock/bevy_new_2d)；
 - [x] 从[ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)开源项目Copy核心逻辑代码，并优化结构；
 - [x] 暂停游戏 Pause/Resume
 - [x] WASM支持 support wasm
@@ -67,7 +67,7 @@ ______
 ## 3.1 游戏引擎
    Game Engine:[Bevy](https://bevyengine.org/)
 ## 3.2 游戏模板
-- 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板
+- 使用`cargo generate thebevyflock/bevy_new_2d`生成的[bevy_new_2d 游戏模板](https://github.com/TheBevyFlock/bevy_new_2d)
 - 从[ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)开源项目Copy核心逻辑代码
 
 ## 3.3 编译优化

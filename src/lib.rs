@@ -97,10 +97,7 @@ impl Plugin for AppPlugin {
         );
 
         // Spawn the main camera.
-        app.add_systems(Startup, spawn_camera).add_systems(
-            OnEnter(AppStates::InGame),
-            setup_physics.in_set(GameEnterSet::Initialize),
-        );
+        app.add_systems(Startup, spawn_camera);
 
         // Add other plugins.
         app.add_plugins((
@@ -134,32 +131,6 @@ enum AppSet {
     RecordInput,
     /// Do everything else (consider splitting this into further variants).
     Update,
-}
-
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
-pub enum GameEnterSet {
-    Initialize,
-    BuildLevel,
-    SpawnPlayer,
-    BuildUi,
-}
-
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
-pub enum GameUpdateSet {
-    Enter,
-    Level,
-    Spawn,
-    NextLevel,
-    UpdateUi,
-    Movement,
-    Abilities,
-    SetTargetBehavior, // TODO: replace with more general set
-    ExecuteBehavior,
-    ContactCollision,
-    IntersectionCollision,
-    ApplyDisconnectedBehaviors,
-    ChangeState,
-    Cleanup,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -257,15 +228,4 @@ fn spawn_camera(mut commands: Commands, mut create_parallax: EventWriter<CreateP
         path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
         ..default()
     },));
-}
-
-// setup rapier
-fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
-    rapier_config.timestep_mode = TimestepMode::Fixed {
-        dt: 1.0 / 60.0,
-        substeps: 1,
-    };
-    rapier_config.physics_pipeline_active = true;
-    rapier_config.query_pipeline_active = true;
-    rapier_config.gravity = Vec2::ZERO;
 }
