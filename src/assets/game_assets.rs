@@ -1,12 +1,19 @@
+use crate::assets::audio::GameAudioAssets;
+use crate::assets::consumable::ConsumableAssets;
+use crate::assets::effect::EffectAssets;
+use crate::assets::item::ItemAssets;
+use crate::assets::mob::MobAssets;
+use crate::assets::player_assets::PlayerAssets;
+use crate::assets::projectile::ProjectileAssets;
+use crate::assets::ui::UiAssets;
 use crate::screens::AppStates;
 use bevy::app::App;
 use bevy::asset::Handle;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-use bevy_kira_audio::AudioSource;
 use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
+use bevy_kira_audio::AudioSource;
 use bevy_rapier2d::plugin::{RapierConfiguration, TimestepMode};
-use crate::assets::player_assets::PlayerAssets;
 
 #[derive(Resource, AssetCollection)]
 pub struct Fonts {
@@ -71,14 +78,12 @@ pub struct Music {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_loading_state(
-        LoadingState::new(AppStates::Loading)
+        LoadingState::new(AppStates::LoadingAssets)
             .continue_to_state(AppStates::MainMenu)
             .load_collection::<Fonts>()
             .load_collection::<AudioAssets>()
             .load_collection::<Music>()
-            .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
-                "player_assets.assets.ron",
-            )
+            .with_dynamic_assets_file::<StandardDynamicAssetCollection>("player_assets.assets.ron")
             .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
                 "projectile_assets.assets.ron",
             )
@@ -86,27 +91,23 @@ pub(super) fn plugin(app: &mut App) {
             .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
                 "consumable_assets.assets.ron",
             )
-            .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
-                "item_assets.assets.ron",
-            )
-            .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
-                "effect_assets.assets.ron",
-            )
+            .with_dynamic_assets_file::<StandardDynamicAssetCollection>("item_assets.assets.ron")
+            .with_dynamic_assets_file::<StandardDynamicAssetCollection>("effect_assets.assets.ron")
             .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
                 "game_audio_assets.assets.ron",
             )
             .with_dynamic_assets_file::<StandardDynamicAssetCollection>("ui_assets.assets.ron")
             .load_collection::<PlayerAssets>()
-            // .load_collection::<ProjectileAssets>()//TODO:Assets need to be loaded
-            // .load_collection::<MobAssets>()
-            // .load_collection::<ItemAssets>()
-            // .load_collection::<ConsumableAssets>()
-            // .load_collection::<EffectAssets>()
-            // .load_collection::<GameAudioAssets>()
-            // .load_collection::<UiAssets>(),
+            .load_collection::<ProjectileAssets>()
+            .load_collection::<MobAssets>()
+            .load_collection::<ItemAssets>()
+            .load_collection::<ConsumableAssets>()
+            .load_collection::<EffectAssets>()
+            .load_collection::<GameAudioAssets>()
+            .load_collection::<UiAssets>(),
     );
 
-    app.edit_schedule(OnEnter(AppStates::InGame), |schedule| {
+    app.edit_schedule(OnEnter(AppStates::Game), |schedule| {
         schedule.configure_sets(
             (
                 GameEnterSet::Initialize,
@@ -140,7 +141,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 
     app.add_systems(
-        OnEnter(AppStates::InGame),
+        OnEnter(AppStates::Game),
         setup_physics.in_set(GameEnterSet::Initialize),
     );
 }

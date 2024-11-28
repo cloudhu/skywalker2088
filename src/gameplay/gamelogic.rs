@@ -1,18 +1,16 @@
-use crate::components::health::Health;
+use crate::assets::game_assets::{AudioAssets, Fonts};
+use crate::components::health::HealthComponent;
+use crate::components::player::{PlayerComponent, PlayersResource};
 use crate::config::GameConfig;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
-use crate::gameplay::GameState;
+use crate::gameplay::GameStates;
 use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
 use crate::util::{Colour, Math, RenderLayer};
-use crate::{AppSet, CameraShake, MainCamera};
 use bevy::app::App;
 use bevy::prelude::*;
-
-use crate::assets::game_assets::{AudioAssets, Fonts};
-use crate::components::player::PlayerComponent;
 use bevy::time::Stopwatch;
 use bevy_kira_audio::prelude::Volume;
 use bevy_kira_audio::{Audio, AudioControl};
@@ -20,6 +18,7 @@ use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
 use rand::Rng;
+use crate::AppSet;
 
 #[derive(Component, Default)]
 pub struct DespawnWithScene;
@@ -103,8 +102,8 @@ impl Default for WillTarget {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TakeDamageEvent>()
-        .add_systems(OnEnter(AppStates::InGame), setup_new_game);
-    app.add_systems(OnExit(AppStates::InGame), reset_game);
+        .add_systems(OnEnter(AppStates::Game), setup_new_game);
+    app.add_systems(OnExit(AppStates::Game), reset_game);
     app.add_systems(
         Update,
         (
@@ -117,7 +116,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::TickTimers)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppStates::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 fn setup_new_game(mut commands: Commands) {
@@ -131,8 +130,8 @@ fn setup_new_game(mut commands: Commands) {
     commands.insert_resource(PlayerLevel { value: 0 });
 }
 
-pub fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
-    *game_state.get() != GameState::Paused && *game_state.get() != GameState::Selection
+pub fn game_not_paused(game_state: Res<State<GameStates>>) -> bool {
+    *game_state.get() != GameStates::Paused && *game_state.get() != GameStates::Selection
 }
 
 fn game_time_system(time: Res<Time>, mut game_time: ResMut<GameTime>) {
@@ -142,24 +141,26 @@ fn game_time_system(time: Res<Time>, mut game_time: ResMut<GameTime>) {
 fn reset_game(
     mut commands: Commands,
     query: Query<Entity, With<DespawnWithScene>>,
-    mut next_game_state: ResMut<NextState<GameState>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
+    mut players_resource: ResMut<PlayersResource>,
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-    next_game_state.set(GameState::Running);
+    *players_resource = PlayersResource::default();
+    next_game_state.set(GameStates::Playing);
 }
 
 pub fn camera_follow(
     time: Res<Time>,
-    player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>, Without<MainCamera>)>,
+    player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>)>,
     mut camera_q: Query<
-        (Entity, &Transform, &mut CameraShake),
-        (With<Transform>, With<MainCamera>, Without<PlayerComponent>),
+        (Entity, &Transform),
+        (With<Camera2d>),
     >,
     mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
-    if let Ok((camera_entity, camera_transform, mut shake)) = camera_q.get_single_mut() {
+    if let Ok((camera_entity, camera_transform)) = camera_q.get_single_mut() {
         if let Ok(player_transform) = player_q.get_single() {
             // Calculate the new camera position based on the player's position
             let target_position = Vec2::new(
@@ -171,9 +172,7 @@ pub fn camera_follow(
 
             let smooth_move_position = current_position
                 .lerp(target_position, 5.0 * time.delta_seconds())
-                + shake.trauma * Math::random_2d_unit_vector();
-
-            shake.trauma = f32::max(shake.trauma - shake.decay * time.delta_seconds(), 0.0);
+                +  Math::random_2d_unit_vector();
 
             move_event_writer.send(ParallaxMoveEvent {
                 translation: smooth_move_position - current_position,
@@ -187,7 +186,7 @@ pub fn camera_follow(
 pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
+    mut query: Query<(&mut HealthComponent, Entity), Without<ShouldDespawn>>,
 ) {
     for (mut health, entity) in &mut query {
         if health.get_health() <= 0 {
@@ -209,11 +208,10 @@ pub fn take_damage_events(
     mut take_damage_events: EventReader<TakeDamageEvent>,
     mut query: Query<(
         &Transform,
-        &mut Health,
+        &mut HealthComponent,
         Option<&PlayerComponent>,
         Option<&mut HitFlash>,
     )>,
-    mut camera: Query<&mut CameraShake>,
     sound_assets: Res<AudioAssets>,
     audio: Res<Audio>,
     config: Res<GameConfig>,
@@ -224,9 +222,6 @@ pub fn take_damage_events(
 
             //玩家受击时带有相机抖动效果
             if is_player.is_some() {
-                if let Ok(mut shake) = camera.get_single_mut() {
-                    shake.trauma = ev.damage.amount.clamp(0, 5) as f32;
-                }
                 //播放玩家被击中音效
                 audio
                     .play(sound_assets.bullet_hit_1.clone())
@@ -278,19 +273,14 @@ pub fn death_system(
             Entity,
             Option<&DropsLoot>,
             Option<&Transform>,
-            Option<&PlayerComponent>,
             Option<&ExplodesOnDespawn>,
             Option<&WorthPoints>,
         ),
         With<ShouldDespawn>,
     >,
-    mut game_state: ResMut<NextState<GameState>>,
     mut points: ResMut<Points>,
-    sound_assets: Res<AudioAssets>,
-    audio: Res<Audio>,
-    config: Res<GameConfig>,
 ) {
-    for (entity, drops_loot, transform, is_player, explodes, worth_points) in &mut query {
+    for (entity, drops_loot, transform, explodes, worth_points) in &mut query {
         commands.entity(entity).despawn_recursive();
 
         if let Some(transform) = transform {
@@ -304,14 +294,6 @@ pub fn death_system(
 
         if let Some(worth_points) = worth_points {
             points.value += worth_points.value;
-        }
-
-        if is_player.is_some() {
-            //播放失败音效
-            audio
-                .play(sound_assets.game_over.clone())
-                .with_volume(Volume::Amplitude(config.sfx_volume as f64));
-            game_state.set(GameState::GameOver);
         }
     }
 }

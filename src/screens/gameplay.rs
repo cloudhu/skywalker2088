@@ -3,21 +3,21 @@ use crate::assets::game_assets::{Fonts, Music};
 use crate::audio::NextBgm;
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
-use crate::gameplay::GameState;
+use crate::gameplay::GameStates;
 use crate::theme::interaction::OnPress;
 use crate::{screens::AppStates, theme::prelude::*};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppStates::InGame), spawn_level);
-    app.add_systems(OnEnter(AppStates::InGame), play_gameplay_music);
-    app.add_systems(OnExit(AppStates::InGame), stop_music);
-    app.add_systems(OnEnter(GameState::GameOver), setup_game_over);
+    app.add_systems(OnEnter(AppStates::Game), spawn_level);
+    app.add_systems(OnEnter(AppStates::Game), play_gameplay_music);
+    app.add_systems(OnExit(AppStates::Game), stop_music);
+    app.add_systems(OnEnter(GameStates::GameOver), setup_game_over);
     app.add_systems(
         Update,
         return_to_title_screen
-            .run_if(in_state(AppStates::InGame).and_then(input_just_pressed(KeyCode::Escape))),
+            .run_if(in_state(AppStates::Game).and_then(input_just_pressed(KeyCode::Escape))),
     );
 }
 
@@ -40,7 +40,7 @@ fn return_to_title_screen(mut next_screen: ResMut<NextState<AppStates>>) {
 fn setup_game_over(mut commands: Commands, points: Res<Points>, fonts: Res<Fonts>) {
     commands
         .ui_root()
-        .insert(StateScoped(GameState::GameOver))
+        .insert(StateScoped(GameStates::GameOver))
         .with_children(|children| {
             children.content(format!("{}", points.into_inner()));
             children.label("points", fonts.primary.clone());

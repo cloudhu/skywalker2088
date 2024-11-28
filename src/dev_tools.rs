@@ -1,6 +1,6 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
-use crate::gameplay::GameState;
+use crate::gameplay::GameStates;
 use crate::screens::AppStates;
 use bevy::{
     dev_tools::{
@@ -14,7 +14,7 @@ use bevy::{
 pub(super) fn plugin(app: &mut App) {
     // Log `Screen` state transitions.
     app.add_systems(Update, log_transitions::<AppStates>);
-    app.add_systems(Update, log_transitions::<GameState>);
+    app.add_systems(Update, log_transitions::<GameStates>);
 
     // Toggle the debug overlay for UI.
     app.add_plugins(DebugUiPlugin);

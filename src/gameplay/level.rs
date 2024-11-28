@@ -1,5 +1,5 @@
 //! Spawn the main level.
-use crate::gameplay::player::SpawnPlayer;
+use crate::gameplay::control::SpawnPlayer;
 use bevy::{ecs::world::Command, prelude::*};
 
 // pub(crate) fn plugin(_app: &mut App) {

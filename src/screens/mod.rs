@@ -3,8 +3,8 @@
 mod credits;
 mod gameplay;
 mod loading;
+mod main_menu;
 mod splash;
-mod title;
 
 use bevy::prelude::*;
 
@@ -17,7 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         gameplay::plugin,
         loading::plugin,
         splash::plugin,
-        title::plugin,
+        main_menu::plugin,
     ));
 }
 
@@ -26,9 +26,12 @@ pub(super) fn plugin(app: &mut App) {
 pub enum AppStates {
     #[default]
     Splash,
-    Loading,
+    LoadingAssets,
     MainMenu,
     CharacterSelection,
+    InitializeRun,
     Credits,
-    InGame,
+    Game,
+    GameOver,
+    Victory,
 }

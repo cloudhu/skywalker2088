@@ -4,7 +4,7 @@ use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::ship::turret::MultiShot;
 use crate::{
-    components::health::{Health, ShipBundle},
+    components::health::{HealthComponent, ShipBundle},
     gameplay::physics::{BaseGlyphRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
@@ -39,7 +39,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     method: EngineMethod::Keep(500.0),
                     ..Default::default()
                 },
-                health: Health::new(100, 80, 3.0),
+                health: HealthComponent::new(100, 80, 3.0),
                 collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 55.0,

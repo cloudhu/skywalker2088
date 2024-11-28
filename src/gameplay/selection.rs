@@ -1,6 +1,6 @@
 use crate::gameplay::gamelogic::PlayerLevel;
 use crate::gameplay::upgrade::{PlayerUpgrades, UpgradeEvent};
-use crate::gameplay::GameState;
+use crate::gameplay::GameStates;
 use crate::ship::turret::TurretClass;
 use crate::theme::language::Localize;
 use crate::util::Colour;
@@ -20,9 +20,9 @@ const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(SelectionData(vec![]))
-        .add_systems(OnEnter(GameState::Selection), setup_selection)
-        .add_systems(Update, menu.run_if(in_state(GameState::Selection)))
-        .add_systems(OnExit(GameState::Selection), cleanup);
+        .add_systems(OnEnter(GameStates::Selection), setup_selection)
+        .add_systems(Update, menu.run_if(in_state(GameStates::Selection)))
+        .add_systems(OnExit(GameStates::Selection), cleanup);
 }
 
 fn random_starting_weapon() -> TurretClass {
@@ -123,7 +123,7 @@ fn setup_selection(
 }
 
 fn menu(
-    mut next_state: ResMut<NextState<GameState>>,
+    mut next_state: ResMut<NextState<GameStates>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &SelectionButton),
         (Changed<Interaction>, With<Button>, With<SelectionButton>),
@@ -134,7 +134,7 @@ fn menu(
         match *interaction {
             Interaction::Pressed => {
                 upgrade_event.send(button.0);
-                next_state.set(GameState::Running);
+                next_state.set(GameStates::Playing);
             }
             Interaction::Hovered => {
                 *color = HOVERED_BUTTON.into();

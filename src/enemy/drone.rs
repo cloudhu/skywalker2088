@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use super::AI;
 use crate::assets::game_assets::Fonts;
-use crate::components::health::{Health, ShipBundle};
+use crate::components::health::{HealthComponent, ShipBundle};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
@@ -30,7 +30,7 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                 },
                 physics: Physics::new(5.0),
                 engine: Engine::new(10.0, 10.0),
-                health: Health::new(1, 4, 3.0),
+                health: HealthComponent::new(1, 4, 3.0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 15.0,

@@ -11,7 +11,7 @@ pub struct ShipBundle {
     pub glyph: Text2dBundle,
     pub physics: Physics,
     pub engine: Engine,
-    pub health: Health,
+    pub health: HealthComponent,
     pub collider: Collider,
     pub targettable: Targettable,
     pub will_target: WillTarget,
@@ -33,7 +33,7 @@ pub struct DamageDealtEvent {
 }
 
 #[derive(Component)]
-pub struct Health {
+pub struct HealthComponent {
     /// Current health value
     health: usize,
     /// Maximum health value
@@ -49,16 +49,20 @@ pub struct Health {
     pub shield_recharge_cooldown: Timer,
 }
 
-impl Default for Health {
+impl Default for HealthComponent {
     fn default() -> Self {
-        Health::new(100, 100, 3.0)
+        HealthComponent::new(100, 100, 3.0)
     }
 }
 
-impl Health {
+impl HealthComponent {
     /// Create a new health struct from a maximum health and shields value
-    pub fn new(max_health: usize, max_shields: usize, shields_recharge_rate: f32) -> Health {
-        Health {
+    pub fn new(
+        max_health: usize,
+        max_shields: usize,
+        shields_recharge_rate: f32,
+    ) -> HealthComponent {
+        HealthComponent {
             health: max_health,
             max_health,
             armor: 0,

@@ -144,10 +144,10 @@ fn tick_splash_timer(time: Res<Time>, mut timer: ResMut<SplashTimer>) {
 
 fn check_splash_timer(timer: ResMut<SplashTimer>, mut next_screen: ResMut<NextState<AppStates>>) {
     if timer.0.just_finished() {
-        next_screen.set(AppStates::Loading);
+        next_screen.set(AppStates::LoadingAssets);
     }
 }
 
 fn continue_to_loading_screen(mut next_screen: ResMut<NextState<AppStates>>) {
-    next_screen.set(AppStates::Loading);
+    next_screen.set(AppStates::LoadingAssets);
 }

@@ -47,7 +47,7 @@ fn enter_gameplay_screen(
     _trigger: Trigger<OnPress>,
     mut next_screen: ResMut<NextState<AppStates>>,
 ) {
-    next_screen.set(AppStates::InGame);
+    next_screen.set(AppStates::Game);
 }
 
 fn enter_credits_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppStates>>) {

@@ -1,5 +1,5 @@
 use crate::assets::game_assets::Fonts;
-use crate::components::health::Health;
+use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
 use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
@@ -12,9 +12,9 @@ use crate::util::Colour;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppStates::InGame), setup_hud)
+    app.add_systems(OnEnter(AppStates::Game), setup_hud)
         // Always run while game is running
-        .add_systems(Update, hud_system.run_if(in_state(AppStates::InGame)));
+        .add_systems(Update, hud_system.run_if(in_state(AppStates::Game)));
 }
 
 #[derive(Component)]
@@ -167,7 +167,7 @@ fn bar(current: usize, max: usize, width: usize) -> String {
 
 pub fn hud_system(
     upgrades: Res<PlayerUpgrades>,
-    player_query: Query<(&Engine, &Health, &Cargo, &Children), With<PlayerComponent>>,
+    player_query: Query<(&Engine, &HealthComponent, &Cargo, &Children), With<PlayerComponent>>,
     turret_query: Query<(&FireRate, &TurretClass)>,
     mut query: Query<(&Children, &UINode)>,
     mut q_child: Query<&mut Text>,

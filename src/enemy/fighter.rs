@@ -3,7 +3,7 @@ use crate::assets::game_assets::Fonts;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::{
-    components::health::{Health, ShipBundle},
+    components::health::{HealthComponent, ShipBundle},
     gameplay::physics::{BaseGlyphRotation, Collider, Physics},
     ship::{
         engine::Engine,
@@ -33,7 +33,7 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
                 },
                 physics: Physics::new(5.0),
                 engine: Engine::new(14.0, 14.0),
-                health: Health::new(10, 0, 3.0),
+                health: HealthComponent::new(10, 0, 3.0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 20.0,

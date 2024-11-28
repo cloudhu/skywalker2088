@@ -14,7 +14,7 @@ use crate::enemy::final_boss::spawn_final_boss;
 use crate::enemy::mothership::spawn_mothership;
 use crate::gameplay::gamelogic::{game_not_paused, GameTime};
 use crate::gameplay::physics::Physics;
-use crate::gameplay::GameState;
+use crate::gameplay::GameStates;
 use crate::screens::AppStates;
 use crate::ship::engine::{Engine, EngineMethod};
 use crate::util::{Math, RenderLayer};
@@ -34,19 +34,19 @@ pub struct AI;
 pub struct FinalBoss;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppStates::InGame), spawn_startup)
+    app.add_systems(OnEnter(AppStates::Game), spawn_startup)
         .add_systems(
             Update,
             ai_system
                 .run_if(game_not_paused)
-                .run_if(in_state(AppStates::InGame)),
+                .run_if(in_state(AppStates::Game)),
         )
         // Stop when game over
         .add_systems(
             Update,
             (spawner_system, spawn_final_boss_system)
-                .distributive_run_if(in_state(GameState::Running))
-                .distributive_run_if(in_state(AppStates::InGame)),
+                .distributive_run_if(in_state(GameStates::Playing))
+                .distributive_run_if(in_state(AppStates::Game)),
         );
 }
 

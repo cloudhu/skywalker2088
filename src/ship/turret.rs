@@ -1,5 +1,5 @@
 use crate::assets::game_assets::{AudioAssets, Fonts};
-use crate::components::health::{Health, Owner, Seeker};
+use crate::components::health::{HealthComponent, Owner, Seeker};
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{
     game_not_paused, Damage, DespawnWithScene, ExplodesOnDespawn, TakeDamageEvent, Targettable,
@@ -270,7 +270,7 @@ pub(super) fn plugin(app: &mut App) {
             Update,
             (turret_targetting_system, turret_fire_system)
                 .distributive_run_if(game_not_paused)
-                .distributive_run_if(in_state(AppStates::InGame)),
+                .distributive_run_if(in_state(AppStates::Game)),
         )
         .add_systems(
             Update,
@@ -284,7 +284,7 @@ pub(super) fn plugin(app: &mut App) {
                 fire_pierce_laser,
                 fire_emp,
             )
-                .distributive_run_if(in_state(AppStates::InGame)),
+                .distributive_run_if(in_state(AppStates::Game)),
         );
 }
 
@@ -716,7 +716,7 @@ pub fn fire_mine_launcher(
                     },
                     ..default()
                 },
-                Health::new(1, 0, 3.0),
+                HealthComponent::new(1, 0, 3.0),
                 Collider { radius: size.0 },
                 Owner(parent.get()),
                 ExplodesOnDespawn {

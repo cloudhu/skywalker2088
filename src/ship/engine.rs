@@ -71,7 +71,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppStates::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 

@@ -1,0 +1,207 @@
+use crate::animation::{AnimationComponent, AnimationData};
+use crate::assets::consumable::ConsumableAssets;
+use crate::components::spawnable::{
+    AttractToClosestPlayerComponent, ConsumableType, SpawnableType,
+};
+use crate::options::resources::GameParametersResource;
+use crate::options::GameOptions;
+use crate::screens::AppStates;
+use crate::spawnable::{SpawnableBehavior, SpawnableComponent};
+use bevy::prelude::StateScoped;
+use bevy::{
+    color::{Color, Srgba},
+    prelude::{
+        Commands, Component, Event, EventReader, Name, Res, Resource, Sprite, Timer, TimerMode,
+        Transform, Vec2, Vec3,
+    },
+    sprite::{SpriteBundle, TextureAtlas},
+    utils::default,
+};
+use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
+use serde::Deserialize;
+use std::collections::HashMap;
+
+mod behavior;
+
+pub(crate) use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
+
+use super::InitialMotion;
+
+/// All the different consumable effects
+#[derive(Deserialize, Clone)]
+pub enum ConsumableEffect {
+    GainHealth(usize),
+    GainArmor(usize),
+    GainMoney(usize),
+    GainProjectiles(usize),
+}
+
+/// Core component for a consumable
+#[derive(Component)]
+pub struct ConsumableComponent {
+    /// Type of the consumable
+    pub consumable_type: ConsumableType,
+    /// Collection of the consumable effects
+    pub consumable_effects: Vec<ConsumableEffect>,
+    /// Consumable specific behaviors
+    pub behaviors: Vec<ConsumableBehavior>,
+}
+
+/// Event for spawning a consumable
+#[derive(Event)]
+pub struct SpawnConsumableEvent {
+    /// Type of the consumable to spawn
+    pub consumable_type: ConsumableType,
+    /// Position of the consumable to spawn
+    pub position: Vec2,
+}
+
+/// Handles spawning of consumables according to read events
+pub fn spawn_consumable_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnConsumableEvent>,
+    consumables_resource: Res<ConsumableResource>,
+    consumable_assets: Res<ConsumableAssets>,
+    game_parameters: Res<GameParametersResource>,
+    game_options: Res<GameOptions>,
+) {
+    for event in event_reader.read() {
+        spawn_consumable(
+            &event.consumable_type,
+            &consumables_resource,
+            &consumable_assets,
+            event.position,
+            &mut commands,
+            &game_parameters,
+            &game_options,
+        );
+    }
+}
+
+/// Data describing consumables
+#[derive(Deserialize)]
+pub struct ConsumableData {
+    /// Type of the consumable
+    pub consumable_type: ConsumableType,
+    /// Dimensions of the collider
+    pub collider_dimensions: Vec2,
+    /// Spawnable generic behaviors
+    pub spawnable_behaviors: Vec<SpawnableBehavior>,
+    /// Texture of the consumable
+    pub animation: AnimationData,
+    /// Initial motion of the consumable
+    pub initial_motion: InitialMotion,
+    /// Effects of picking up the consumable
+    pub consumable_effects: Vec<ConsumableEffect>,
+    /// Consumable specific behaviors
+    pub consumable_behaviors: Vec<ConsumableBehavior>,
+    /// Maximum speed
+    pub speed: Vec2,
+    /// Acceleration stat
+    pub acceleration: Vec2,
+    /// Deceleration stat
+    pub deceleration: Vec2,
+    /// z value of the transform
+    pub z_level: f32,
+    /// Color for bloom effect
+    pub bloom_color: Srgba,
+}
+
+impl ConsumableData {
+    /// Color for bloom effect, multiplied by the bloom intensity value
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
+        Color::srgb(
+            1.0 + self.bloom_color.red * bloom_intensity,
+            1.0 + self.bloom_color.green * bloom_intensity,
+            1.0 + self.bloom_color.blue * bloom_intensity,
+        )
+    }
+}
+
+/// Consumable resource stores data about all consumables
+#[derive(Resource)]
+pub struct ConsumableResource {
+    /// Maps consumable types to data
+    pub consumables: HashMap<ConsumableType, ConsumableData>,
+}
+
+/// Spawn a consumable by type
+pub fn spawn_consumable(
+    consumable_type: &ConsumableType,
+    consumable_resource: &ConsumableResource,
+    consumable_assets: &ConsumableAssets,
+    position: Vec2,
+    commands: &mut Commands,
+    game_parameters: &GameParametersResource,
+    game_options: &GameOptions,
+) {
+    //Get data from the consumable resource
+    let consumable_data = &consumable_resource.consumables[consumable_type];
+    // Scale collider to align with the sprite
+    let collider_size_hx =
+        consumable_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy =
+        consumable_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
+
+    // Create consumable entity
+    let mut consumable = commands.spawn_empty();
+    if consumable_data
+        .spawnable_behaviors
+        .contains(&SpawnableBehavior::AttractToPlayer)
+    {
+        consumable.insert(AttractToClosestPlayerComponent);
+    }
+
+    // spawn the consumable
+    consumable
+        .insert(SpriteBundle {
+            sprite: Sprite {
+                color: consumable_data.affine_bloom_transformation(game_options.bloom_intensity),
+                ..Default::default()
+            },
+            texture: consumable_assets.get_image(consumable_type),
+            ..default()
+        })
+        .insert(TextureAtlas {
+            layout: consumable_assets.get_texture_atlas_layout(consumable_type),
+            ..default()
+        })
+        .insert(AnimationComponent {
+            timer: Timer::from_seconds(
+                consumable_data.animation.frame_duration,
+                TimerMode::Repeating,
+            ),
+            direction: consumable_data.animation.direction.clone(),
+        })
+        .insert(RigidBody::Dynamic)
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Velocity::from(consumable_data.initial_motion.clone()))
+        .insert(Transform {
+            translation: position.extend(consumable_data.z_level),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
+            ..Default::default()
+        })
+        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Sensor)
+        .insert(ConsumableComponent {
+            consumable_type: consumable_data.consumable_type.clone(),
+            consumable_effects: consumable_data.consumable_effects.clone(),
+            behaviors: consumable_data.consumable_behaviors.clone(),
+        })
+        .insert(SpawnableComponent {
+            spawnable_type: SpawnableType::Consumable(consumable_data.consumable_type.clone()),
+            acceleration: consumable_data.acceleration,
+            deceleration: consumable_data.deceleration,
+            speed: consumable_data.speed,
+            angular_acceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: consumable_data.spawnable_behaviors.clone(),
+        })
+        .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(StateScoped(AppStates::Game))
+        .insert(Name::new(consumable_data.consumable_type.to_string()));
+}

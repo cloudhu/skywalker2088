@@ -7,29 +7,41 @@ mod dev_tools;
 mod enemy;
 mod gameplay;
 
+mod animation;
 pub mod assets;
+pub mod camera;
+mod collision;
+mod loot;
 mod options;
+mod player;
+mod run;
 mod screens;
 mod ship;
+pub mod spawnable;
+mod stats;
 mod theme;
 mod util;
+pub mod weapon;
+mod arena;
+mod ui;
 
+use crate::animation::SpriteAnimationPlugin;
+use crate::camera::CameraPlugin;
+use crate::loot::LootPlugin;
 use crate::options::display::DisplayConfig;
 use crate::options::generate_config_files;
-use crate::screens::AppStates;
-use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
-use bevy::core_pipeline::tonemapping::Tonemapping;
+use crate::player::PlayerPlugin;
+use crate::run::RunPlugin;
+use crate::spawnable::SpawnablePlugin;
 use bevy::window::WindowMode;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_kira_audio::{AudioPlugin, AudioSettings};
-use bevy_parallax::{
-    CreateParallaxEvent, LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin,
-};
-use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, ShapePlugin};
-use bevy_prototype_lyon::shapes;
-use bevy_rapier2d::plugin::{RapierConfiguration, TimestepMode};
+use bevy_parallax::ParallaxPlugin;
+use bevy_prototype_lyon::prelude::ShapePlugin;
 use bevy_rapier2d::prelude::{NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
-use util::RenderLayer;
+use crate::arena::ArenaPlugin;
+use crate::ui::UiPlugin;
+use crate::weapon::WeaponPlugin;
 
 /// Used by a physics engine to translate physics calculations to graphics
 const PHYSICS_PIXELS_PER_METER: f32 = 10.0;
@@ -91,19 +103,27 @@ impl Plugin for AppPlugin {
         .add_plugins(ShapePlugin)
         .add_plugins(ParallaxPlugin)
         .add_plugins(AudioPlugin)
+        .add_plugins(CameraPlugin)
+        .add_plugins(ArenaPlugin)
+        .add_plugins(PlayerPlugin)
+        .add_plugins(SpawnablePlugin)
+        .add_plugins(RunPlugin)
+        .add_plugins(LootPlugin)
+        .add_plugins(SpriteAnimationPlugin)
+        .add_plugins(WeaponPlugin)
+        .add_plugins(UiPlugin)
+        .add_plugins(collision::CollisionPlugin)
         .add_plugins(
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_PIXELS_PER_METER)
                 .in_fixed_schedule(),
         );
-
-        // Spawn the main camera.
-        app.add_systems(Startup, spawn_camera);
 
         // Add other plugins.
         app.add_plugins((
             options::plugin,
             config::plugin,
             assets::plugin,
+            stats::plugin,
             screens::plugin,
             theme::plugin,
             gameplay::plugin,
@@ -150,82 +170,4 @@ fn get_display_config() -> DisplayConfig {
         height: 1024.0,
         fullscreen: false,
     }
-}
-
-#[derive(Component)]
-pub struct MainCamera;
-#[derive(Component)]
-pub struct CameraShake {
-    pub trauma: f32,
-    pub decay: f32,
-}
-
-impl Default for CameraShake {
-    fn default() -> Self {
-        Self {
-            trauma: 0.0,
-            decay: 20.0,
-        }
-    }
-}
-
-fn spawn_camera(mut commands: Commands, mut create_parallax: EventWriter<CreateParallaxEvent>) {
-    // Spawn the Camera
-    let camera = commands
-        .spawn((
-            Name::new("Camera"),
-            Camera2dBundle {
-                camera: Camera {
-                    hdr: true, // 1. HDR is required for bloom
-                    ..default()
-                },
-                tonemapping: Tonemapping::TonyMcMapface, // 2. Using a tonemapper that desaturates to white is recommended
-                ..default()
-            },
-            MainCamera,
-            CameraShake::default(),
-            BloomSettings {
-                // 3. Enable bloom for the camera
-                intensity: 0.15,
-                composite_mode: BloomCompositeMode::Additive,
-                ..default()
-            },
-            // Render all UI to this camera.
-            // Not strictly necessary since we only use one camera,
-            // but if we don't use this component, our UI will disappear as soon
-            // as we add another camera. This includes indirect ways of adding cameras like using
-            // [ui node outlines](https://bevyengine.org/news/bevy-0-14/#ui-node-outline-gizmos)
-            // for debugging. So it's good to have this here for future-proofing.
-            IsDefaultUiCamera,
-        ))
-        .insert(ParallaxCameraComponent::default())
-        .id();
-
-    // Setup parallax
-    create_parallax.send(CreateParallaxEvent {
-        layers_data: vec![
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.95, 0.95),
-                path: "background/black.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                scale: Vec2::splat(5.0),
-                z: RenderLayer::Background.as_z_with_offset(-10.),
-                ..default()
-            },
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.9, 0.9),
-                path: "background/stars-tile.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                z: RenderLayer::Background.as_z(),
-                ..default()
-            },
-        ],
-        camera,
-    });
-
-    // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
-    commands.spawn((ShapeBundle {
-        path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
-        ..default()
-    },));
 }

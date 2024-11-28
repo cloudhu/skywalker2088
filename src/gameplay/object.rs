@@ -1,4 +1,4 @@
-use crate::components::health::Health;
+use crate::components::health::HealthComponent;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::physics::{Collider, Physics, Rotator};
 use crate::screens::AppStates;
@@ -14,7 +14,7 @@ use std::f32::consts::PI;
 pub struct SpaceObject;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppStates::InGame), setup_space_objects);
+    app.add_systems(OnEnter(AppStates::Game), setup_space_objects);
 }
 
 pub fn generate_object_geometry(sides: i32, min_radius: f32, max_radius: f32) -> Path {
@@ -45,7 +45,7 @@ fn spawn_space_object(commands: &mut Commands) {
         Rotator {
             speed: rng.gen_range(-0.4..0.4),
         },
-        Health::new(size as usize, 0, 3.0),
+        HealthComponent::new(size as usize, 0, 3.0),
         Stroke::new(Colour::WHITE, 2.0),
         ShapeBundle {
             path: generate_object_geometry(10, size - 10., size + 10.),
