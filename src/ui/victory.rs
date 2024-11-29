@@ -1,5 +1,12 @@
+use crate::assets::ui::UiAssets;
+use crate::components::audio::ChangeBackgroundMusicEvent;
+use crate::screens::AppStates;
+use crate::stats::historical_metrics::{
+    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
 use crate::ui::BouncingPromptComponent;
 use bevy::color::{Alpha, Color};
+use bevy::prelude::StateScoped;
 use bevy::{
     asset::AssetServer,
     ecs::{
@@ -17,11 +24,6 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use bevy::prelude::StateScoped;
-use crate::assets::ui::UiAssets;
-use crate::components::audio::ChangeBackgroundMusicEvent;
-use crate::screens::AppStates;
-use crate::stats::historical_metrics::{MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID};
 
 #[derive(Component)]
 pub struct VictoryUI;

@@ -5,6 +5,7 @@ use self::screen_shake::{
 };
 use crate::components::events::ScreenShakeEvent;
 use crate::options::resources::GameParametersResource;
+use crate::screens::AppStates;
 use crate::util::RenderLayer;
 use bevy::app::{App, Plugin, Startup, Update};
 use bevy::core_pipeline::bloom::BloomPrefilterSettings;
@@ -12,7 +13,7 @@ use bevy::core_pipeline::core_2d::{Camera2d, Camera2dBundle};
 use bevy::core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping};
 use bevy::ecs::system::{Commands, Res};
 use bevy::math::{Vec2, Vec3};
-use bevy::prelude::{EventWriter, IsDefaultUiCamera, UVec2};
+use bevy::prelude::{in_state, EventWriter, IntoSystemConfigs, IsDefaultUiCamera, UVec2};
 use bevy::render::camera::{Camera, ClearColorConfig};
 use bevy::transform::components::Transform;
 use bevy::utils::default;
@@ -38,7 +39,8 @@ impl Plugin for CameraPlugin {
                 screen_shake_system,
                 add_trauma_system,
                 screen_shake_on_player_damage_system,
-            ),
+            )
+                .run_if(in_state(AppStates::Game)),
         );
     }
 }

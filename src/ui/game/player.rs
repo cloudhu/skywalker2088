@@ -1,3 +1,10 @@
+use super::parent::PlayerUiChildBuilderExt;
+use crate::assets::ui::UiAssets;
+use crate::components::abilities::{AbilityCooldownComponent, AbilitySlotIDComponent};
+use crate::components::character::Character;
+use crate::components::health::HealthComponent;
+use crate::components::player::{PlayerComponent, PlayerIDComponent, PlayersResource};
+use crate::player::CharactersResource;
 use bevy::{
     asset::Handle,
     color::{
@@ -18,17 +25,6 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_assets::UiAssets;
-use thetawave_interface::{
-    abilities::{AbilityCooldownComponent, AbilitySlotIDComponent},
-    character::Character,
-    health::HealthComponent,
-    player::{PlayerComponent, PlayerIDComponent, PlayersResource},
-};
-
-use crate::player::CharactersResource;
-
-use super::parent::PlayerUiChildBuilderExt;
 
 const INNER_PADDING: UiRect = UiRect::all(Val::Percent(5.0));
 const INNER_WIDTH: Val = Val::Percent(35.0);
@@ -311,6 +307,20 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         });
     }
 
+    fn spawn_player_armor_counter_ui(&mut self) {
+        self.spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                aspect_ratio: ARMOR_COUNTER_ASPECT_RATIO,
+                margin: ARMOR_COUNTER_MARGIN,
+                ..default()
+            },
+            background_color: ARMOR_COUNTER_COLOR.with_alpha(ARMOR_COUNTER_ALPHA).into(),
+            ..default()
+        })
+        .insert(ArmorCounterUi);
+    }
+
     fn spawn_player_ability_icon_ui(
         &mut self,
         player_id: PlayerIDComponent,
@@ -345,20 +355,6 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 .insert(ability_slot_id)
                 .insert(AbilityValueUi);
         });
-    }
-
-    fn spawn_player_armor_counter_ui(&mut self) {
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                aspect_ratio: ARMOR_COUNTER_ASPECT_RATIO,
-                margin: ARMOR_COUNTER_MARGIN,
-                ..default()
-            },
-            background_color: ARMOR_COUNTER_COLOR.with_alpha(ARMOR_COUNTER_ALPHA).into(),
-            ..default()
-        })
-        .insert(ArmorCounterUi);
     }
 }
 
@@ -426,7 +422,7 @@ pub(super) fn update_player_armor_ui_system(
     for (player_health, player_id) in player_query.iter() {
         for (entity, armor_id) in armor_ui.iter() {
             if player_id == armor_id {
-                // spawn all of the existing child armor ticks
+                // spawn all the existing child armor ticks
                 commands.entity(entity).despawn_descendants();
 
                 // spawn armor ticks

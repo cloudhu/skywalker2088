@@ -1,4 +1,5 @@
 use crate::components::objectives::DefenseInteraction;
+use crate::components::player::PlayerInput;
 use crate::components::spawnable::{MobSegmentType, MobType};
 use bevy::prelude::*;
 
@@ -33,4 +34,16 @@ pub struct MobReachedBottomGateEvent {
 pub struct ScreenShakeEvent {
     /// This should be between 0 and 1. ( 0 is no screen shake; 1 is a very aggressive shake.)
     pub trauma: f32,
+}
+
+/// This event is used for notifying systems when an animation for an entity has been completed
+/// Can be used for despawning entities after animations finish
+#[derive(Event)]
+pub struct AnimationCompletedEvent(pub Entity);
+
+/// Stores the index (likely 0 or 1) of the player that joined an n-player game.
+#[derive(Event)]
+pub struct PlayerJoinEvent {
+    pub player_idx: u8,
+    pub input: PlayerInput,
 }

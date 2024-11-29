@@ -1,11 +1,11 @@
+use crate::assets::game_assets::GameEnterSet;
+use crate::gameplay::GameStates;
+use crate::screens::AppStates;
 use bevy::{
     app::{Plugin, Update},
     ecs::schedule::IntoSystemConfigs,
     prelude::{in_state, OnEnter},
 };
-use thetawave_interface::states;
-
-use crate::GameEnterSet;
 
 mod border_gradient;
 mod game_center;
@@ -21,7 +21,7 @@ impl Plugin for GameUiPlugin {
         app.add_event::<border_gradient::BorderGradientEvent>();
 
         app.add_systems(
-            OnEnter(states::AppStates::Game),
+            OnEnter(AppStates::Game),
             parent::setup_game_ui_system.after(GameEnterSet::BuildUi),
         );
 
@@ -40,8 +40,8 @@ impl Plugin for GameUiPlugin {
                 border_gradient::border_gradient_update_system,
                 border_gradient::border_gradient_on_gate_interaction_system,
             )
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         );
     }
 }

@@ -19,10 +19,7 @@ use bevy::{
 #[derive(Component)]
 pub struct PauseUI;
 
-pub fn setup_pause_system(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
+pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(NodeBundle {
             style: Style {

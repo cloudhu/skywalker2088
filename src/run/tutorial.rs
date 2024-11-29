@@ -1,6 +1,14 @@
 //! The logic for the tutorial level. Generally, a `TutorialLesson` is added to a collection of
 //! levels to invoke some behavior each tick, until all objectives/milestones are met (a sentinel
 //! in the tick/update function is returned).
+use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
+use crate::components::events::MobReachedBottomGateEvent;
+use crate::components::input::PlayerAction;
+use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent};
+use crate::components::spawnable::{
+    AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
+    NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
+};
 use bevy::log::info;
 use bevy::math::Quat;
 use bevy::prelude::{EventReader, EventWriter, Query, Time, Timer, With};
@@ -8,14 +16,7 @@ use leafwing_input_manager::action_state::ActionState;
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::ops::Range;
-use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
-use thetawave_interface::input::PlayerAction;
-use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
-use thetawave_interface::spawnable::{
-    AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
-    NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
-};
+
 fn enable_player_actions_at_end_of_phase() {
     info!("TODO: Enable player actions");
 }
@@ -564,7 +565,7 @@ impl TutorialLesson {
                 });
             }
 
-            // return true if all timers are finshed
+            // return true if all timers are finished
             up_timer.finished()
                 && down_timer.finished()
                 && left_timer.finished()

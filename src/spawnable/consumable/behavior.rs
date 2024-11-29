@@ -1,6 +1,12 @@
-use crate::{
-    collision::SortedCollisionEvent, game::GameParametersResource, spawnable::SpawnEffectEvent,
+use super::ConsumableEffect;
+use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
+use crate::components::health::HealthComponent;
+use crate::components::player::{
+    PlayerComponent, PlayerInventoryComponent, PlayerOutgoingDamageComponent,
 };
+use crate::components::spawnable::{ConsumableType, EffectType, TextEffectType};
+use crate::options::resources::GameParametersResource;
+use crate::{collision::SortedCollisionEvent, spawnable::SpawnEffectEvent};
 use bevy::{
     math::Vec3,
     prelude::{
@@ -9,14 +15,6 @@ use bevy::{
     },
 };
 use serde::Deserialize;
-use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::HealthComponent,
-    player::{PlayerComponent, PlayerInventoryComponent, PlayerOutgoingDamageComponent},
-    spawnable::{ConsumableType, EffectType, TextEffectType},
-};
-
-use super::ConsumableEffect;
 
 /// Behaviors specific to consumables
 #[derive(Deserialize, Clone)]
@@ -74,7 +72,7 @@ pub fn consumable_execute_behavior_system(
     }
 }
 
-/// Apply effects to the player on collistion
+/// Apply effects to the player on collision
 #[allow(clippy::too_many_arguments)]
 fn apply_effects_on_impact(
     commands: &mut Commands,

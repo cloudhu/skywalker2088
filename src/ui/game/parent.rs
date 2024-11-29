@@ -1,3 +1,11 @@
+use super::border_gradient::BorderGradientType;
+use crate::assets::ui::UiAssets;
+use crate::components::abilities::AbilitySlotIDComponent;
+use crate::components::character::Character;
+use crate::components::player::{PlayerIDComponent, PlayersResource};
+use crate::player::CharactersResource;
+use crate::screens::AppStates;
+use bevy::prelude::StateScoped;
 use bevy::{
     asset::Handle,
     color::{Color, Srgba},
@@ -11,17 +19,6 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_assets::UiAssets;
-use thetawave_interface::{
-    abilities::AbilitySlotIDComponent,
-    character::Character,
-    player::{PlayerIDComponent, PlayersResource},
-    states::GameCleanup,
-};
-
-use crate::player::CharactersResource;
-
-use super::border_gradient::BorderGradientType;
 
 const TOP_ROW_HEIGHT: Val = Val::Percent(13.0);
 const TOP_CORNER_WIDTH: Val = Val::Percent(10.0);
@@ -106,7 +103,7 @@ pub(super) fn setup_game_ui_system(
             },
             ..default()
         })
-        .insert(GameCleanup)
+        .insert(StateScoped(AppStates::Game))
         .with_children(|game| {
             // Parent node for top row containing the phase ui
             game.spawn(NodeBundle {

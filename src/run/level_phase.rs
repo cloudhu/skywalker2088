@@ -1,8 +1,8 @@
+use crate::components::spawnable::MobType;
 use crate::run::tutorial::TutorialLesson;
 use bevy::math::Vec2;
 use bevy::prelude::Timer;
 use serde::Deserialize;
-use thetawave_interface::spawnable::MobType;
 
 /// Describes a distinct portion of the level
 #[derive(Deserialize, Clone, Debug)]

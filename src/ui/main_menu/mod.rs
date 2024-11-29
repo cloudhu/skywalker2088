@@ -1,6 +1,10 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
 //! guides the user into the `thetawave_interface::states::AppStates::CharacterSelection` state.
 use crate::animation::{AnimationComponent, AnimationDirection};
+use crate::assets::ui::UiAssets;
+use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
+use crate::screens::AppStates;
+use bevy::prelude::StateScoped;
 use bevy::{
     color::Srgba,
     ecs::{
@@ -15,12 +19,10 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
-use thetawave_interface::states::{AppStates, MainMenuCleanup};
+
 mod button;
 use self::button::main_menu_button_selection_and_click_system;
 use self::button::UiChildBuilderExt;
-use thetawave_assets::UiAssets;
 
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
 /// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will
@@ -37,7 +39,7 @@ impl Plugin for MainMenuUIPlugin {
     }
 }
 
-/// Spawn the intiial components of the main menu UI to be rendered. This only needs to be called
+/// Spawn the initial components of the main menu UI to be rendered. This only needs to be called
 /// once whenever we want to overlay the main menu. Despawning entities with the`MainMenuCleanup`
 /// component is the main way to undo the side effects of this system.
 fn setup_main_menu_system(
@@ -64,7 +66,7 @@ fn setup_main_menu_system(
             background_color: Srgba::new(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
-        .insert(MainMenuCleanup)
+        .insert(StateScoped(AppStates::MainMenu))
         .with_children(|parent| {
             parent
                 .spawn(NodeBundle {

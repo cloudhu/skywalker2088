@@ -1,7 +1,6 @@
+use crate::components::character::{Character, CharacterType};
 use bevy::{ecs::system::Resource, utils::HashMap};
 use serde::Deserialize;
-
-use thetawave_interface::character::{Character, CharacterType};
 
 /// Manages all characters
 #[derive(Resource, Deserialize)]

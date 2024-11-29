@@ -1,7 +1,11 @@
 use crate::spawnable::{MobComponent, MobSegmentComponent};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
+use crate::arena::ArenaBarrierComponent;
+use crate::components::audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType};
 use crate::components::player::PlayerOutgoingDamageComponent;
+use crate::components::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
+use crate::spawnable::projectile::ProjectileComponent;
 use bevy::prelude::{Entity, EventReader, EventWriter, Query, With};
 use bevy_rapier2d::prelude::CollisionEvent;
 
@@ -23,7 +27,7 @@ pub(super) fn contact_collision_system(
             // `x collided with y` and `y collided with x` symmetry
             let colliding_entities = {
                 let mut entities = [*collider1_entity, *collider2_entity];
-                // This sort order is key to making other logic in the function work
+                // This sort order is key to make other logic in the function work
                 // (0,...,1) ascending ordering. E.x. [...,mob segments,  mobs, players]
                 entities.sort_by_key(|e| {
                     (

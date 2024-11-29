@@ -8,6 +8,7 @@ mod enemy;
 mod gameplay;
 
 mod animation;
+mod arena;
 pub mod assets;
 pub mod camera;
 mod collision;
@@ -20,12 +21,12 @@ mod ship;
 pub mod spawnable;
 mod stats;
 mod theme;
+mod ui;
 mod util;
 pub mod weapon;
-mod arena;
-mod ui;
 
 use crate::animation::SpriteAnimationPlugin;
+use crate::arena::ArenaPlugin;
 use crate::camera::CameraPlugin;
 use crate::loot::LootPlugin;
 use crate::options::display::DisplayConfig;
@@ -33,15 +34,14 @@ use crate::options::generate_config_files;
 use crate::player::PlayerPlugin;
 use crate::run::RunPlugin;
 use crate::spawnable::SpawnablePlugin;
+use crate::ui::UiPlugin;
+use crate::weapon::WeaponPlugin;
 use bevy::window::WindowMode;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_kira_audio::{AudioPlugin, AudioSettings};
 use bevy_parallax::ParallaxPlugin;
 use bevy_prototype_lyon::prelude::ShapePlugin;
 use bevy_rapier2d::prelude::{NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
-use crate::arena::ArenaPlugin;
-use crate::ui::UiPlugin;
-use crate::weapon::WeaponPlugin;
 
 /// Used by a physics engine to translate physics calculations to graphics
 const PHYSICS_PIXELS_PER_METER: f32 = 10.0;

@@ -1,15 +1,12 @@
-use std::f32::consts::PI;
-
+use crate::components::input::PlayerAction;
+use crate::components::player::{PlayerComponent, PlayerMovementComponent};
+use crate::options::resources::GameParametersResource;
 use bevy::ecs::query::With;
 use bevy::ecs::system::{Query, Res};
 use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
-
-use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::{PlayerComponent, PlayerMovementComponent};
-
-use crate::game::GameParametersResource;
+use std::f32::consts::PI;
 
 /// Move player by modifying velocity with input
 pub(in crate::player) fn player_movement_system(

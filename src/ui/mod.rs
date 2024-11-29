@@ -1,11 +1,11 @@
 //! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
+use crate::gameplay::GameStates;
+use crate::screens::AppStates;
+use crate::stats::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 use bevy::{
     app::{App, Plugin, Update},
     prelude::*,
 };
-use crate::gameplay::GameStates;
-use crate::screens::AppStates;
-use crate::stats::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 mod button;
 mod character_selection;
@@ -13,8 +13,8 @@ mod game;
 mod game_over;
 mod main_menu;
 mod pause_menu;
-mod victory;
 mod player;
+mod victory;
 
 use self::{
     button::{button_action_change_state_system, ButtonActionEvent},

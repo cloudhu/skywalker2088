@@ -1,5 +1,12 @@
 //! Systems to draw/update the in-game UI compoenents related to the player's stats, health, fire
 //! rate, etc.
+use crate::components::abilities::StandardWeaponAbilityComponent;
+use crate::components::character::CharacterType;
+use crate::components::health::HealthComponent;
+use crate::components::player::{PlayerIDComponent, PlayersResource};
+use crate::components::weapon::WeaponsComponent;
+use crate::util::Colour;
+use bevy::prelude::*;
 use bevy::{
     asset::AssetServer,
     ecs::{
@@ -15,13 +22,6 @@ use bevy::{
     },
     utils::default,
 };
-use bevy::prelude::*;
-use crate::components::abilities::StandardWeaponAbilityComponent;
-use crate::components::character::CharacterType;
-use crate::components::health::HealthComponent;
-use crate::components::player::{PlayerIDComponent, PlayersResource};
-use crate::components::weapon::WeaponsComponent;
-use crate::util::Colour;
 
 // Player data Uis
 #[derive(Component)]
@@ -183,20 +183,12 @@ fn build_player_ability_slot_ui(
                     image: asset_server
                         .load(match ability_index {
                             0 => match character {
-                                CharacterType::Captain => {
-                                    "texture/blast_ability.png"
-                                }
-                                CharacterType::Juggernaut => {
-                                    "texture/bullet_ability.png"
-                                }
+                                CharacterType::Captain => "texture/blast_ability.png",
+                                CharacterType::Juggernaut => "texture/bullet_ability.png",
                             },
                             _ => match character {
-                                CharacterType::Captain => {
-                                    "texture/megablast_ability.png"
-                                }
-                                CharacterType::Juggernaut => {
-                                    "texture/charge_ability.png"
-                                }
+                                CharacterType::Captain => "texture/megablast_ability.png",
+                                CharacterType::Juggernaut => "texture/charge_ability.png",
                             },
                         })
                         .into(),
@@ -330,72 +322,72 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
         .insert(ArmorCounterUI);
 }
 
-/// Resync the HUD/in-game UI to match player stats. This should run every frame for a snappy UI.
-pub(super) fn update_player_ui_system(
-    mut commands: Commands,
-    player_query: Query<
-        (
-            &HealthComponent,
-            &PlayerIDComponent,
-            &StandardWeaponAbilityComponent,
-            &WeaponsComponent,
-        ),
-        Or<(
-            Changed<HealthComponent>,
-            Changed<StandardWeaponAbilityComponent>,
-            Changed<WeaponsComponent>,
-        )>,
-    >,
-    mut player_ui: ParamSet<(
-        Query<(&mut Style, &PlayerIDComponent), With<HealthValueUI>>,
-        Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUI>>,
-        Query<(Entity, &PlayerIDComponent), With<ArmorUI>>,
-        Query<(&mut Style, &AbilityValueUI, &PlayerIDComponent)>,
-    )>,
-) {
-    for (player_health, player_id, player_abilities, weapon_component) in player_query.iter() {
-        // health ui
-        for (mut style, health_id) in player_ui.p0().iter_mut() {
-            if player_id == health_id {
-                style.height = Val::Percent(100.0 * player_health.get_health_percentage());
-            }
-        }
-
-        // shields ui
-        for (mut style, shields_id) in player_ui.p1().iter_mut() {
-            if player_id == shields_id {
-                style.height = Val::Percent(100.0 * player_health.get_shields_percentage());
-            }
-        }
-
-        // armor ui
-        for (entity, armor_id) in player_ui.p2().iter() {
-            if player_id == armor_id {
-                // spawn all the existing child armor ticks
-                commands.entity(entity).despawn_descendants();
-
-                // spawn armor ticks
-                commands.entity(entity).with_children(|armor_ui| {
-                    for _ in 0..player_health.get_armor() {
-                        build_armor_counter(armor_ui);
-                    }
-                });
-            }
-        }
-        // TODO:fix cooldown UI
-        // for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
-        //     if player_id == ability_id && ability_value_ui.ability_index == 0 {
-        //         style.height =
-        //             Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.fraction()));
-        //     }
-        // }
-        //
-        // for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
-        //     if player_id == ability_id && ability_value_ui.ability_index == 1 {
-        //         style.height = Val::Percent(
-        //             100.0 * (1.0 - player_abilities.cooldown_timer.fraction()),
-        //         );
-        //     }
-        // }
-    }
-}
+// TODO: Rsync the HUD/in-game UI to match player stats. This should run every frame for a snappy UI.
+// pub(super) fn update_player_ui_system(
+//     mut commands: Commands,
+//     player_query: Query<
+//         (
+//             &HealthComponent,
+//             &PlayerIDComponent,
+//             &StandardWeaponAbilityComponent,
+//             &WeaponsComponent,
+//         ),
+//         Or<(
+//             Changed<HealthComponent>,
+//             Changed<StandardWeaponAbilityComponent>,
+//             Changed<WeaponsComponent>,
+//         )>,
+//     >,
+//     mut player_ui: ParamSet<(
+//         Query<(&mut Style, &PlayerIDComponent), With<HealthValueUI>>,
+//         Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUI>>,
+//         Query<(Entity, &PlayerIDComponent), With<ArmorUI>>,
+//         Query<(&mut Style, &AbilityValueUI, &PlayerIDComponent)>,
+//     )>,
+// ) {
+//     for (player_health, player_id, player_abilities, weapon_component) in player_query.iter() {
+//         // health ui
+//         for (mut style, health_id) in player_ui.p0().iter_mut() {
+//             if player_id == health_id {
+//                 style.height = Val::Percent(100.0 * player_health.get_health_percentage());
+//             }
+//         }
+//
+//         // shields ui
+//         for (mut style, shields_id) in player_ui.p1().iter_mut() {
+//             if player_id == shields_id {
+//                 style.height = Val::Percent(100.0 * player_health.get_shields_percentage());
+//             }
+//         }
+//
+//         // armor ui
+//         for (entity, armor_id) in player_ui.p2().iter() {
+//             if player_id == armor_id {
+//                 // spawn all the existing child armor ticks
+//                 commands.entity(entity).despawn_descendants();
+//
+//                 // spawn armor ticks
+//                 commands.entity(entity).with_children(|armor_ui| {
+//                     for _ in 0..player_health.get_armor() {
+//                         build_armor_counter(armor_ui);
+//                     }
+//                 });
+//             }
+//         }
+//         // TODO:fix cooldown UI
+//         // for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
+//         //     if player_id == ability_id && ability_value_ui.ability_index == 0 {
+//         //         style.height =
+//         //             Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.fraction()));
+//         //     }
+//         // }
+//         //
+//         // for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
+//         //     if player_id == ability_id && ability_value_ui.ability_index == 1 {
+//         //         style.height = Val::Percent(
+//         //             100.0 * (1.0 - player_abilities.cooldown_timer.fraction()),
+//         //         );
+//         //     }
+//         // }
+//     }
+// }

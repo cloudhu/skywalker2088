@@ -1,6 +1,11 @@
 use std::{f32::consts::PI, time::Duration};
 
 use super::parent::BorderGradientCommandsExt;
+use crate::assets::ui::UiAssets;
+use crate::components::events::MobReachedBottomGateEvent;
+use crate::components::objectives::DefenseInteraction;
+use crate::screens::AppStates;
+use bevy::prelude::StateScoped;
 use bevy::{
     color::Color,
     ecs::{
@@ -16,11 +21,6 @@ use bevy::{
         FlexDirection, Style, UiImage, Val,
     },
     utils::default,
-};
-use thetawave_assets::UiAssets;
-use thetawave_interface::{
-    objective::{DefenseInteraction, MobReachedBottomGateEvent},
-    states::GameCleanup,
 };
 
 const DURATION: f32 = 0.4;
@@ -52,7 +52,7 @@ impl BorderGradientCommandsExt for Commands<'_, '_> {
             },
             ..default()
         })
-        .insert(GameCleanup)
+        .insert(StateScoped(AppStates::Game))
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
@@ -80,7 +80,7 @@ impl BorderGradientCommandsExt for Commands<'_, '_> {
     }
 }
 
-/// Starts a border gradient effect by reseting its timer when an event is read
+/// Starts a border gradient effect by resetting its timer when an event is read
 pub(super) fn border_gradient_start_system(
     mut bg_query: Query<&mut BorderGradientComponent>,
     mut bg_event_reader: EventReader<BorderGradientEvent>,
@@ -94,7 +94,7 @@ pub(super) fn border_gradient_start_system(
     }
 }
 
-/// Sets the alpha of a border gradient's background color based on the time reamining
+/// Sets the alpha of a border gradient's background color based on the time remaining
 /// in the border gradient component's timer
 pub(super) fn border_gradient_update_system(
     mut bg_query: Query<(&mut BorderGradientComponent, &mut UiImage)>,

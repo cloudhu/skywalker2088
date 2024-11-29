@@ -4,8 +4,15 @@ pub mod abilities;
 pub mod movement;
 pub mod upgrades;
 
-use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
+use crate::spawnable::SpawnEffectEvent;
 
+use super::PlayersResource;
+use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
+use crate::components::events::{RunDefeatType, RunEndEvent, RunOutcomeType};
+use crate::components::health::HealthComponent;
+use crate::components::player::PlayerComponent;
+use crate::components::spawnable::EffectType;
+use crate::options::resources::GameParametersResource;
 use bevy::ecs::entity::Entity;
 use bevy::ecs::event::EventWriter;
 use bevy::ecs::query::With;
@@ -14,13 +21,6 @@ use bevy::hierarchy::DespawnRecursiveExt;
 use bevy::math::Vec3;
 use bevy::transform::components::Transform;
 use bevy::utils::default;
-use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
-use thetawave_interface::health::HealthComponent;
-use thetawave_interface::player::PlayerComponent;
-use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
-use thetawave_interface::spawnable::EffectType;
-
-use super::PlayersResource;
 
 /// Handle player reaching zero health
 pub(super) fn player_death_system(

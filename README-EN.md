@@ -19,11 +19,16 @@ ______
 
 ## 1.1 Control
 ______
-1. Move: left mouse button for ship navigation (TODO: keyboard arrow keys and joystick support)
-2. Pause/Resume: keyboard space bar (TODO: Start button on gamepad)
-3. return to the main menu: keyboard ESC (todo: controller return key)
-4. Full screen/window switch: F11 keyboard key (todo: controller Settings menu)
-5. Zoom: mouse wheel /PageUp = +, PageDown = - (Todo: handle Trigger zoom)
+| Action             | Keyboard 🖮                            | Controller 🎮    |
+|--------------------|----------------------------------------|------------------|
+| 🕹️ Movement       | 'WASD' / Arrow Keys /left mouse button | D-Pad            |
+| 🔫 Fire Weapon     | Auto                                   | Auto             |
+| 💥 Special Ability | Right Click / Shift                    | Left Bumper (LB) |
+| Pause/Resume       | space bar                              | Start            |
+| back               | ESC                                    | B button         |
+| Full screen        | F11                                    | Settings         |
+| Zoom               | mouse wheel /PageUp, PageDown          | Triggers         |
+
 ______
 ##  1.2. Level Design
 The levels are mainly divided into: 1. Drama level; 2. Relic exploration level; 3. Infinite Abyss Level.
@@ -47,16 +52,17 @@ ______
 - [x] Use [bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio) to Optimize sound play logic and performance
 - [x] Supports full screen/window switching and mouse wheel zooming (November 15, 2024)
 - [x] Configure property values and multiple languages with csv (English and Chinese are supported first)
+- [x] Merging [Thetawave](https://github.com/thetawavegame/thetawave)'s codes and resources to improve code structure and gameplay logics (November 29, 2024)
+- [x] Support gamepad handle operation input （employ [leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager) as input plugin）
+- [x] Spawner for different type of enemies
+- [x] Collision detection with a physics engine（bevy_rapier2d）
+- [x] Animation module
+- [x] Game UI
 
 ## 2.2 待实现列表 TODO List
-- [ ] Support gamepad handle operation input （employ [leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager) as input plugin）
 - [ ] Use [LDTK](https://github.com/Trouv/bevy_ecs_ldtk) to develop game levels
 - [ ] Level loading
 - [ ] Level switching
-- [ ] Spawner for different type of enemies
-- [ ] Collision detection with a physics engine
-- [ ] Animation module
-- [ ] Game UI
 - [ ] Game saving, file reading, auto save(employ [bevy_pkv](https://github.com/johanhelsing/bevy_pkv) plugin)
 - [ ] Multiplayer support
 
@@ -77,3 +83,21 @@ Game Engine:[Bevy](https://bevyengine.org/)
 
 # 4.  Showcase
 [Itch.io](https://cloudhu.itch.io/skywalker2088)
+
+# 5. External Assets
+
+## 🎵 Music
+[Joel Schuman](https://joelhasa.site/) - Original Game Soundtrack
+
+## 📢 Sound Effects
+[*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package) - Comprehensive Space Audio Collection
+
+## 🎨 Art
+[Kadith's icons](https://kadith.itch.io/kadiths-free-icons) - Game Iconography
+
+## 📜 Fonts
+[*Space Madness*](https://modernmodron.itch.io/) - Font Design by Rose Frye
+
+# 6. Merged Repositories 
+- [ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)
+- [Thetawave](https://github.com/thetawavegame/thetawave)

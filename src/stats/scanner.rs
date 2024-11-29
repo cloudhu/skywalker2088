@@ -1,20 +1,17 @@
 //! Exposes a plugin that logs whenever the user's mouse hovers over a mob.
+use crate::components::health::HealthComponent;
+use crate::options::resources::GameParametersResource;
+use crate::screens::AppStates;
+use crate::spawnable::MobComponent;
 use bevy::app::App;
 use bevy::math::Vec2;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use tracing::debug;
-use crate::components::health::HealthComponent;
-use crate::options::resources::GameParametersResource;
-use crate::screens::AppStates;
-use crate::spawnable::MobComponent;
 
 /// Debug logs whenever the cursor is hovering over a mob.
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(
-        Update,
-        scanner_system.run_if(in_state(AppStates::Game)),
-    );
+    app.add_systems(Update, scanner_system.run_if(in_state(AppStates::Game)));
 }
 
 /// Manages scanning of entities using the cursor

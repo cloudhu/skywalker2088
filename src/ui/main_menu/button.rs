@@ -1,7 +1,10 @@
-//! Provides the layout (trait on `bevy::hierarchy::ChildBUilder`) and behavior (systems) to put 4
-//! vertically layed out on the main menu, and change the state from
+//! Provides the layout (trait on `bevy::hierarchy::ChildBuilder`) and behavior (systems) to put 4
+//! vertically layered out on the main menu, and change the state from
 //! `thetawave_interface::states::AppStates::MainMenu` to
 //! `thetawave_interface::states::AppStates::CharacterSelection`
+use crate::assets::ui::UiAssets;
+use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
+use crate::components::input::{MainMenuExplorer, MenuAction};
 use crate::ui::button::{
     ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
 };
@@ -19,11 +22,6 @@ use bevy::{
     ui::{widget::Button, Interaction, Style, UiRect, Val},
 };
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_assets::UiAssets;
-use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
-    input::{MainMenuExplorer, MenuAction},
-};
 
 const BUTTON_TEXTURE_PADDING: UiRect =
     UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
@@ -60,11 +58,12 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
 }
 
 type TButtonIdx = i16;
-// Roughly `(val1 + episilon) % modulo` except keeps everything positive and wraps to ensure that
+// Roughly `(val1 + epsilon) % modulo` except keeps everything positive and wraps to ensure that
 // numbers stay small and that the returned value is `0<=returned_value < modulo`
 fn wrapped_modulo_add(val1: TButtonIdx, epsilon: i8, modulo: usize) -> TButtonIdx {
-    ((((val1 as isize) + (epsilon as isize)).rem_euclid(modulo as isize))
-        .rem_euclid(TButtonIdx::MAX as isize)) as TButtonIdx
+    ((val1 as isize) + (epsilon as isize))
+        .rem_euclid(modulo as isize)
+        .rem_euclid(TButtonIdx::MAX as isize) as TButtonIdx
 }
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 enum ButtonSelectionCause {
@@ -84,7 +83,7 @@ fn bool_to_plus_minus_1(val: bool) -> i8 {
 }
 /// Selects a button on the main menu to click. Mainly sends a `MainMenuButtonActionEvent`.
 /// Selection happens from the mouse, keyboard and gamepad. We deal with all kinds of inputs in 1
-/// system to control the interactionsm between using, for example, arrows and hovers.
+/// system to control the interactions between using, for example, arrows and hovers.
 pub(super) fn main_menu_button_selection_and_click_system(
     main_menu_buttons: Query<(&ButtonActionComponent, &Children), With<Button>>,
     main_menu_button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
@@ -105,7 +104,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
     // 1. Compute some facts about the current ui state and compute the next frame's ui state
     // 2. Send out sound effect events.
     // 3. Send out any events for "button clicked" actions
-    // 4. Set the styling so that only that one button looks "pressed" while all other are inactive
+    // 4. Set the styling so that only that one button looks "pressed" while all others are inactive
     // 5. Update the `ui_state` for the next frame.
     let currently_hovered_on_button: Option<&ButtonActionType> = main_menu_button_mouse_movements
         .iter()
@@ -129,10 +128,9 @@ pub(super) fn main_menu_button_selection_and_click_system(
         .get_single()
         .ok()
         .map(|x| match &ui_state.current_selected_button_and_cause {
-            Some((idx, _)) if x.just_released(&MenuAction::Confirm) => Some(
-                MAIN_MENU_BUTTON_ORDER[(*idx as usize % MAIN_MENU_BUTTON_ORDER.len()) as usize]
-                    .clone(),
-            ),
+            Some((idx, _)) if x.just_released(&MenuAction::Confirm) => {
+                Some(MAIN_MENU_BUTTON_ORDER[*idx as usize % MAIN_MENU_BUTTON_ORDER.len()].clone())
+            }
             _ => None,
         })
         .flatten();
@@ -195,7 +193,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
         .current_selected_button_and_cause
         .map(|(idx, _)| {
             MAIN_MENU_BUTTON_ORDER
-                [(idx.rem_euclid(MAIN_MENU_BUTTON_ORDER.len() as TButtonIdx)) as usize]
+                [idx.rem_euclid(MAIN_MENU_BUTTON_ORDER.len() as TButtonIdx) as usize]
         });
 
     // Side effects/fire off events

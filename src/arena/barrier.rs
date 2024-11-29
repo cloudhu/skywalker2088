@@ -1,13 +1,16 @@
 use crate::collision::{HORIZONTAL_BARRIER_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP};
-use crate::{spawnable::SpawnEffectEvent};
-use bevy::prelude::{Commands, Component, EventWriter, Name, Quat, Res, StateScoped, Transform, TransformBundle, Vec2, Vec3};
+use crate::components::spawnable::EffectType;
+use crate::options::resources::GameParametersResource;
+use crate::screens::AppStates;
+use crate::spawnable::SpawnEffectEvent;
+use bevy::prelude::{
+    Commands, Component, EventWriter, Name, Quat, Res, StateScoped, Transform, TransformBundle,
+    Vec2, Vec3,
+};
 use bevy_rapier2d::prelude::{
     ActiveEvents, Collider, CollisionGroups, Friction, Group, Restitution, RigidBody,
 };
 use std::f32::consts::FRAC_PI_2;
-use crate::components::spawnable::EffectType;
-use crate::options::resources::GameParametersResource;
-use crate::screens::AppStates;
 
 /// Tag component for arena barriers. During the main game, there should be exactly 4 entities with
 /// this component, one for each side of a rectangle.

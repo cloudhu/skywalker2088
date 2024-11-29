@@ -7,7 +7,6 @@ use crate::stats::historical_metrics::{
     MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
     UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
 };
-use bevy::asset::AssetContainer;
 use bevy::prelude::*;
 use std::collections::HashMap;
 

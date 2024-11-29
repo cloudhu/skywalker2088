@@ -4,5 +4,5 @@ pub mod metrics;
 mod scanner;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((metrics::plugin,scanner::plugin,));
+    app.add_plugins((metrics::plugin, scanner::plugin));
 }

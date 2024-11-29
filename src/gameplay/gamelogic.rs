@@ -9,6 +9,7 @@ use crate::gameplay::GameStates;
 use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
 use crate::util::{Colour, Math, RenderLayer};
+use crate::AppSet;
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
@@ -18,7 +19,6 @@ use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
 use rand::Rng;
-use crate::AppSet;
 
 #[derive(Component, Default)]
 pub struct DespawnWithScene;
@@ -154,10 +154,7 @@ fn reset_game(
 pub fn camera_follow(
     time: Res<Time>,
     player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>)>,
-    mut camera_q: Query<
-        (Entity, &Transform),
-        (With<Camera2d>),
-    >,
+    mut camera_q: Query<(Entity, &Transform), With<Camera2d>>,
     mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
     if let Ok((camera_entity, camera_transform)) = camera_q.get_single_mut() {
@@ -172,7 +169,7 @@ pub fn camera_follow(
 
             let smooth_move_position = current_position
                 .lerp(target_position, 5.0 * time.delta_seconds())
-                +  Math::random_2d_unit_vector();
+                + Math::random_2d_unit_vector();
 
             move_event_writer.send(ParallaxMoveEvent {
                 translation: smooth_move_position - current_position,

@@ -29,7 +29,7 @@ use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 
 mod resources;
-mod spawn;
+pub mod spawn;
 mod systems;
 
 /// Contains systems to allow the player to do most (all?) of its required behaviors.

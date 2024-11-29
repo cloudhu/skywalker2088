@@ -1,5 +1,12 @@
 //! System to draw the game over screen.
+use crate::assets::ui::UiAssets;
+use crate::components::audio::ChangeBackgroundMusicEvent;
+use crate::screens::AppStates;
+use crate::stats::historical_metrics::{
+    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
 use crate::ui::BouncingPromptComponent;
+use bevy::prelude::StateScoped;
 use bevy::{
     asset::AssetServer,
     color::{Alpha, Color},
@@ -17,11 +24,6 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use bevy::prelude::StateScoped;
-use crate::assets::ui::UiAssets;
-use crate::components::audio::ChangeBackgroundMusicEvent;
-use crate::screens::AppStates;
-use crate::stats::historical_metrics::{MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID};
 
 /// Spawn the styled UI elements for the game over screen. It should tell the player how they did.
 pub(super) fn setup_game_over_system(

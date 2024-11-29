@@ -1,16 +1,13 @@
-use crate::{
-    collision::SortedCollisionEvent, game::GameParametersResource, spawnable::SpawnableComponent,
-    tools::signed_modulo,
+use crate::components::player::{PlayerAttractionComponent, PlayerComponent};
+use crate::components::spawnable::{
+    AttractToClosestPlayerComponent, EnemyMobType, MobType, SpawnableType,
 };
+use crate::options::resources::GameParametersResource;
+use crate::util::signed_modulo;
+use crate::{collision::SortedCollisionEvent, spawnable::SpawnableComponent};
 use bevy::prelude::{Entity, EventReader, Query, Res, Transform, Vec2, Vec3Swizzles, With};
 use bevy_rapier2d::prelude::Velocity;
 use serde::Deserialize;
-use thetawave_interface::player::PlayerAttractionComponent;
-use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
-use thetawave_interface::{
-    player::PlayerComponent,
-    spawnable::{EnemyMobType, MobType, SpawnableType},
-};
 
 /// Types of behaviors that can be performed by spawnables
 #[derive(Deserialize, Clone, PartialEq)]
@@ -26,7 +23,7 @@ pub enum SpawnableBehavior {
     AttractToPlayer,
 }
 
-/// Manages excuting behaviors of spawnables
+/// Manages executing behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
     game_parameters: Res<GameParametersResource>,
     mut spawnable_query: Query<(Entity, &mut SpawnableComponent, &mut Velocity, &Transform)>,
@@ -104,7 +101,7 @@ pub fn spawnable_set_target_behavior_system(
                 SpawnableType::Mob(mob_type) => match mob_type {
                     MobType::Enemy(enemy_type) => match enemy_type {
                         EnemyMobType::Missile => {
-                            // set target to closest player
+                            // set target to the closest player
                             for behavior in spawnable_component.behaviors.iter_mut() {
                                 *behavior = match behavior {
                                     SpawnableBehavior::RotateToTarget(target) => {
@@ -205,9 +202,9 @@ fn rotate_to_target(
     spawnable_component: &SpawnableComponent,
     rb_vel: &mut Velocity,
 ) {
-    let mut target_angle = ((transform.translation.y - target_position.y)
-        .atan2(transform.translation.x - target_position.x))
-    .to_degrees()
+    let mut target_angle = (transform.translation.y - target_position.y)
+        .atan2(transform.translation.x - target_position.x)
+        .to_degrees()
         + 90.0;
 
     if target_angle < 0.0 {

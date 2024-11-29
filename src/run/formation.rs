@@ -5,9 +5,10 @@ use bevy::{
 };
 use serde::Deserialize;
 use std::collections::HashMap;
-use thetawave_interface::spawnable::{SpawnMobEvent, SpawnableType};
 
-use crate::{spawnable::SpawnConsumableEvent, tools::weighted_rng};
+use crate::components::spawnable::{SpawnMobEvent, SpawnableType};
+use crate::spawnable::SpawnConsumableEvent;
+use crate::util::weighted_rng;
 
 /// Resource for storing collections of formations of spawnables
 #[derive(Resource, Deserialize)]
@@ -68,7 +69,7 @@ impl Formation {
             // TODO: add cases for items, consumables, etc, as they are added
             // call the appropriate spawn function for the spawnable
             match &formation_spawnable.spawnable_type {
-                thetawave_interface::spawnable::SpawnableType::Mob(mob_type) => {
+                SpawnableType::Mob(mob_type) => {
                     spawn_mob.send(SpawnMobEvent {
                         mob_type: mob_type.clone(),
                         position: formation_spawnable.position,

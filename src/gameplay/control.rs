@@ -7,12 +7,11 @@ use crate::{
     },
     screens::AppStates,
     ship::engine::Engine,
-    AppSet, CameraShake, MainCamera,
+    AppSet,
 };
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::window::WindowMode;
-use leafwing_input_manager::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -40,7 +39,7 @@ pub(super) fn plugin(app: &mut App) {
 pub fn player_control(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
-    camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    camera_q: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
     mut query: Query<(&PlayerComponent, &mut Engine), (With<PlayerComponent>, With<Engine>)>,
 ) {
     for (_, mut engine) in &mut query {
@@ -64,20 +63,12 @@ pub fn pause_control(
     key_input: Res<ButtonInput<KeyCode>>,
     game_state: Res<State<GameStates>>,
     mut change_game_state: ResMut<NextState<GameStates>>,
-    mut query: Query<&mut CameraShake>,
 ) {
     if key_input.just_pressed(KeyCode::Space) {
         match game_state.get() {
             GameStates::Playing => change_game_state.set(GameStates::Paused),
             GameStates::Paused => change_game_state.set(GameStates::Playing),
             _ => (),
-        }
-    }
-
-    // Debug camera shake
-    if key_input.just_pressed(KeyCode::KeyR) {
-        for mut shake in &mut query {
-            shake.trauma = 5.0;
         }
     }
 }
@@ -100,7 +91,7 @@ pub fn zoom_control(
     key_input: Res<ButtonInput<KeyCode>>,
     mut camera_q: Query<
         &mut OrthographicProjection,
-        (With<OrthographicProjection>, With<MainCamera>),
+        (With<OrthographicProjection>, With<Camera2d>),
     >,
 ) {
     let scale_factor = 0.25;
@@ -123,7 +114,7 @@ fn handle_mouse_wheel_input(
     mut mouse_wheel_input: EventReader<MouseWheel>,
     mut camera_q: Query<
         &mut OrthographicProjection,
-        (With<OrthographicProjection>, With<MainCamera>),
+        (With<OrthographicProjection>, With<Camera2d>),
     >,
 ) {
     for event in mouse_wheel_input.read() {

@@ -1,6 +1,8 @@
 //! Systems to draw and update UI elements related to the player's level progression and objectives
 //! (e.x. health). The user should know that certain behaviors bring them closer to defeat and know
 //! how far away they are from losing.
+use super::parent::LevelUiChildBuilderExt;
+use crate::components::objectives::Objective;
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
@@ -19,8 +21,6 @@ use bevy::{
     },
     utils::default,
 };
-
-use super::parent::LevelUiChildBuilderExt;
 
 const NODE_WIDTH: Val = Val::Percent(50.0);
 const TEXT_COLOR: Srgba = Srgba::WHITE;
@@ -95,7 +95,7 @@ impl LevelUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-/// Updates the all of the level ui at the bottom of the window
+/// Updates the all the level ui at the bottom of the window
 pub(super) fn update_level_ui_system(
     mut commands: Commands,
     level_data_ui_query: Query<Entity, With<LevelDataUi>>,
@@ -112,7 +112,7 @@ pub(super) fn update_level_ui_system(
 
             if let Some(objective) = &current_level.objective {
                 match objective {
-                    thetawave_interface::objective::Objective::Defense(defense_data) => {
+                    Objective::Defense(defense_data) => {
                         commands.entity(entity).with_children(|level_data_ui| {
                             level_data_ui
                                 .spawn(NodeBundle {

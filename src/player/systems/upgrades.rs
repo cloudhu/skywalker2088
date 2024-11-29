@@ -1,12 +1,12 @@
+use crate::components::player::{PlayerInventoryComponent, PlayerOutgoingDamageComponent};
 use bevy::ecs::{query::Changed, system::Query};
-use thetawave_interface::player::{PlayerInventoryComponent, PlayerOutgoingDamageComponent};
 
 trait PlayerOutgoingDamageComponentExt {
     fn update_cooldown_multiplier_from_collected_money(&mut self, money: usize);
 }
 
 impl PlayerOutgoingDamageComponentExt for PlayerOutgoingDamageComponent {
-    /// Updates the `cooldown_multilier` using the `base_cooldown_multiplier` and a money parameter
+    /// Updates the `cooldown_multiplier` using the `base_cooldown_multiplier` and a money parameter
     /// along an exponential decay curve
     fn update_cooldown_multiplier_from_collected_money(&mut self, money: usize) {
         self.cooldown_multiplier =

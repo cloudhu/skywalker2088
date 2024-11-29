@@ -1,7 +1,14 @@
 //! Mainly exposes `Level` for moving between different phases of the same level, and progressing
 //! between levels.
+use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
+use crate::components::events::{CyclePhaseEvent, MobReachedBottomGateEvent};
+use crate::components::input::PlayerAction;
+use crate::components::objectives::Objective;
+use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent};
+use crate::components::spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent};
 use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
+use crate::spawnable::BossesDestroyedEvent;
 use bevy::{
     log::info,
     math::Quat,
@@ -14,17 +21,6 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
-use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::InputRestrictionsAtSpawn;
-use thetawave_interface::{
-    audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
-    objective::{MobReachedBottomGateEvent, Objective},
-    player::PlayerComponent,
-    run::CyclePhaseEvent,
-    spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
-};
-
-use crate::spawnable::BossesDestroyedEvent;
 
 use super::{FormationPoolsResource, SpawnFormationEvent};
 
@@ -127,7 +123,7 @@ impl Level {
             self.current_phase = None;
         }
 
-        // pop the next level (if it exists) into the the current level
+        // pop the next level (if it exists) into the current level
         self.current_phase = self.queued_phases.pop_front();
 
         info!("Phase cycled");

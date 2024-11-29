@@ -1,12 +1,12 @@
 //! Exposes a plugin that starts, stops, and modulates in-game audio when events are emitted
+use crate::assets::audio::GameAudioAssets;
+use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
 use crate::config::GameConfig;
+use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use std::time::Duration;
-use crate::assets::audio::GameAudioAssets;
-use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
-use crate::screens::AppStates;
 
 const SPATIAL_AUDIO_MAX_DISTANCE: f32 = 400.0;
 
@@ -124,7 +124,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (play_sound_effect_system, change_bg_music_system)
-            .run_if(not(in_state(AppStates::LoadingAssets))),
+            .run_if(resource_added::<GameAudioAssets>),
     );
 }
 

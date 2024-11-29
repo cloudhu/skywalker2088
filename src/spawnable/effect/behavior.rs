@@ -1,5 +1,9 @@
+use super::EffectComponent;
 use crate::animation::AnimationComponent;
-use crate::GameUpdateSet;
+use crate::assets::game_assets::GameUpdateSet;
+use crate::components::events::AnimationCompletedEvent;
+use crate::gameplay::GameStates;
+use crate::screens::AppStates;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::{Assets, Handle};
 use bevy::color::Alpha;
@@ -13,10 +17,6 @@ use bevy::state::condition::in_state;
 use bevy::text::Text;
 use bevy::time::{Stopwatch, Time, Timer, TimerMode};
 use serde::Deserialize;
-use thetawave_interface::animation::AnimationCompletedEvent;
-use thetawave_interface::states;
-
-use super::EffectComponent;
 
 /// `EffectBehaviorPlugin` manages the behaviors of in-game effects.
 ///
@@ -37,8 +37,8 @@ impl Plugin for EffectBehaviorPlugin {
                 fade_out_despawn_after_animation_effect_behavior_system
                     .in_set(GameUpdateSet::ExecuteBehavior),
             )
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         );
     }
 }
@@ -220,7 +220,7 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
 
                 // Get an alpha value along an exponential decay curve
                 let elapsed_time = stopwatch.elapsed().as_secs_f32();
-                let decay_constant = -(total_animation_time.recip()) * 0.001_f32.ln();
+                let decay_constant = -total_animation_time.recip() * 0.001_f32.ln();
                 let alpha = (1.0_f32 * (-decay_constant * elapsed_time).exp()).clamp(0.0, 1.0);
 
                 sprite.color.set_alpha(alpha);

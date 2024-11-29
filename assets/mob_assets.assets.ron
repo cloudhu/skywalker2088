@@ -6,7 +6,7 @@
         rows: 1,
     ),
     "crustling.head.image": File (
-        path: "texture/crustling_spritesheet.png"
+        path: "texture/crustling_spritesheet.png",
     ),
     "crustling.tentacle1.layout": TextureAtlasLayout (
         tile_size_x: 10,
@@ -15,7 +15,7 @@
         rows: 1,
     ),
     "crustling.tentacle1.image": File (
-        path: "texture/crustling_tentacle_1.png"
+        path: "texture/crustling_tentacle_1.png",
     ),
     "crustling.tentacle2.layout": TextureAtlasLayout (
         tile_size_x: 10,
@@ -24,7 +24,7 @@
         rows: 1,
     ),
     "crustling.tentacle2.image": File (
-        path: "texture/crustling_tentacle_2.png"
+        path: "texture/crustling_tentacle_2.png",
     ),
     "crustling.tentacle3.layout": TextureAtlasLayout (
         tile_size_x: 10,
@@ -33,16 +33,16 @@
         rows: 1,
     ),
     "crustling.tentacle3.image": File (
-        path: "texture/crustling_tentacle_3.png"
+        path: "texture/crustling_tentacle_3.png",
     ),
     "tutorial_drone.layout": TextureAtlasLayout (
-        tile_size_x: 22,
-        tile_size_y: 23,
+        tile_size_x: 20,
+        tile_size_y: 21,
         columns: 3,
         rows: 1,
     ),
     "tutorial_drone.image": File (
-        path: "texture/tutorial_drone_spritesheet.png"
+        path: "texture/tutorial_drone_spritesheet.png",
     ),
     "drone.layout": TextureAtlasLayout (
         tile_size_x: 20,
@@ -51,7 +51,7 @@
         rows: 1,
     ),
     "drone.image": File (
-        path: "texture/drone_spritesheet.png"
+        path: "texture/drone_spritesheet.png",
     ),
     "drone.thruster.layout": TextureAtlasLayout (
         tile_size_x: 14,
@@ -60,7 +60,7 @@
         rows: 1,
     ),
     "drone.thruster.image": File (
-        path: "texture/drone_thrusters_spritesheet.png"
+        path: "texture/drone_thrusters_spritesheet.png",
     ),
     "pawn.layout": TextureAtlasLayout (
         tile_size_x: 20,
@@ -69,7 +69,7 @@
         rows: 1,
     ),
     "pawn.image": File (
-        path: "texture/pawn_spritesheet.png"
+        path: "texture/pawn_spritesheet.png",
     ),
     "pawn.thruster.layout": TextureAtlasLayout (
         tile_size_x: 14,
@@ -78,7 +78,7 @@
         rows: 1,
     ),
     "pawn.thruster.image": File (
-        path: "texture/pawn_thrusters_spritesheet.png"
+        path: "texture/pawn_thrusters_spritesheet.png",
     ),
     "shelly.layout": TextureAtlasLayout (
         tile_size_x: 24,
@@ -87,7 +87,7 @@
         rows: 1,
     ),
     "shelly.image": File (
-        path: "texture/shelly_spritesheet.png"
+        path: "texture/shelly_spritesheet.png",
     ),
     "hauler.front.layout": TextureAtlasLayout (
         tile_size_x: 18,
@@ -96,7 +96,7 @@
         rows: 1,
     ),
     "hauler.front.image": File (
-        path: "texture/hauler_front.png"
+        path: "texture/hauler_front.png",
     ),
     "hauler.back.layout": TextureAtlasLayout (
         tile_size_x: 18,
@@ -105,7 +105,7 @@
         rows: 1,
     ),
     "hauler.back.image": File (
-        path: "texture/hauler_back.png"
+        path: "texture/hauler_back.png",
     ),
     "hauler.middle.layout": TextureAtlasLayout (
         tile_size_x: 18,
@@ -114,7 +114,7 @@
         rows: 1,
     ),
     "hauler.middle.image": File (
-        path: "texture/hauler_middle.png"
+        path: "texture/hauler_middle.png",
     ),
     "hauler.thruster.layout": TextureAtlasLayout (
         tile_size_x: 20,
@@ -123,7 +123,7 @@
         rows: 1,
     ),
     "hauler.thruster.image": File (
-        path: "texture/hauler_thrusters_spritesheet.png"
+        path: "texture/hauler_thrusters_spritesheet.png",
     ),
     "missile_launcher.layout": TextureAtlasLayout (
         tile_size_x: 23,
@@ -132,7 +132,7 @@
         rows: 1,
     ),
     "missile_launcher.image": File (
-        path: "texture/missile_launcher_spritesheet.png"
+        path: "texture/missile_launcher_spritesheet.png",
     ),
     "missile_launcher.thruster.layout": TextureAtlasLayout (
         tile_size_x: 17,
@@ -141,7 +141,7 @@
         rows: 1,
     ),
     "missile_launcher.thruster.image": File (
-        path: "texture/missile_launcher_thrusters_spritesheet.png"
+        path: "texture/missile_launcher_thrusters_spritesheet.png",
     ),
     "missile.layout": TextureAtlasLayout (
         tile_size_x: 11,
@@ -150,7 +150,7 @@
         rows: 1,
     ),
     "missile.image": File (
-        path: "texture/missile_spritesheet.png"
+        path: "texture/missile_spritesheet.png",
     ),
     "missile.thruster.layout": TextureAtlasLayout (
         tile_size_x: 7,
@@ -159,7 +159,7 @@
         rows: 1,
     ),
     "missile.thruster.image": File (
-        path: "texture/missile_thrusters_spritesheet.png"
+        path: "texture/missile_thrusters_spritesheet.png",
     ),
     "strafer.layout": TextureAtlasLayout (
         tile_size_x: 26,
@@ -168,7 +168,7 @@
         rows: 1,
     ),
     "strafer.image": File (
-        path: "texture/strafer_spritesheet.png"
+        path: "texture/strafer_spritesheet.png",
     ),
     "strafer.thruster.layout": TextureAtlasLayout (
         tile_size_x: 24,
@@ -177,7 +177,7 @@
         rows: 1,
     ),
     "strafer.thruster.image": File (
-        path: "texture/strafer_thrusters_spritesheet.png"
+        path: "texture/strafer_thrusters_spritesheet.png",
     ),
     "money_asteroid.layout": TextureAtlasLayout (
         tile_size_x: 21,
@@ -186,7 +186,7 @@
         rows: 1,
     ),
     "money_asteroid.image": File (
-        path: "texture/money_asteroid_spritesheet.png"
+        path: "texture/money_asteroid_spritesheet.png",
     ),
     "repeater.head.layout": TextureAtlasLayout (
         tile_size_x: 68,
@@ -195,7 +195,7 @@
         rows: 1,
     ),
     "repeater.head.image": File (
-        path: "texture/repeater_head_spritesheet.png"
+        path: "texture/repeater_head_spritesheet.png",
     ),
     "repeater.body.layout": TextureAtlasLayout (
         tile_size_x: 70,
@@ -204,7 +204,7 @@
         rows: 1,
     ),
     "repeater.body.image": File (
-        path: "texture/repeater_body_spritesheet.png"
+        path: "texture/repeater_body_spritesheet.png",
     ),
     "repeater.right_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 58,
@@ -213,7 +213,7 @@
         rows: 1,
     ),
     "repeater.right_shoulder.image": File (
-        path: "texture/repeater_right_shoulder_spritesheet.png"
+        path: "texture/repeater_right_shoulder_spritesheet.png",
     ),
     "repeater.left_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 58,
@@ -222,7 +222,7 @@
         rows: 1,
     ),
     "repeater.left_shoulder.image": File (
-        path: "texture/repeater_left_shoulder_spritesheet.png"
+        path: "texture/repeater_left_shoulder_spritesheet.png",
     ),
     "repeater.right_arm.layout": TextureAtlasLayout (
         tile_size_x: 41,
@@ -231,7 +231,7 @@
         rows: 1,
     ),
     "repeater.right_arm.image": File (
-        path: "texture/repeater_right_arm_spritesheet.png"
+        path: "texture/repeater_right_arm_spritesheet.png",
     ),
     "repeater.left_arm.layout": TextureAtlasLayout (
         tile_size_x: 41,
@@ -240,7 +240,7 @@
         rows: 1,
     ),
     "repeater.left_arm.image": File (
-        path: "texture/repeater_left_arm_spritesheet.png"
+        path: "texture/repeater_left_arm_spritesheet.png",
     ),
     "repeater.right_claw.layout": TextureAtlasLayout (
         tile_size_x: 36,
@@ -249,7 +249,7 @@
         rows: 1,
     ),
     "repeater.right_claw.image": File (
-        path: "texture/repeater_right_claw_spritesheet.png"
+        path: "texture/repeater_right_claw_spritesheet.png",
     ),
     "repeater.left_claw.layout": TextureAtlasLayout (
         tile_size_x: 36,
@@ -258,7 +258,7 @@
         rows: 1,
     ),
     "repeater.left_claw.image": File (
-        path: "texture/repeater_left_claw_spritesheet.png"
+        path: "texture/repeater_left_claw_spritesheet.png",
     ),
     "mecha_ferritharax.head.layout": TextureAtlasLayout (
         tile_size_x: 42,
@@ -267,7 +267,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.head.image": File (
-        path: "texture/mecha_ferritharax_head.png"
+        path: "texture/mecha_ferritharax_head.png",
     ),
     "mecha_ferritharax.body.layout": TextureAtlasLayout (
         tile_size_x: 80,
@@ -276,7 +276,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.body.image": File (
-        path: "texture/mecha_ferritharax_body.png"
+        path: "texture/mecha_ferritharax_body.png",
     ),
     "mecha_ferritharax.right_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 62,
@@ -285,7 +285,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.right_shoulder.image": File (
-        path: "texture/mecha_ferritharax_right_shoulder.png"
+        path: "texture/mecha_ferritharax_right_shoulder.png",
     ),
     "mecha_ferritharax.left_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 62,
@@ -294,7 +294,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.left_shoulder.image": File (
-        path: "texture/mecha_ferritharax_left_shoulder.png"
+        path: "texture/mecha_ferritharax_left_shoulder.png",
     ),
     "mecha_ferritharax.right_arm.layout": TextureAtlasLayout (
         tile_size_x: 40,
@@ -303,7 +303,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.right_arm.image": File (
-        path: "texture/mecha_ferritharax_right_arm.png"
+        path: "texture/mecha_ferritharax_right_arm.png",
     ),
     "mecha_ferritharax.left_arm.layout": TextureAtlasLayout (
         tile_size_x: 40,
@@ -312,7 +312,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.left_arm.image": File (
-        path: "texture/mecha_ferritharax_left_arm.png"
+        path: "texture/mecha_ferritharax_left_arm.png",
     ),
     "mecha_ferritharax.right_claw.layout": TextureAtlasLayout (
         tile_size_x: 44,
@@ -321,7 +321,7 @@
         rows: 1,
     ),
     "mecha_ferritharax.right_claw.image": File (
-        path: "texture/mecha_ferritharax_right_claw.png"
+        path: "texture/mecha_ferritharax_right_claw.png",
     ),
     "mecha_ferritharax.left_claw.layout": TextureAtlasLayout (
         tile_size_x: 44,
@@ -330,16 +330,16 @@
         rows: 1,
     ),
     "mecha_ferritharax.left_claw.image": File (
-        path: "texture/mecha_ferritharax_left_claw.png"
+        path: "texture/mecha_ferritharax_left_claw.png",
     ),
     "mecha_saucetron.head.layout": TextureAtlasLayout (
-        tile_size_x: 46,
-        tile_size_y: 50,
-        columns: 3,
-        rows: 1,
+    tile_size_x: 46,
+    tile_size_y: 50,
+    columns: 3,
+    rows: 1,
     ),
     "mecha_saucetron.head.image": File (
-        path: "texture/mecha_saucetron_head.png"
+        path: "texture/mecha_saucetron_head.png",
     ),
     "mecha_saucetron.body.layout": TextureAtlasLayout (
         tile_size_x: 80,
@@ -348,7 +348,7 @@
         rows: 1,
     ),
     "mecha_saucetron.body.image": File (
-        path: "texture/mecha_saucetron_body.png"
+        path: "texture/mecha_saucetron_body.png",
     ),
     "mecha_saucetron.right_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 62,
@@ -357,7 +357,7 @@
         rows: 1,
     ),
     "mecha_saucetron.right_shoulder.image": File (
-        path: "texture/mecha_saucetron_right_shoulder.png"
+        path: "texture/mecha_saucetron_right_shoulder.png",
     ),
     "mecha_saucetron.left_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 62,
@@ -366,7 +366,7 @@
         rows: 1,
     ),
     "mecha_saucetron.left_shoulder.image": File (
-        path: "texture/mecha_saucetron_left_shoulder.png"
+        path: "texture/mecha_saucetron_left_shoulder.png",
     ),
     "mecha_saucetron.right_arm.layout": TextureAtlasLayout (
         tile_size_x: 40,
@@ -375,7 +375,7 @@
         rows: 1,
     ),
     "mecha_saucetron.right_arm.image": File (
-        path: "texture/mecha_saucetron_right_arm.png"
+        path: "texture/mecha_saucetron_right_arm.png",
     ),
     "mecha_saucetron.left_arm.layout": TextureAtlasLayout (
         tile_size_x: 40,
@@ -384,7 +384,7 @@
         rows: 1,
     ),
     "mecha_saucetron.left_arm.image": File (
-        path: "texture/mecha_saucetron_left_arm.png"
+        path: "texture/mecha_saucetron_left_arm.png",
     ),
     "mecha_saucetron.right_claw.layout": TextureAtlasLayout (
         tile_size_x: 44,
@@ -393,7 +393,7 @@
         rows: 1,
     ),
     "mecha_saucetron.right_claw.image": File (
-        path: "texture/mecha_saucetron_right_claw.png"
+        path: "texture/mecha_saucetron_right_claw.png",
     ),
     "mecha_saucetron.left_claw.layout": TextureAtlasLayout (
         tile_size_x: 44,
@@ -402,8 +402,7 @@
         rows: 1,
     ),
     "mecha_saucetron.left_claw.image": File (
-        path: "texture/mecha_saucetron_left_claw.png"
+        path: "texture/mecha_saucetron_left_claw.png",
     ),
-
 })
 

@@ -1,6 +1,10 @@
+use super::parent::PhaseUiChildBuilderExt;
+use crate::assets::ui::UiAssets;
+use crate::components::health::HealthComponent;
 use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::TutorialLesson;
-use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
+use crate::run::CurrentRunProgressResource;
+use crate::spawnable::mob::BossComponent;
 use bevy::{
     asset::Handle,
     color::{Alpha, Color, Srgba},
@@ -18,10 +22,6 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_assets::UiAssets;
-use thetawave_interface::health::HealthComponent;
-
-use super::parent::PhaseUiChildBuilderExt;
 
 const NODE_WIDTH: Val = Val::Percent(50.0);
 const NORMAL_TEXT_COLOR: Srgba = Srgba::WHITE;

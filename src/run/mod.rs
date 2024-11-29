@@ -355,10 +355,12 @@ fn run_reset_system(
 mod test {
     use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use crate::components::events::MobReachedBottomGateEvent;
+    use crate::components::objectives::DefenseInteraction;
     use crate::components::player::{InputRestrictionsAtSpawn, PlayersResource};
     use crate::components::spawnable::{
         MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent,
     };
+    use crate::gameplay::GameStates;
     use crate::run::{RunPlugin, SpawnFormationEvent};
     use crate::screens::AppStates;
     use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent};
@@ -368,8 +370,6 @@ mod test {
     use bevy::state::app::{AppExtStates, StatesPlugin};
     use bevy::MinimalPlugins;
     use rstest::rstest;
-    use crate::components::objectives::DefenseInteraction;
-    use crate::gameplay::GameStates;
 
     fn _minimal_app_for_run_progression_defend_gate_objective() -> App {
         let mut app = App::new();

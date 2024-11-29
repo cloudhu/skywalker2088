@@ -14,7 +14,7 @@ pub struct DisplayConfig {
     pub width: f32,
     /// Height of window
     pub height: f32,
-    /// True of fullsceen, false if windowed
+    /// True of fullscreen, false if windowed
     pub fullscreen: bool,
 }
 

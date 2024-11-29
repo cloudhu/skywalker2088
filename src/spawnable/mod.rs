@@ -30,7 +30,7 @@ mod behavior_sequence;
 pub mod consumable;
 mod effect;
 mod item;
-mod mob;
+pub mod mob;
 pub mod projectile;
 use self::behavior::attract_to_player_system;
 use self::item::ItemPlugin;

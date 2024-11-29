@@ -1,3 +1,6 @@
+use crate::assets::ui::UiAssets;
+use crate::components::player::PlayerInput;
+use crate::screens::AppStates;
 use bevy::{
     app::AppExit,
     asset::Handle,
@@ -19,9 +22,6 @@ use bevy::{
     },
     utils::default,
 };
-use crate::assets::ui::UiAssets;
-use crate::components::player::PlayerInput;
-use crate::screens::AppStates;
 
 /// Event and Component for giving and sending menu buttons actions to move the user from
 /// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and

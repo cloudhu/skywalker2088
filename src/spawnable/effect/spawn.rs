@@ -1,20 +1,22 @@
 use crate::animation::AnimationComponent;
+use crate::assets::effect::EffectAssets;
+use crate::assets::ui::UiAssets;
+use crate::components::spawnable::{EffectType, SpawnableType, TextEffectType};
+use crate::gameplay::GameStates;
+use crate::options::GameOptions;
+use crate::screens::AppStates;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
 use bevy::color::Color;
 use bevy::prelude::{
-    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Sprite, Text,
-    Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update, Vec3,
+    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Sprite,
+    StateScoped, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update, Vec3,
 };
 use bevy::sprite::{SpriteBundle, TextureAtlas};
 use bevy::utils::default;
 use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
-use thetawave_assets::{EffectAssets, UiAssets};
-use thetawave_interface::game::options::GameOptions;
-use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
-use thetawave_interface::states;
-use thetawave_interface::states::GameCleanup;
+
 /// `EffectSpawnPlugin` manages the spawning of in-game effects.
 ///
 /// This plugin is responsible for adding the system that handles the spawning of effects during the game.
@@ -25,8 +27,8 @@ impl Plugin for EffectSpawnPlugin {
         app.add_systems(
             Update,
             (spawn_effect_system, spawn_text_effect_system)
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         );
     }
 }
@@ -143,7 +145,7 @@ fn spawn_text_effect(
             ..Default::default()
         })
         .insert(EffectComponent::from(effect_data))
-        .insert(GameCleanup);
+        .insert(StateScoped(AppStates::Game));
 }
 
 /// Creates and spawns a non-text effect entity based on the provided parameters.
@@ -196,6 +198,6 @@ fn spawn_effect(
         .insert(RigidBody::KinematicVelocityBased)
         .insert(Velocity::from(initial_motion))
         .insert(effect_transform)
-        .insert(GameCleanup)
+        .insert(StateScoped(AppStates::Game))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

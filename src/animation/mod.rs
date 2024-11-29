@@ -1,5 +1,8 @@
 //! Exposes a component to tag animatable sprite sheets, along with the plugin with associated
 //! systems to animate + clean up 2D sprite-based animations.
+use crate::components::events::AnimationCompletedEvent;
+use crate::gameplay::GameStates;
+use crate::screens::AppStates;
 use bevy::{
     app::{App, Plugin, Update},
     asset::Assets,
@@ -16,7 +19,6 @@ use bevy::{
     time::{Time, Timer},
 };
 use serde::Deserialize;
-use thetawave_interface::{animation::AnimationCompletedEvent, states};
 
 /// The main behavior to animate sprite sheets while the game is not paused. Without this plugin,
 /// sprite animations will stay on their first frame.
@@ -27,12 +29,12 @@ impl Plugin for SpriteAnimationPlugin {
         app.add_systems(
             Update,
             animate_sprite_system
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         )
         .add_systems(
             Update,
-            animate_sprite_system.run_if(in_state(states::AppStates::MainMenu)),
+            animate_sprite_system.run_if(in_state(AppStates::MainMenu)),
         );
 
         app.add_event::<AnimationCompletedEvent>();
@@ -47,7 +49,7 @@ pub enum AnimationDirection {
     PingPong(PingPongDirection),
 }
 
-/// Current direction of a pingping animation
+/// Current direction of a pingpong animation
 #[derive(Deserialize, Clone)]
 pub enum PingPongDirection {
     Forward,

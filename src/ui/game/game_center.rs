@@ -1,4 +1,6 @@
 //! Systems that draw things that go in the center of the screen.
+use super::parent::GameCenterUiChildBuilderExt;
+use crate::components::events::CyclePhaseEvent;
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
@@ -16,9 +18,6 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use thetawave_interface::run::CyclePhaseEvent;
-
-use super::parent::GameCenterUiChildBuilderExt;
 
 const BASE_TEXT_ALPHA: f32 = 1.0;
 const BASE_BACKGROUND_ALPHA: f32 = 0.4;

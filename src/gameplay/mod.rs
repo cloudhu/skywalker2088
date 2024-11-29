@@ -33,6 +33,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum GameStates {
     #[default]
+    Initialise,
     Playing,
     Selection,
     Paused,

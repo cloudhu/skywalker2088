@@ -159,7 +159,7 @@ fn spawn_player(
                 character.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
             let collider_size_hy =
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-            println!("spawning Player:{}", player_data);
+            println!("spawning Player:{}", &character.name);
             // create player component from character
             let player_bundle = PlayerBundle::from(character).with_id(player_id);
 

@@ -1,3 +1,8 @@
+use super::ProjectileComponent;
+use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
+use crate::components::health::DamageDealtEvent;
+use crate::components::player::PlayerComponent;
+use crate::components::spawnable::{EffectType, Faction, ProjectileType};
 use crate::{
     collision::SortedCollisionEvent,
     spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
@@ -10,14 +15,6 @@ use bevy::{
     time::Time,
 };
 use serde::Deserialize;
-use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::DamageDealtEvent,
-    player::PlayerComponent,
-    spawnable::{EffectType, Faction, ProjectileType},
-};
-
-use super::ProjectileComponent;
 
 /// Types of behaviors that can be performed by projectiles
 #[derive(Deserialize, Clone)]

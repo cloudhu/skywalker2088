@@ -20,11 +20,16 @@ ______
 ______
 
 ## 1.1 操作
-1. 移动：鼠标左键为飞船导航（TODO：键盘方向键和手柄摇杆支持）
-2. 暂停/恢复：键盘空格键（TODO：手柄Start按键）
-3. 返回主菜单：键盘ESC（todo：手柄return返回按键）
-4. 全屏/窗口切换：F11键盘按键（todo：手柄设置菜单）
-5. 缩放：鼠标滚轮/PageUp = +、PageDown = -（Todo：手柄左右Trigger缩放）
+______
+| 动作     | 键盘 🖮                | 手柄 🎮 |
+|--------|----------------------|-------|
+| 🕹️ 移动 | 'WASD' / 方向键 /鼠标左键   | 摇杆    |
+| 🔫 射击  | 自动                   | 自动    |
+| 💥 技能  | 自动                   | 自动    |
+| 暂停/恢复  | 空格                   | 开始    |
+| 返回     | ESC                  | B按钮   |
+| 全屏     | F11                  | 设置菜单  |
+| 缩放     | 鼠标滚轮/PageUp、PageDown | 扳机    |
 
 ______
 ##  1.2. 关卡设计
@@ -41,25 +46,25 @@ ______
 ## 2.1 已实现列表 
 - [x] 使用`cargo generate thebevyflock/bevy_new_2d`生成的2d游戏模板作为[2D游戏基础开发框架bevy_new_2d](https://github.com/TheBevyFlock/bevy_new_2d)；
 - [x] 从[ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)开源项目Copy核心逻辑代码，并优化结构；
-- [x] 暂停游戏 Pause/Resume
-- [x] WASM支持 support wasm
-- [x] 敌人AI实现 Enemy AI
-- [x] 游戏音效 Game audio
+- [x] 暂停游戏
+- [x] WASM支持
+- [x] 敌人AI实现
+- [x] 游戏音效
 - [x] 使用[bevy_asset_loader](https://github.com/NiklasEi/bevy_asset_loader)优化资源加载
 - [x] 使用[bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio)优化音效播放逻辑和性能
 - [x] 支持全屏/窗口切换和鼠标滚轮缩放（2024年11月15日）
 - [x] 通过csv来配置数值和多语言（先支持中英双语）
+- [x] 融合[Thetawave](https://github.com/thetawavegame/thetawave)的代码和资源，改进代码结构和游戏玩法（2024年11月29日）
+- [x] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）
+- [x] 玩家定点和敌人随机点出生
+- [x] 利用物理引擎进行碰撞检测（bevy_rapier2d）
+- [x] 游戏UI
 
 ## 2.2 待实现列表
-- [ ] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）
-- [ ] 多语言支持（先弄中英文双语，考虑使用[fluent](https://github.com/kgv/bevy_fluent)插件）
 - [ ] [LDTK](https://github.com/Trouv/bevy_ecs_ldtk)软件编辑关卡
 - [ ] 关卡载入
 - [ ] 关卡切换
-- [ ] 玩家定点和敌人随机点出生
-- [ ] 利用物理引擎进行碰撞检测
 - [ ] 玩家出生、护盾、爆炸、水波等精灵动画
-- [ ] 游戏UI
 - [ ] 游戏存档、读档、自动保存(考虑使用[bevy_pkv](https://github.com/johanhelsing/bevy_pkv)插件开发)
 - [ ] 本地多人模式
 
@@ -80,3 +85,21 @@ ______
 
 # 4. 发布
 [Itch.io](https://cloudhu.itch.io/skywalker2088)
+
+# 5. 外部资产
+
+## 🎵 音乐
+[Joel Schuman](https://joelhasa.site/) - Original Game Soundtrack
+
+## 📢 音效
+[*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package) - Comprehensive Space Audio Collection
+
+## 🎨 美术
+[Kadith's icons](https://kadith.itch.io/kadiths-free-icons) - Game Iconography
+
+## 📜 字体
+[*Space Madness*](https://modernmodron.itch.io/) - Font Design by Rose Frye
+
+# 6. 合并的仓库
+- [ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)
+- [Thetawave](https://github.com/thetawavegame/thetawave)

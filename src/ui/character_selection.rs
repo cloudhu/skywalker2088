@@ -1,10 +1,19 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
-//! //! from one of a few options, and possibly enables/diables the tutorial.
-
+//! //! from one of a few options, and possibly enables/disables the tutorial.
 use super::button::{
     ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
 };
-use crate::{game::GameParametersResource, player::CharactersResource};
+use crate::assets::player_assets::PlayerAssets;
+use crate::assets::ui::UiAssets;
+use crate::components::abilities::AbilityDescriptionsResource;
+use crate::components::character::{Character, CharacterStatType, CharacterType};
+use crate::components::events::PlayerJoinEvent;
+use crate::components::input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer};
+use crate::components::player::{PlayerData, PlayerInput, PlayersResource};
+use crate::options::resources::GameParametersResource;
+use crate::player::CharactersResource;
+use crate::screens::AppStates;
+use bevy::prelude::StateScoped;
 use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Handle},
@@ -32,19 +41,6 @@ use bevy::{
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use std::collections::VecDeque;
 use strum::IntoEnumIterator;
-use thetawave_assets::{PlayerAssets, UiAssets};
-use thetawave_interface::{
-    abilities::AbilityDescriptionsResource,
-    character::{Character, CharacterStatType},
-    input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer},
-    states::{self, AppStates},
-};
-use thetawave_interface::{
-    character::CharacterType,
-    character_selection::PlayerJoinEvent,
-    player::{PlayerData, PlayerInput, PlayersResource},
-    states::CharacterSelectionCleanup,
-};
 
 pub(super) struct CharacterSelectionPlugin;
 impl Plugin for CharacterSelectionPlugin {
@@ -67,27 +63,27 @@ impl Plugin for CharacterSelectionPlugin {
         );
 
         app.add_systems(
-            OnEnter(states::AppStates::CharacterSelection),
+            OnEnter(AppStates::CharacterSelection),
             setup_character_selection_system,
         );
     }
 }
 
-/// Component for tagging a ui node entity as the center
+/// Component for tagging an ui node entity as the center
 /// of a player's character selection ui.
 ///
 /// u8 value represents a player index
 #[derive(Component, Debug)]
 struct CharacterSelectionCenter(u8);
 
-/// Component for tagging a ui node entity as the right
+/// Component for tagging an ui node entity as the right
 /// side of a player's character selection ui.
 ///
 /// u8 value represents a player index.
 #[derive(Component)]
 struct CharacterSelectionRight(u8);
 
-/// Component for tagging a ui node entity as the left
+/// Component for tagging an ui node entity as the left
 /// side of a player's character selection ui.
 ///
 /// u8 value represents a player index.
@@ -107,7 +103,7 @@ struct CharacterDescription(u8);
 /// Tag component for character info ui entity
 ///
 /// The entity containing this component should be the parent of
-/// the `CharacteAbilityDescriptions` and `CharacterStatsDescriptions`
+/// the `CharacterAbilityDescriptions` and `CharacterStatsDescriptions`
 #[derive(Component)]
 struct CharacterInfo;
 
@@ -120,7 +116,7 @@ struct CharacterName;
 
 /// Tag component for ability description ui entity
 ///
-/// This ui node contains all of the ability description rows
+/// This ui node contains all the ability description rows
 #[derive(Component)]
 struct CharacterAbilityDescriptions;
 
@@ -260,177 +256,6 @@ trait UiPlayerJoinChildBuilderExt {
 }
 
 impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
-    fn spawn_stats(&mut self, ui_assets: &UiAssets, character: &Character) {
-        // Iterate over each character stat type
-        for stat in CharacterStatType::iter() {
-            // Spawn a node for the stat bar container
-            self.spawn(NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(12.0),
-                    flex_direction: FlexDirection::Row,
-                    ..default()
-                },
-                ..default()
-            })
-            .with_children(|parent| {
-                // Spawn an image for the stat icon
-                parent.spawn(ImageBundle {
-                    image: ui_assets.get_stat_icon(&stat).into(),
-                    style: Style {
-                        margin: UiRect::all(Val::Px(5.0)),
-                        ..default()
-                    },
-                    ..default()
-                });
-
-                // Spawn a node for the stat bar background
-                parent
-                    .spawn(NodeBundle {
-                        style: Style {
-                            height: Val::Percent(100.0),
-                            width: Val::Percent(100.0),
-                            ..default()
-                        },
-                        ..default()
-                    })
-                    .with_children(|parent| {
-                        // Spawn a node to represent the stat percentage
-                        parent.spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Percent(character.get_stat_percent(&stat)),
-                                height: Val::Percent(50.0),
-                                align_self: AlignSelf::Center,
-                                ..default()
-                            },
-                            background_color: Srgba::WHITE.into(),
-                            ..default()
-                        });
-                    });
-            });
-        }
-    }
-
-    fn spawn_ability_descriptions(
-        &mut self,
-        ui_assets: &UiAssets,
-        font: Handle<Font>,
-        character: &Character,
-        abilities_desc_res: &AbilityDescriptionsResource,
-    ) {
-        // Check if the character has a slot 1 ability
-        if let Some(slot_1_ability_type) = &character.slot_1_ability {
-            // Spawn a node for the slot 1 ability description container
-            self.spawn(NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(25.0),
-                    align_content: AlignContent::Center,
-                    flex_direction: FlexDirection::Row,
-                    ..default()
-                },
-                ..default()
-            })
-            .with_children(|parent| {
-                // Spawn an image for the ability slot
-                parent
-                    .spawn(ImageBundle {
-                        image: ui_assets.get_ability_slot_image(false).into(),
-                        ..default()
-                    })
-                    .with_children(|parent| {
-                        // Spawn an image for the slot 1 ability
-                        parent.spawn(ImageBundle {
-                            image: ui_assets
-                                .get_slot_1_ability_image(slot_1_ability_type)
-                                .into(),
-                            ..default()
-                        });
-                    });
-
-                // Check if there is a description for the slot 1 ability
-                if let Some(ability_desc) = abilities_desc_res.slot_one.get(slot_1_ability_type) {
-                    // Spawn text for the slot 1 ability description
-                    parent.spawn(TextBundle {
-                        text: Text::from_section(
-                            ability_desc,
-                            TextStyle {
-                                font: font.clone(),
-                                font_size: 16.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        style: Style {
-                            margin: UiRect {
-                                left: Val::Px(5.0),
-                                right: Val::Px(5.0),
-                                ..default()
-                            },
-                            ..default()
-                        },
-                        ..default()
-                    });
-                }
-            });
-        }
-
-        // Check if the character has a slot 2 ability
-        if let Some(slot_2_ability_type) = &character.slot_2_ability {
-            // Spawn a node for the slot 2 ability description container
-            self.spawn(NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(25.0),
-                    align_content: AlignContent::Center,
-                    flex_direction: FlexDirection::Row,
-                    ..default()
-                },
-                ..default()
-            })
-            .with_children(|parent| {
-                // Spawn an image for the ability slot
-                parent
-                    .spawn(ImageBundle {
-                        image: ui_assets.get_ability_slot_image(false).into(),
-                        ..default()
-                    })
-                    .with_children(|parent| {
-                        // Spawn an image for the slot 2 ability
-                        parent.spawn(ImageBundle {
-                            image: ui_assets
-                                .get_slot_2_ability_image(slot_2_ability_type)
-                                .into(),
-                            ..default()
-                        });
-                    });
-
-                // Check if there is a description for the slot 2 ability
-                if let Some(ability_desc) = abilities_desc_res.slot_two.get(slot_2_ability_type) {
-                    // Spawn text for the slot 2 ability description
-                    parent.spawn(TextBundle {
-                        text: Text::from_section(
-                            ability_desc,
-                            TextStyle {
-                                font: font.clone(),
-                                font_size: 16.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        style: Style {
-                            margin: UiRect {
-                                left: Val::Px(5.0),
-                                right: Val::Px(5.0),
-                                ..default()
-                            },
-                            ..default()
-                        },
-                        ..default()
-                    });
-                }
-            });
-        }
-    }
-
     fn spawn_player_join_row(
         &mut self,
         ui_assets: &UiAssets,
@@ -562,9 +387,180 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
             }
         });
     }
+
+    fn spawn_ability_descriptions(
+        &mut self,
+        ui_assets: &UiAssets,
+        font: Handle<Font>,
+        character: &Character,
+        abilities_desc_res: &AbilityDescriptionsResource,
+    ) {
+        // Check if the character has a slot 1 ability
+        if let Some(slot_1_ability_type) = &character.slot_1_ability {
+            // Spawn a node for the slot 1 ability description container
+            self.spawn(NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(25.0),
+                    align_content: AlignContent::Center,
+                    flex_direction: FlexDirection::Row,
+                    ..default()
+                },
+                ..default()
+            })
+            .with_children(|parent| {
+                // Spawn an image for the ability slot
+                parent
+                    .spawn(ImageBundle {
+                        image: ui_assets.get_ability_slot_image(false).into(),
+                        ..default()
+                    })
+                    .with_children(|parent| {
+                        // Spawn an image for the slot 1 ability
+                        parent.spawn(ImageBundle {
+                            image: ui_assets
+                                .get_slot_1_ability_image(slot_1_ability_type)
+                                .into(),
+                            ..default()
+                        });
+                    });
+
+                // Check if there is a description for the slot 1 ability
+                if let Some(ability_desc) = abilities_desc_res.slot_one.get(slot_1_ability_type) {
+                    // Spawn text for the slot 1 ability description
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
+                            ability_desc,
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 16.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        style: Style {
+                            margin: UiRect {
+                                left: Val::Px(5.0),
+                                right: Val::Px(5.0),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        ..default()
+                    });
+                }
+            });
+        }
+
+        // Check if the character has a slot 2 ability
+        if let Some(slot_2_ability_type) = &character.slot_2_ability {
+            // Spawn a node for the slot 2 ability description container
+            self.spawn(NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(25.0),
+                    align_content: AlignContent::Center,
+                    flex_direction: FlexDirection::Row,
+                    ..default()
+                },
+                ..default()
+            })
+            .with_children(|parent| {
+                // Spawn an image for the ability slot
+                parent
+                    .spawn(ImageBundle {
+                        image: ui_assets.get_ability_slot_image(false).into(),
+                        ..default()
+                    })
+                    .with_children(|parent| {
+                        // Spawn an image for the slot 2 ability
+                        parent.spawn(ImageBundle {
+                            image: ui_assets
+                                .get_slot_2_ability_image(slot_2_ability_type)
+                                .into(),
+                            ..default()
+                        });
+                    });
+
+                // Check if there is a description for the slot 2 ability
+                if let Some(ability_desc) = abilities_desc_res.slot_two.get(slot_2_ability_type) {
+                    // Spawn text for the slot 2 ability description
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
+                            ability_desc,
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 16.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        style: Style {
+                            margin: UiRect {
+                                left: Val::Px(5.0),
+                                right: Val::Px(5.0),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        ..default()
+                    });
+                }
+            });
+        }
+    }
+
+    fn spawn_stats(&mut self, ui_assets: &UiAssets, character: &Character) {
+        // Iterate over each character stat type
+        for stat in CharacterStatType::iter() {
+            // Spawn a node for the stat bar container
+            self.spawn(NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(12.0),
+                    flex_direction: FlexDirection::Row,
+                    ..default()
+                },
+                ..default()
+            })
+            .with_children(|parent| {
+                // Spawn an image for the stat icon
+                parent.spawn(ImageBundle {
+                    image: ui_assets.get_stat_icon(&stat).into(),
+                    style: Style {
+                        margin: UiRect::all(Val::Px(5.0)),
+                        ..default()
+                    },
+                    ..default()
+                });
+
+                // Spawn a node for the stat bar background
+                parent
+                    .spawn(NodeBundle {
+                        style: Style {
+                            height: Val::Percent(100.0),
+                            width: Val::Percent(100.0),
+                            ..default()
+                        },
+                        ..default()
+                    })
+                    .with_children(|parent| {
+                        // Spawn a node to represent the stat percentage
+                        parent.spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(character.get_stat_percent(&stat)),
+                                height: Val::Percent(50.0),
+                                align_self: AlignSelf::Center,
+                                ..default()
+                            },
+                            background_color: Srgba::WHITE.into(),
+                            ..default()
+                        });
+                    });
+            });
+        }
+    }
 }
 
-/// Setup the character selection UI
+/// Set up the character selection UI
 ///
 /// This function initializes the UI for character selection by spawning the main UI node
 /// and creating rows for player join elements based on the maximum number of players.
@@ -595,7 +591,7 @@ fn setup_character_selection_system(
             },
             ..Default::default()
         })
-        .insert(CharacterSelectionCleanup)
+        .insert(StateScoped(AppStates::CharacterSelection))
         .with_children(|parent| {
             // Create vectors of player indices to use for spawning player join rows
             let mut top_row_player_idxs = vec![];
@@ -895,7 +891,7 @@ fn update_ui_system(
                 commands.entity(entity).add_child(button_entity);
             } else {
                 // If entity was not found for new character selection, despawn the button
-                // This means all of the available player slots have been used up
+                // This means all the available player slots have been used up
                 commands.entity(button_entity).despawn_recursive();
             }
 
@@ -962,7 +958,7 @@ fn update_ui_system(
                     input_map,
                 })
                 .insert(MenuExplorer(*player_idx))
-                .insert(CharacterSelectionCleanup);
+                .insert(StateScoped(AppStates::CharacterSelection));
         }
     }
 }
@@ -1112,7 +1108,7 @@ fn keyboard_and_gamepad_input_system(
 ///
 /// This function sets up the initial characters in the carousel for each player,
 /// updates character descriptions, abilities, and stats, and sets the player's
-/// selected character in the players resource.
+/// selected character in the players' resource.
 fn init_carousel_ui_system(
     mut commands: Commands,
     character_carousels: Query<(Entity, &CharacterCarousel), Without<Children>>,
@@ -1257,7 +1253,7 @@ fn init_carousel_ui_system(
 ///
 /// This function handles the rotation of the character carousel when left or right buttons
 /// are pressed, updates the visible characters, and sets the character description, abilities,
-/// and stats accordingly. It also updates the player's selected character in the players resource.
+/// and stats accordingly. It also updates the player's selected character in the players' resource.
 fn carousel_ui_system(
     mut commands: Commands,
     mut character_carousels: Query<(&mut CharacterCarousel, &Children)>,
@@ -1371,7 +1367,7 @@ fn carousel_ui_system(
                                         } else if let Ok(char_stats_entity) =
                                             character_stats.get(*char_info_child)
                                         {
-                                            // Despawn all of the existing stats
+                                            // Despawn all the existing stats
                                             commands
                                                 .entity(char_stats_entity)
                                                 .despawn_descendants();

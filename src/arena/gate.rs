@@ -1,4 +1,7 @@
+use crate::components::events::MobReachedBottomGateEvent;
+use crate::screens::AppStates;
 use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent};
+use bevy::prelude::StateScoped;
 use bevy::{
     core::Name,
     math::Vec2,
@@ -7,13 +10,10 @@ use bevy::{
         Transform, TransformBundle, With,
     },
 };
-use bevy::prelude::StateScoped;
 use bevy_rapier2d::{
     prelude::{Collider, CollisionEvent, Sensor},
     rapier::prelude::CollisionEventFlags,
 };
-use crate::components::events::MobReachedBottomGateEvent;
-use crate::screens::AppStates;
 
 /// Tag for the gate that triggers mobs to respawn (and cause something bad to happen to the
 /// player). There will generally only be 1 entity with this component.
