@@ -1,6 +1,6 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::audio::ChangeBackgroundMusicEvent;
-use crate::screens::AppStates;
 use crate::stats::historical_metrics::{
     MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
 };
@@ -80,7 +80,7 @@ pub fn setup_victory_system(
                     ..default()
                 })
                 .with_children(|parent| {
-                    let font = ui_assets.lunchds_font.clone();
+                    let font = ui_assets.song_font.clone();
 
                     parent
                         .spawn(NodeBundle {

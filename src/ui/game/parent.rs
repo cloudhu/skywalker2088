@@ -1,10 +1,10 @@
 use super::border_gradient::BorderGradientType;
+use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::abilities::AbilitySlotIDComponent;
 use crate::components::character::Character;
 use crate::components::player::{PlayerIDComponent, PlayersResource};
 use crate::player::CharactersResource;
-use crate::screens::AppStates;
 use bevy::prelude::StateScoped;
 use bevy::{
     asset::Handle,
@@ -87,7 +87,7 @@ pub(super) fn setup_game_ui_system(
     players_resource: Res<PlayersResource>,
     characters_resource: Res<CharactersResource>,
 ) {
-    let font: Handle<Font> = ui_assets.lunchds_font.clone();
+    let font: Handle<Font> = ui_assets.song_font.clone();
 
     commands.spawn_border_gradient(&ui_assets, BorderGradientType::Defense);
     commands.spawn_border_gradient(&ui_assets, BorderGradientType::Warning);

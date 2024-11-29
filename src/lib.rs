@@ -124,7 +124,7 @@ impl Plugin for AppPlugin {
             config::plugin,
             assets::plugin,
             stats::plugin,
-            screens::plugin,
+            // screens::plugin,//TODO:Merge with ui(UiPlugin)
             theme::plugin,
             gameplay::plugin,
             ship::plugin,

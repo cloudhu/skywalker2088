@@ -1,3 +1,4 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::player_assets::PlayerAssets;
 use crate::components::abilities::{
     AbilitiesResource, ChargeAbilityBundle, SlotOneAbilityType, SlotTwoAbilityType,
@@ -11,7 +12,6 @@ use crate::gameplay::loot::{Cargo, Magnet};
 use crate::gameplay::physics::{BaseGlyphRotation, Physics};
 use crate::options::resources::GameParametersResource;
 use crate::player::PlayersResource;
-use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::util::RenderLayer;
 use bevy::color::Color;

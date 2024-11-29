@@ -1,3 +1,4 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::projectile::ProjectileAssets;
 use crate::collision::{
     ALLY_PROJECTILE_COLLIDER_GROUP, ENEMY_PROJECTILE_COLLIDER_GROUP,
@@ -8,7 +9,6 @@ use crate::components::spawnable::{Faction, ProjectileType, SpawnPosition, Spawn
 use crate::components::weapon::WeaponProjectileData;
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
-use crate::screens::AppStates;
 use crate::weapon::WeaponProjectileInitialVelocitiesExt;
 use crate::{
     animation::{AnimationComponent, AnimationData},

@@ -11,12 +11,10 @@ use bevy_asset_loader::asset_collection::AssetCollection;
 /// Collection of texture atlases and images for ui
 #[derive(AssetCollection, Resource)]
 pub struct UiAssets {
-    #[asset(key = "font.lunchds")]
-    pub lunchds_font: Handle<Font>,
-    #[asset(key = "thetawave_logo.layout")]
-    pub thetawave_logo_layout: Handle<TextureAtlasLayout>,
-    #[asset(key = "thetawave_logo.image")]
-    pub thetawave_logo_image: Handle<Image>,
+    #[asset(key = "font.song")]
+    pub song_font: Handle<Font>,
+    #[asset(key = "bevy_logo_light.image")]
+    pub bevy_logo_light: Handle<Image>,
     #[asset(key = "thetawave_menu_button.layout")]
     pub thetawave_menu_button_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "thetawave_menu_button.image")]

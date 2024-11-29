@@ -1,15 +1,12 @@
 //! The title screen that appears when the game starts.
-use crate::assets::game_assets::{Fonts, Music};
-use crate::audio::NextBgm;
+use crate::assets::game_assets::{AppStates, Fonts, Music};
 use crate::config::GameConfig;
-use crate::{screens::AppStates, theme::prelude::*};
+use crate::theme::prelude::*;
 use bevy::prelude::*;
 use bevy::window::WindowMode;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppStates::MainMenu), spawn_title_screen);
-    app.add_systems(OnEnter(AppStates::MainMenu), play_title_music);
-    app.add_systems(OnExit(AppStates::MainMenu), stop_title_music);
 }
 
 fn spawn_title_screen(
@@ -74,14 +71,6 @@ fn set_lang(
 #[cfg(not(target_family = "wasm"))]
 fn exit_app(_trigger: Trigger<OnPress>, mut app_exit: EventWriter<AppExit>) {
     app_exit.send(AppExit::Success);
-}
-
-fn play_title_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {
-    *next_bgm = NextBgm(Some(music.title.clone()));
-}
-
-fn stop_title_music(mut next_bgm: ResMut<NextBgm>) {
-    *next_bgm = NextBgm(None);
 }
 
 #[cfg(not(target_family = "wasm"))]

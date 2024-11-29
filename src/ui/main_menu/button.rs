@@ -1,7 +1,6 @@
 //! Provides the layout (trait on `bevy::hierarchy::ChildBuilder`) and behavior (systems) to put 4
 //! vertically layered out on the main menu, and change the state from
-//! `thetawave_interface::states::AppStates::MainMenu` to
-//! `thetawave_interface::states::AppStates::CharacterSelection`
+//! `AppStates::MainMenu` to `AppStates::CharacterSelection`
 use crate::assets::ui::UiAssets;
 use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
 use crate::components::input::{MainMenuExplorer, MenuAction};
@@ -36,7 +35,7 @@ const MAIN_MENU_BUTTON_ORDER: [ButtonActionType; 4] = [
     ButtonActionType::QuitGame,
 ];
 
-/// Extension trait for spawning customized UI elements for Thetawave
+/// Extension trait for spawning customized UI elements for The Game
 pub(super) trait UiChildBuilderExt {
     // Spawn 1 menu button for each element of `MainMenuButtonActionComponent`
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self;

@@ -1,6 +1,6 @@
+use crate::assets::game_assets::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::{Collider, Physics};
-use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::app::{App, Update};
 use bevy::prelude::*;

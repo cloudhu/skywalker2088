@@ -1,7 +1,7 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::spawnable::Faction;
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use bevy::{
     app::{App, Plugin, Update},
     prelude::{in_state, Entity, Event, IntoSystemConfigs},

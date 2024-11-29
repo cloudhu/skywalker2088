@@ -5,13 +5,13 @@ use crate::{
         loot::Cargo,
         GameStates,
     },
-    screens::AppStates,
     ship::engine::Engine,
     AppSet,
 };
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::window::WindowMode;
+use crate::assets::game_assets::AppStates;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

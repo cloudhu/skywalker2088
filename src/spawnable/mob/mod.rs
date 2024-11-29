@@ -40,6 +40,7 @@ pub(in crate::spawnable) use self::{
 };
 
 use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
+use crate::assets::game_assets::AppStates;
 use crate::collision::{
     HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
@@ -52,7 +53,6 @@ use crate::components::spawnable::{
 use crate::components::weapon::{WeaponData, WeaponsComponent};
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
-use crate::screens::AppStates;
 
 /// Core component for mobs
 #[derive(Component)]

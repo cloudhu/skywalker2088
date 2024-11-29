@@ -1,9 +1,9 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
-//! guides the user into the `thetawave_interface::states::AppStates::CharacterSelection` state.
+//! guides the user into the `AppStates::CharacterSelection` state.
 use crate::animation::{AnimationComponent, AnimationDirection};
+use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
-use crate::screens::AppStates;
 use bevy::prelude::StateScoped;
 use bevy::{
     color::Srgba,
@@ -40,14 +40,14 @@ impl Plugin for MainMenuUIPlugin {
 }
 
 /// Spawn the initial components of the main menu UI to be rendered. This only needs to be called
-/// once whenever we want to overlay the main menu. Despawning entities with the`MainMenuCleanup`
+/// once whenever we want to overlay the main menu. Despawning entities with the`StateScoped(AppStates::MainMenu)`
 /// component is the main way to undo the side effects of this system.
 fn setup_main_menu_system(
     mut commands: Commands,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     ui_assets: Res<UiAssets>,
 ) {
-    let font = ui_assets.lunchds_font.clone();
+    let font = ui_assets.song_font.clone();
 
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
         bg_music_type: Some(BGMusicType::Main),
@@ -96,27 +96,19 @@ fn setup_main_menu_system(
                             parent
                                 .spawn((
                                     ImageBundle {
-                                        image: ui_assets.thetawave_logo_image.clone().into(),
+                                        image: ui_assets.bevy_logo_light.clone().into(),
                                         style: Style {
-                                            max_width: Val::Px(900.0),
-                                            width: Val::Percent(70.0),
-                                            min_width: Val::Px(300.0),
-                                            aspect_ratio: Some(1920.0 / 1080.0),
+                                            max_width: Val::Px(520.0),
+                                            width: Val::Percent(100.0),
+                                            min_width: Val::Px(130.0),
+                                            aspect_ratio: Some(520.0 / 130.0),
                                             justify_content: JustifyContent::Center,
                                             align_items: AlignItems::Center,
                                             ..default()
                                         },
                                         ..default()
                                     },
-                                    TextureAtlas {
-                                        layout: ui_assets.thetawave_logo_layout.clone(),
-                                        ..default()
-                                    },
-                                ))
-                                .insert(AnimationComponent {
-                                    timer: Timer::from_seconds(0.1, TimerMode::Repeating),
-                                    direction: AnimationDirection::Forward,
-                                });
+                                ));
                         });
                     parent
                         .spawn(NodeBundle {

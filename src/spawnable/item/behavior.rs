@@ -1,9 +1,9 @@
+use crate::assets::game_assets::AppStates;
 use crate::collision::SortedCollisionEvent;
 use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
 use crate::components::spawnable::ItemComponent;
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use bevy::log::info;
 use bevy::prelude::{
     in_state, App, Commands, Component, EventReader, IntoSystemConfigs, Plugin, Query, Update, With,

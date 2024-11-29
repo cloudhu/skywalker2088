@@ -1,5 +1,5 @@
+use crate::assets::game_assets::AppStates;
 use crate::components::events::MobReachedBottomGateEvent;
-use crate::screens::AppStates;
 use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent};
 use bevy::prelude::StateScoped;
 use bevy::{

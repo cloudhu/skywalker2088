@@ -15,11 +15,11 @@ use bevy::{
 use bevy_rapier2d::dynamics::Velocity;
 use std::time::Duration;
 
+use crate::assets::game_assets::AppStates;
 use crate::components::weapon::{
     FireMode, SpreadPattern, Weapon, WeaponProjectileData, WeaponsComponent,
 };
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 use rand::{thread_rng, Rng};
 

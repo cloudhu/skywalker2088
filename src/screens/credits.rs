@@ -1,15 +1,11 @@
 //! A credits screen that can be accessed from the title screen.
 use bevy::prelude::*;
 
-use crate::assets::game_assets::{Fonts, Music};
-use crate::audio::NextBgm;
-use crate::{screens::AppStates, theme::prelude::*};
+use crate::assets::game_assets::{AppStates, Fonts, Music};
+use crate::{theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppStates::Credits), spawn_credits_screen);
-
-    app.add_systems(OnEnter(AppStates::Credits), play_credits_music);
-    app.add_systems(OnExit(AppStates::Credits), stop_music);
 }
 
 fn spawn_credits_screen(mut commands: Commands, fonts: Res<Fonts>) {
@@ -31,12 +27,4 @@ fn spawn_credits_screen(mut commands: Commands, fonts: Res<Fonts>) {
 
 fn enter_title_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppStates>>) {
     next_screen.set(AppStates::MainMenu);
-}
-
-fn play_credits_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {
-    *next_bgm = NextBgm(Some(music.monkeys.clone()));
-}
-
-fn stop_music(mut next_bgm: ResMut<NextBgm>) {
-    *next_bgm = NextBgm(None);
 }

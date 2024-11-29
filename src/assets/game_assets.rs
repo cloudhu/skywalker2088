@@ -6,7 +6,6 @@ use crate::assets::mob::MobAssets;
 use crate::assets::player_assets::PlayerAssets;
 use crate::assets::projectile::ProjectileAssets;
 use crate::assets::ui::UiAssets;
-use crate::screens::AppStates;
 use bevy::app::App;
 use bevy::asset::Handle;
 use bevy::prelude::*;
@@ -80,6 +79,8 @@ pub struct Music {
 }
 
 pub(super) fn plugin(app: &mut App) {
+    app.init_state::<AppStates>();
+    app.enable_state_scoped_entities::<AppStates>();
     app.add_loading_state(
         LoadingState::new(AppStates::LoadingAssets)
             .continue_to_state(AppStates::MainMenu)
@@ -173,6 +174,21 @@ pub enum GameUpdateSet {
     ApplyDisconnectedBehaviors,
     ChangeState,
     Cleanup,
+}
+
+/// The game's main screen states.
+#[derive(States, Debug, Hash, PartialEq, Eq, Clone, Default)]
+pub enum AppStates {
+    #[default]
+    Splash,
+    LoadingAssets,
+    MainMenu,
+    CharacterSelection,
+    InitializeRun,
+    Credits,
+    Game,
+    GameOver,
+    Victory,
 }
 
 // setup rapier

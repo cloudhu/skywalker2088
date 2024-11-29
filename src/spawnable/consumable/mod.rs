@@ -1,11 +1,11 @@
 use crate::animation::{AnimationComponent, AnimationData};
 use crate::assets::consumable::ConsumableAssets;
+use crate::assets::game_assets::AppStates;
 use crate::components::spawnable::{
     AttractToClosestPlayerComponent, ConsumableType, SpawnableType,
 };
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
-use crate::screens::AppStates;
 use crate::spawnable::{SpawnableBehavior, SpawnableComponent};
 use bevy::prelude::StateScoped;
 use bevy::{

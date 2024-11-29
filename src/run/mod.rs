@@ -12,6 +12,7 @@ use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType};
 use crate::components::events::{
@@ -22,7 +23,6 @@ use crate::components::objectives::{DefenseInteraction, Objective};
 use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent};
 use crate::components::spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent};
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use crate::spawnable::BossesDestroyedEvent;
 
 mod formation;
@@ -353,6 +353,7 @@ fn run_reset_system(
 
 #[cfg(test)]
 mod test {
+    use crate::assets::game_assets::AppStates;
     use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use crate::components::events::MobReachedBottomGateEvent;
     use crate::components::objectives::DefenseInteraction;
@@ -362,7 +363,6 @@ mod test {
     };
     use crate::gameplay::GameStates;
     use crate::run::{RunPlugin, SpawnFormationEvent};
-    use crate::screens::AppStates;
     use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent};
     use bevy::app::App;
     use bevy::log::{Level, LogPlugin};

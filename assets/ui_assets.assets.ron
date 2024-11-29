@@ -1,15 +1,9 @@
 ({
-    "font.lunchds": File(
-        path: "fonts/Lunchds.ttf",
+    "font.song": File(
+        path: "fonts/song_GB2312.ttf",
     ),
-    "thetawave_logo.layout": TextureAtlasLayout (
-        tile_size_x: 1920,
-        tile_size_y: 1080,
-        columns: 4,
-        rows: 12
-    ),
-    "thetawave_logo.image": File(
-        path: "texture/thetawave_logo_spritesheet.png",
+    "bevy_logo_light.image": File(
+        path: "branding/bevy_logo_light.png",
     ),
     "thetawave_menu_button.layout": TextureAtlasLayout (
         tile_size_x: 160,

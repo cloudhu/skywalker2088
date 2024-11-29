@@ -26,6 +26,7 @@ use super::{
     ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData, MobSpawner,
     MobSpawnerData,
 };
+use crate::assets::game_assets::AppStates;
 use crate::assets::mob::MobAssets;
 use crate::components::audio::CollisionSoundType;
 use crate::components::health::HealthComponent;
@@ -33,7 +34,6 @@ use crate::components::objectives::DefenseInteraction;
 use crate::components::spawnable::{MobSegmentType, SpawnableType};
 use crate::components::weapon::{WeaponData, WeaponsComponent};
 use crate::options::resources::GameParametersResource;
-use crate::screens::AppStates;
 pub(in crate::spawnable) use behavior::{
     mob_segment_apply_disconnected_behaviors_system, mob_segment_execute_behavior_system,
     MobSegmentBehavior,

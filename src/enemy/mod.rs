@@ -5,6 +5,7 @@ mod final_boss;
 mod mothership;
 use bevy::prelude::*;
 
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::Fonts;
 use crate::components::player::PlayerComponent;
 use crate::enemy::drone::spawn_drone;
@@ -15,7 +16,6 @@ use crate::enemy::mothership::spawn_mothership;
 use crate::gameplay::gamelogic::{game_not_paused, GameTime};
 use crate::gameplay::physics::Physics;
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use crate::ship::engine::{Engine, EngineMethod};
 use crate::util::{Math, RenderLayer};
 use rand::Rng;

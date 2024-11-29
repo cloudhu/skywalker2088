@@ -1,7 +1,7 @@
 //! Exposes a plugin that logs whenever the user's mouse hovers over a mob.
+use crate::assets::game_assets::AppStates;
 use crate::components::health::HealthComponent;
 use crate::options::resources::GameParametersResource;
-use crate::screens::AppStates;
 use crate::spawnable::MobComponent;
 use bevy::app::App;
 use bevy::math::Vec2;

@@ -120,7 +120,7 @@ pub(super) fn update_phase_ui_system(
 
                 match &current_phase.phase_type {
                     LevelPhaseType::FormationSpawn { phase_timer, .. } => {
-                        let font = ui_assets.lunchds_font.clone();
+                        let font = ui_assets.song_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui.spawn(TextBundle {
@@ -138,7 +138,7 @@ pub(super) fn update_phase_ui_system(
                         });
                     }
                     LevelPhaseType::Break { phase_timer, .. } => {
-                        let font = ui_assets.lunchds_font.clone();
+                        let font = ui_assets.song_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui.spawn(TextBundle {
@@ -192,7 +192,7 @@ pub(super) fn update_phase_ui_system(
                     LevelPhaseType::Tutorial {
                         tutorial_lesson, ..
                     } => {
-                        let font = ui_assets.lunchds_font.clone();
+                        let font = ui_assets.song_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui

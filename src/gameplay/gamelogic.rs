@@ -1,20 +1,19 @@
-use crate::assets::game_assets::{AudioAssets, Fonts};
-use crate::components::health::HealthComponent;
+use crate::assets::game_assets::AppStates;
+use crate::assets::game_assets::Fonts;
+use crate::components::health::{DamageDealtEvent, HealthComponent};
 use crate::components::player::{PlayerComponent, PlayersResource};
-use crate::config::GameConfig;
+use crate::components::spawnable::{EffectType, TextEffectType};
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
+use crate::spawnable::SpawnEffectEvent;
 use crate::util::{Colour, Math, RenderLayer};
 use crate::AppSet;
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
-use bevy_kira_audio::prelude::Volume;
-use bevy_kira_audio::{Audio, AudioControl};
 use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
@@ -70,7 +69,7 @@ pub struct Damage {
     pub is_crit: bool,
 }
 
-#[derive(Event)]
+#[derive(Event)]//TODO:replace DamageDealtEvent
 pub struct TakeDamageEvent {
     pub entity: Entity,
     pub damage: Damage,
@@ -102,6 +101,7 @@ impl Default for WillTarget {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TakeDamageEvent>()
+        .add_event::<DamageDealtEvent>()
         .add_systems(OnEnter(AppStates::Game), setup_new_game);
     app.add_systems(OnExit(AppStates::Game), reset_game);
     app.add_systems(
@@ -206,58 +206,55 @@ pub fn take_damage_events(
     mut query: Query<(
         &Transform,
         &mut HealthComponent,
-        Option<&PlayerComponent>,
         Option<&mut HitFlash>,
     )>,
-    sound_assets: Res<AudioAssets>,
-    audio: Res<Audio>,
-    config: Res<GameConfig>,
+    mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
     for ev in take_damage_events.read() {
-        if let Ok((transform, mut health, is_player, hit_flash)) = query.get_mut(ev.entity) {
+        if let Ok((transform, mut health, hit_flash)) = query.get_mut(ev.entity) {
+            // take damage from health
             health.take_damage(ev.damage.amount);
-
-            //玩家受击时带有相机抖动效果
-            if is_player.is_some() {
-                //播放玩家被击中音效
-                audio
-                    .play(sound_assets.bullet_hit_1.clone())
-                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
-            } else {
-                //播放敌人被击中音效
-                audio
-                    .play(sound_assets.bullet_hit_2.clone())
-                    .with_volume(Volume::Amplitude(config.sfx_volume as f64));
-                // Floating Text
-                commands.spawn((
-                    FloatingText::default(),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            format!("{}", ev.damage.amount),
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
-                                color: if ev.damage.is_crit {
-                                    Colour::YELLOW
-                                } else {
-                                    Colour::WHITE
-                                },
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y + 10.0,
-                            RenderLayer::Effects.as_z(),
-                        ),
-                        ..default()
-                    },
-                ));
-            }
+            // spawn damage dealt text effect
+            spawn_effect_event_writer.send(SpawnEffectEvent {
+                effect_type: EffectType::Text(TextEffectType::DamageDealt),
+                transform: Transform {
+                    translation: transform.translation,
+                    scale: transform.scale,
+                    ..Default::default()
+                },
+                text: Some(ev.damage.amount.to_string()),
+                ..Default::default()
+            });
 
             if let Some(mut hit_flash) = hit_flash {
                 hit_flash.hit();
             }
+            //TODO:to value which floating text is better,use the better one and delete the other one
+            // Floating Text
+            commands.spawn((
+                FloatingText::default(),
+                Text2dBundle {
+                    text: Text::from_section(
+                        format!("{}", ev.damage.amount),
+                        TextStyle {
+                            font: fonts.primary.clone(),
+                            font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
+                            color: if ev.damage.is_crit {
+                                Colour::YELLOW
+                            } else {
+                                Colour::WHITE
+                            },
+                        },
+                    )
+                        .with_justify(JustifyText::Center),
+                    transform: Transform::from_xyz(
+                        transform.translation.x,
+                        transform.translation.y + 10.0,
+                        RenderLayer::Effects.as_z(),
+                    ),
+                    ..default()
+                },
+            ));
         }
     }
 }

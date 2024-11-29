@@ -1,5 +1,5 @@
+use crate::assets::game_assets::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::screens::AppStates;
 use crate::util::Colour;
 use crate::AppSet;
 use bevy::prelude::*;

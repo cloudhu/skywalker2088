@@ -1,6 +1,6 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameEnterSet;
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use bevy::{
     app::{Plugin, Update},
     ecs::schedule::IntoSystemConfigs,

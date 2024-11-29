@@ -1,9 +1,9 @@
 use super::EffectComponent;
 use crate::animation::AnimationComponent;
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::events::AnimationCompletedEvent;
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::{Assets, Handle};
 use bevy::color::Alpha;

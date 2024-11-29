@@ -1,7 +1,7 @@
+use crate::assets::game_assets::AppStates;
 use crate::components::health::Seeker;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::Physics;
-use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::prelude::*;
 use std::f32::consts::PI;

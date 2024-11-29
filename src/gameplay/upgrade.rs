@@ -1,7 +1,7 @@
+use crate::assets::game_assets::AppStates;
 use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
 use crate::gameplay::loot::{Cargo, Magnet};
-use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, EffectSize, FireRate, MultiShot, TurretBundle, TurretClass};
 use bevy::app::App;

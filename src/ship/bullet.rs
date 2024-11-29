@@ -1,9 +1,9 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::AudioAssets;
 use crate::components::health::*;
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
 use crate::gameplay::physics::Collider;
-use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_kira_audio::prelude::Volume;

@@ -9,6 +9,7 @@ use self::systems::{
     player_death_system, players_reset_system,
     upgrades::scale_ability_cooldowns_system,
 };
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::abilities::{
     AbilitiesResource, AbilityDescriptionsResource, ActivateAbilityEvent,
@@ -16,7 +17,6 @@ use crate::components::abilities::{
 use crate::components::input::PlayerAction;
 use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent, PlayersResource};
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoSystemConfigs,

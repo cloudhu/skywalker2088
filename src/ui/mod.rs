@@ -1,6 +1,7 @@
 //! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use crate::gameplay::GameStates;
-use crate::screens::AppStates;
+
+use crate::assets::game_assets::AppStates;
 use crate::stats::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 use bevy::{
     app::{App, Plugin, Update},
@@ -14,6 +15,7 @@ mod game_over;
 mod main_menu;
 mod pause_menu;
 mod player;
+pub mod splash;
 mod victory;
 
 use self::{
@@ -33,6 +35,7 @@ pub(super) struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ButtonActionEvent>();
+        app.add_plugins((splash::plugin,));
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);
         app.add_plugins(CharacterSelectionPlugin);

@@ -1,7 +1,7 @@
+use crate::assets::game_assets::AppStates;
 use crate::components::health::HealthComponent;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::physics::{Collider, Physics, Rotator};
-use crate::screens::AppStates;
 use crate::util;
 use crate::util::{Colour, RenderLayer};
 use bevy::prelude::*;

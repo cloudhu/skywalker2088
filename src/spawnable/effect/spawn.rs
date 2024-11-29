@@ -1,10 +1,10 @@
 use crate::animation::AnimationComponent;
 use crate::assets::effect::EffectAssets;
+use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::spawnable::{EffectType, SpawnableType, TextEffectType};
 use crate::gameplay::GameStates;
 use crate::options::GameOptions;
-use crate::screens::AppStates;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
 use bevy::color::Color;
@@ -112,7 +112,7 @@ fn spawn_text_effect(
             TextEffectType::ConsumableCollected(_) => text_effect_data.text.clone(),
         },
         TextStyle {
-            font: ui_assets.lunchds_font.clone(),
+            font: ui_assets.song_font.clone(),
             font_size: text_effect_data.font_size,
             color: Color::Srgba(text_effect_data.text_color),
         },

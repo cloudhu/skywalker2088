@@ -1,10 +1,10 @@
+use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::Fonts;
 use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
 use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
 use crate::gameplay::upgrade::PlayerUpgrades;
-use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{FireRate, TurretClass};
 use crate::theme::language::Localize;

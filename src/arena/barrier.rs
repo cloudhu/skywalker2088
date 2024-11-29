@@ -1,7 +1,7 @@
+use crate::assets::game_assets::AppStates;
 use crate::collision::{HORIZONTAL_BARRIER_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP};
 use crate::components::spawnable::EffectType;
 use crate::options::resources::GameParametersResource;
-use crate::screens::AppStates;
 use crate::spawnable::SpawnEffectEvent;
 use bevy::prelude::{
     Commands, Component, EventWriter, Name, Quat, Res, StateScoped, Transform, TransformBundle,
