@@ -3,8 +3,8 @@
 use self::screen_shake::{
     add_trauma_system, screen_shake_on_player_damage_system, screen_shake_system,
 };
-use crate::assets::game_assets::AppStates;
 use crate::components::events::ScreenShakeEvent;
+use crate::components::states::AppStates;
 use crate::options::resources::GameParametersResource;
 use crate::util::RenderLayer;
 use bevy::app::{App, Plugin, Startup, Update};

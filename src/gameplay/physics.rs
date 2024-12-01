@@ -1,4 +1,4 @@
-use crate::assets::game_assets::AppStates;
+use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::util::Math;
 use crate::AppSet;
@@ -75,7 +75,7 @@ pub fn physics_system(
         let drag = physics.drag;
         physics.velocity += current_acceleration;
         transform.translation += physics.velocity.extend(0.0) * time.delta_seconds();
-        // println!("Player translate at {:?}", transform.translation);
+        debug!("Player translate at {:?}", transform.translation);
         // TODO make acceleration ramp down
         physics.acceleration = Vec2::ZERO;
         physics.velocity *= 1.0 - (drag * time.delta_seconds());

@@ -1,5 +1,6 @@
 //! The title screen that appears when the game starts.
-use crate::assets::game_assets::{AppStates, Fonts, Music};
+use crate::assets::game_assets::Fonts;
+use crate::components::states::AppStates;
 use crate::config::GameConfig;
 use crate::theme::prelude::*;
 use bevy::prelude::*;

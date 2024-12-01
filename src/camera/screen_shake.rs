@@ -1,7 +1,6 @@
 //! Shake the screen when the player receives damage. There is some randomness in the initial
 //! jolt, with the camera eventually moving back to the original location (centered)
-use crate::components::events::ScreenShakeEvent;
-use crate::components::health::DamageDealtEvent;
+use crate::components::events::{ScreenShakeEvent, TakeDamageEvent};
 use crate::components::player::PlayerComponent;
 use bevy::{
     core_pipeline::{core_2d::Camera2d, core_3d::Camera3d},
@@ -84,12 +83,12 @@ fn get_random_shake(screen_shake: &ScreenShakeComponent) -> f32 {
 
 /// Trigger a screen shake whenever the player receives nonzero damage.
 pub(super) fn screen_shake_on_player_damage_system(
-    mut damage_dealt_events: EventReader<DamageDealtEvent>,
+    mut damage_dealt_events: EventReader<TakeDamageEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,
     mut screen_shake_event_writer: EventWriter<ScreenShakeEvent>,
 ) {
     for event in damage_dealt_events.read() {
-        if player_query.contains(event.target) && event.damage > 0 {
+        if player_query.contains(event.target) && event.damage.amount > 0 {
             screen_shake_event_writer.send(ScreenShakeEvent { trauma: 0.23 });
         }
     }

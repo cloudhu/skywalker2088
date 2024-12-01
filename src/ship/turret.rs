@@ -1,15 +1,14 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::{AudioAssets, Fonts};
-use crate::components::health::{HealthComponent, Owner, Seeker};
+use crate::components::events::TakeDamageEvent;
+use crate::components::game::ExplosionRender;
+use crate::components::health::{Damage, HealthComponent, Owner, Seeker};
+use crate::components::states::AppStates;
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{
-    game_not_paused, Damage, DespawnWithScene, ExplodesOnDespawn, TakeDamageEvent, Targettable,
-    WillTarget,
+    game_not_paused, DespawnWithScene, ExplodesOnDespawn, Targettable, WillTarget,
 };
 use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
-use crate::ship::bullet::{
-    AoeDamage, Bullet, DirectDamage, ExpandingCollider, ExplosionRender, LaserRender,
-};
+use crate::ship::bullet::{AoeDamage, Bullet, DirectDamage, ExpandingCollider, LaserRender};
 use crate::ship::engine::Engine;
 use crate::util::{Colour, Math, RenderLayer};
 use bevy::ecs::query::QueryEntityError;
@@ -434,7 +433,7 @@ pub fn fire_blast_laser(
 
             // Immediate hit
             take_damage_event.send(TakeDamageEvent {
-                entity: target,
+                target,
                 damage: damage.roll(),
             });
         }
@@ -526,7 +525,7 @@ fn spawn_link(
     ));
     // Immediate hit
     take_damage_event.send(TakeDamageEvent {
-        entity: target,
+        target,
         damage: damage.roll(),
     });
     Ok(target_position)
@@ -800,7 +799,7 @@ pub fn fire_pierce_laser(
                         <= a.3.radius + size.0
                 })
                 .map(|hit| TakeDamageEvent {
-                    entity: hit.0,
+                    target: hit.0,
                     damage: damage.roll(),
                 });
             take_damage_event.send_batch(events);

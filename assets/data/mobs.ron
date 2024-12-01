@@ -175,7 +175,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Boss,
 		health: 2400,
 		density: 3.8,
@@ -396,7 +396,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Boss,
 		health: 1800,
 		density: 3.5,
@@ -617,7 +617,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Boss,
 		health: 1200,
 		density: 2.7,
@@ -683,7 +683,7 @@
 				rotation: 0.0,
 			),
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 40,
 		animation: (
@@ -738,7 +738,7 @@
 				rotation: 0.0,
 			),
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 40,
 		animation: (
@@ -788,7 +788,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 30,
 		animation: (
@@ -829,7 +829,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 20,
 		animation: (
@@ -893,7 +893,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 50,
 		animation: (
@@ -1134,7 +1134,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 6.0,
+		z_level: 506.0,
 		health: 80,
 		animation: (
 			direction: None,
@@ -1179,7 +1179,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 6.0,
+		z_level: 506.0,
 		health: 80,
 		animation: (
 			direction: None,
@@ -1224,7 +1224,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 6.0,
+		z_level: 506.0,
 		health: 80,
 		animation: (
 			direction: None,
@@ -1275,7 +1275,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 50,
 		animation: (
@@ -1323,7 +1323,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		health: 15,
 		animation: (
 			direction: Forward,
@@ -1363,7 +1363,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 20,
 		animation: (
@@ -1426,7 +1426,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Standard,
 		health: 20,
 		animation: (
@@ -1478,7 +1478,7 @@
 		can_rotate: true,
 		speed: (0.0, 75.0),
 		collision_damage: 7,
-		z_level: 4.0,
+		z_level: 504.0,
 		consumable_drops: MoneyAsteroid,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
@@ -1512,7 +1512,7 @@
 				rotation: 0.0,
 			)
 		],
-		z_level: 5.0,
+		z_level: 705.0,
 		consumable_drops: Nothing,
 		health: 15,
 		animation: (

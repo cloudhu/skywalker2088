@@ -26,12 +26,6 @@ pub struct Seeker(pub Entity);
 #[derive(Reflect, Component)]
 pub struct Owner(pub Entity);
 
-#[derive(Event)]
-pub struct DamageDealtEvent {
-    pub damage: usize,
-    pub target: Entity,
-}
-
 #[derive(Component)]
 pub struct HealthComponent {
     /// Current health value
@@ -168,5 +162,20 @@ impl HealthComponent {
     }
     pub fn full_heal(&mut self) {
         self.health = self.max_health;
+    }
+}
+
+#[derive(Component, Copy, Clone)]
+pub struct Damage {
+    pub amount: usize,
+    pub is_crit: bool,
+}
+
+impl Damage {
+    pub fn from_amount(amount: usize) -> Self {
+        Self {
+            amount,
+            is_crit: false,
+        }
     }
 }

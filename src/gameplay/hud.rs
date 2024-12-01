@@ -1,7 +1,7 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::Fonts;
 use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
+use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
 use crate::gameplay::upgrade::PlayerUpgrades;

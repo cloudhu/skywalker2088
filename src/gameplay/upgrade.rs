@@ -1,6 +1,6 @@
-use crate::assets::game_assets::AppStates;
 use crate::components::health::HealthComponent;
 use crate::components::player::PlayerComponent;
+use crate::components::states::AppStates;
 use crate::gameplay::loot::{Cargo, Magnet};
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, EffectSize, FireRate, MultiShot, TurretBundle, TurretClass};

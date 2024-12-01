@@ -1,4 +1,4 @@
-use crate::gameplay::GameStates;
+use crate::components::states::GameStates;
 use crate::ui::BouncingPromptComponent;
 use bevy::prelude::StateScoped;
 use bevy::{

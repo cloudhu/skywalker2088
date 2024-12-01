@@ -6,7 +6,7 @@ use bevy::{
     render::texture::{ImageLoaderSettings, ImageSampler},
 };
 
-use crate::assets::game_assets::AppStates;
+use crate::components::states::AppStates;
 use crate::{theme::prelude::*, AppSet};
 
 pub(crate) fn plugin(app: &mut App) {

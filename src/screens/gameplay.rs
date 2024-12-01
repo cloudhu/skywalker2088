@@ -1,8 +1,8 @@
 //! The screen state for the main gameplay.
-use crate::assets::game_assets::{AppStates, Fonts};
+use crate::assets::game_assets::Fonts;
+use crate::components::states::*;
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
-use crate::gameplay::GameStates;
 use crate::theme::interaction::OnPress;
 use crate::theme::prelude::*;
 use bevy::input::common_conditions::input_just_pressed;

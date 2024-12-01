@@ -1,9 +1,9 @@
 use crate::components::player::PlayerComponent;
+use crate::components::states::{AppStates, GameStates};
 use crate::{
     gameplay::{
         gamelogic::{game_not_paused, PlayerLevel},
         loot::Cargo,
-        GameStates,
     },
     ship::engine::Engine,
     AppSet,
@@ -11,7 +11,6 @@ use crate::{
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::window::WindowMode;
-use crate::assets::game_assets::AppStates;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -52,7 +51,7 @@ pub fn player_control(
                 .cursor_position()
                 .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
                 .map(|ray| ray.origin.truncate());
-            // println!("Player controlled at {:?}", engine.target);
+            debug!("Player controlled at {:?}", engine.target);
         } else {
             engine.target = None;
         }

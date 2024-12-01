@@ -11,7 +11,7 @@ use bevy::{ecs::world::Command, prelude::*};
 /// Functions that accept only `&mut World` as their parameter implement [`Command`].
 /// We use this style when a command requires no configuration.
 pub fn spawn_level(world: &mut World) {
-    println!("spawning level");
+    debug!("spawning level");
     // The only thing we have in our level is a player,
     // but add things like walls etc. here.
     SpawnPlayer::default().apply(world);

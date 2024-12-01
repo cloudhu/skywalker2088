@@ -1,5 +1,5 @@
-use crate::assets::game_assets::AppStates;
 use crate::components::health::HealthComponent;
+use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::physics::{Collider, Physics, Rotator};
 use crate::util;

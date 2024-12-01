@@ -7,6 +7,7 @@ use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
 use std::f32::consts::PI;
+use tracing::debug;
 
 /// Move player by modifying velocity with input
 pub(in crate::player) fn player_movement_system(
@@ -29,7 +30,7 @@ pub(in crate::player) fn player_movement_system(
         // convert to axis multipliers
         let x_axis = -(left as i8) + right as i8;
         let y_axis = -(down as i8) + up as i8;
-
+        debug!("x_axis: {:?}, y_axis: {:?}", x_axis, y_axis);
         // handle movement in x direction
         if x_axis != 0 {
             // accelerate to the player's maximum speed stat

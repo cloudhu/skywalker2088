@@ -18,7 +18,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (play_sound_effect_system, change_bg_music_system)
-            .run_if(resource_added::<GameAudioAssets>),
+            .run_if(resource_exists::<GameAudioAssets>),
     );
 }
 
@@ -81,7 +81,7 @@ fn change_bg_music_system(
                 stop_command.fade_out(AudioTween::new(fade_out, AudioEasing::Linear));
             }
         }
-
+        // info!("play_sound_effect_system: change_bg_music_event");
         // play music if provided a type
         if let Some(bg_music_type) = event.bg_music_type.clone() {
             let mut start_command =

@@ -1,12 +1,12 @@
 //! Exposes a plugin with systems determining how spawnables (e.x. consumables, items, mobs,
 //! players, etc.) behave.
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::spawnable::{
     ConsumableType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobType, ProjectileType,
     SpawnMobEvent, SpawnableType,
 };
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
 use crate::spawnable::effect::EffectPlugin;
 use bevy::app::{App, Plugin, Update};
 use bevy::hierarchy::DespawnRecursiveExt;

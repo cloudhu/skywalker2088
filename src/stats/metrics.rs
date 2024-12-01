@@ -1,7 +1,7 @@
-use crate::assets::game_assets::AppStates;
 use crate::collision::SortedCollisionEvent;
 use crate::components::player::PlayerIDComponent;
 use crate::components::spawnable::{MobDestroyedEvent, MobType};
+use crate::components::states::AppStates;
 use crate::spawnable::FireWeaponEvent;
 use crate::stats::historical_metrics::{
     MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
@@ -181,7 +181,6 @@ fn roll_current_game_counters_into_completed_game_metrics(
 mod test {
     use std::f32::consts::{FRAC_PI_2, PI};
 
-    use crate::assets::game_assets::AppStates;
     use crate::collision::SortedCollisionEvent;
     use crate::components::audio::SoundEffectType;
     use crate::components::character::{Character, CharacterType};
@@ -189,8 +188,9 @@ mod test {
     use crate::components::spawnable::{
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
+    use crate::components::states::AppStates;
+    use crate::components::states::GameStates;
     use crate::components::weapon::{ArcPatternData, SpreadPattern, WeaponProjectileData};
-    use crate::gameplay::GameStates;
     use crate::player::{CharactersResource, PlayerPlugin};
     use crate::spawnable::FireWeaponEvent;
     use crate::stats::historical_metrics::{

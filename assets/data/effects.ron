@@ -2,7 +2,7 @@
 	AllyBlastExplosion: (
 		effect_type: AllyBlastExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -17,7 +17,7 @@
 	EnemyBlastExplosion: (
 		effect_type: EnemyBlastExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 10.5,
+		z_level: 909.5,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -32,7 +32,7 @@
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -47,7 +47,7 @@
 	EnemyBlastDespawn: (
 		effect_type: EnemyBlastDespawn,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -62,7 +62,7 @@
 	MobExplosion: (
 		effect_type: MobExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: -5.0,
+		z_level: 904.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -77,7 +77,7 @@
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.05,
@@ -92,7 +92,7 @@
 	BarrierGlow: (
 		effect_type: BarrierGlow,
 		effect_behaviors_data: [],
-		z_level: 25.0,
+		z_level: 925.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.2,
@@ -107,7 +107,7 @@
 	AllyBulletDespawn: (
 		effect_type: AllyBulletDespawn,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -122,7 +122,7 @@
 	EnemyBulletDespawn: (
 		effect_type: EnemyBulletDespawn,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -137,7 +137,7 @@
 	AllyBulletExplosion: (
 		effect_type: AllyBulletExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -152,7 +152,7 @@
 	EnemyBulletExplosion: (
 		effect_type: EnemyBulletExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
-		z_level: 9.0,
+		z_level: 909.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -167,7 +167,7 @@
 	Text(DamageDealt): (
 		effect_type: Text(DamageDealt),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,
@@ -182,7 +182,7 @@
 	Text(ConsumableCollected(Money1)): (
 		effect_type: Text(ConsumableCollected(Money1)),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,
@@ -197,7 +197,7 @@
 	Text(ConsumableCollected(Money3)): (
 		effect_type: Text(ConsumableCollected(Money3)),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,
@@ -212,7 +212,7 @@
 	Text(ConsumableCollected(HealthWrench)): (
 		effect_type: Text(ConsumableCollected(HealthWrench)),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,
@@ -227,7 +227,7 @@
 	Text(ConsumableCollected(Armor)): (
 		effect_type: Text(ConsumableCollected(Armor)),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,
@@ -242,7 +242,7 @@
 	Text(ConsumableCollected(GainProjectiles)): (
 		effect_type: Text(ConsumableCollected(GainProjectiles)),
 		effect_behaviors_data: [FadeOut(0.55)],
-		z_level: 10.0,
+		z_level: 909.0,
 		animation: (
 			direction: None,
 			frame_duration: 0.1,

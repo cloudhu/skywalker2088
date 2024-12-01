@@ -1,8 +1,10 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::AudioAssets;
+use crate::components::events::TakeDamageEvent;
+use crate::components::game::{ExplosionRender, ShouldDespawn};
 use crate::components::health::*;
+use crate::components::states::AppStates;
 use crate::config::GameConfig;
-use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
+use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::Collider;
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
@@ -10,17 +12,6 @@ use bevy_kira_audio::prelude::Volume;
 use bevy_kira_audio::{Audio, AudioControl};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, Path, Stroke};
 use bevy_prototype_lyon::shapes;
-
-#[derive(Component)]
-pub struct ExplosionRender {
-    pub origin: Vec2,
-    pub radius: f32,
-    pub ttl: Timer,
-    pub fade_out: bool,
-}
-
-#[derive(Component)]
-pub struct ShouldDespawn;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -163,7 +154,7 @@ pub fn bullet_collision_system(
                 *number_of_times_hit += 1;
 
                 take_damage_event.send(TakeDamageEvent {
-                    entity: *potential_entity,
+                    target: *potential_entity,
                     damage: direct_damage.0,
                 });
             }
@@ -206,7 +197,7 @@ fn do_aoe_damage(
         *number_of_times_hit += 1;
 
         take_damage_event.send(TakeDamageEvent {
-            entity: h.2,
+            target: h.2,
             damage: aoe_damage.damage,
         });
     }

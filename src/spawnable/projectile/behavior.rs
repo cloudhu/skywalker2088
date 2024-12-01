@@ -1,6 +1,7 @@
 use super::ProjectileComponent;
 use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
-use crate::components::health::DamageDealtEvent;
+use crate::components::events::TakeDamageEvent;
+use crate::components::health::Damage;
 use crate::components::player::PlayerComponent;
 use crate::components::spawnable::{EffectType, Faction, ProjectileType};
 use crate::{
@@ -38,7 +39,7 @@ pub fn projectile_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
+    mut damage_dealt_event_writer: EventWriter<TakeDamageEvent>,
 ) {
     // Put all collision events in a vec so they can be read more than once
     let collision_events_vec: Vec<_> = collision_events.read().collect();
@@ -156,7 +157,7 @@ fn deal_damage_on_contact(
     mob_query: &Query<(Entity, &MobComponent)>,
     mob_segment_query: &Query<(Entity, &MobSegmentComponent)>,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
+    damage_dealt_event_writer: &mut EventWriter<TakeDamageEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -174,8 +175,8 @@ fn deal_damage_on_contact(
                         sound_effect_type: SoundEffectType::PlayerHit,
                     });
                     if player_query.contains(*player_entity) && *projectile_damage > 0 {
-                        damage_dealt_event_writer.send(DamageDealtEvent {
-                            damage: *projectile_damage,
+                        damage_dealt_event_writer.send(TakeDamageEvent {
+                            damage: Damage::from_amount(*projectile_damage),
                             target: *player_entity,
                         });
                     }
@@ -201,8 +202,8 @@ fn deal_damage_on_contact(
                         sound_effect_type: SoundEffectType::BulletDing,
                     });
                     if mob_query.contains(*mob_entity) && *projectile_damage > 0 {
-                        damage_dealt_event_writer.send(DamageDealtEvent {
-                            damage: *projectile_damage,
+                        damage_dealt_event_writer.send(TakeDamageEvent {
+                            damage: Damage::from_amount(*projectile_damage),
                             target: *mob_entity,
                         });
                     }
@@ -227,8 +228,8 @@ fn deal_damage_on_contact(
                         sound_effect_type: SoundEffectType::BulletDing,
                     });
                     if mob_segment_query.contains(*mob_segment_entity) && *projectile_damage > 0 {
-                        damage_dealt_event_writer.send(DamageDealtEvent {
-                            damage: *projectile_damage,
+                        damage_dealt_event_writer.send(TakeDamageEvent {
+                            damage: Damage::from_amount(*projectile_damage),
                             target: *mob_segment_entity,
                         });
                     }
@@ -247,7 +248,7 @@ fn deal_damage_on_intersection(
     mob_query: &Query<(Entity, &MobComponent)>,
     mob_segment_query: &Query<(Entity, &MobSegmentComponent)>,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
+    damage_dealt_event_writer: &mut EventWriter<TakeDamageEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -263,8 +264,8 @@ fn deal_damage_on_intersection(
                     && *projectile_damage > 0
                 {
                     // deal damage to player
-                    damage_dealt_event_writer.send(DamageDealtEvent {
-                        damage: *projectile_damage,
+                    damage_dealt_event_writer.send(TakeDamageEvent {
+                        damage: Damage::from_amount(*projectile_damage),
                         target: *player_entity,
                     });
                     sound_effect_event_writer.send(PlaySoundEffectEvent {
@@ -287,8 +288,8 @@ fn deal_damage_on_intersection(
                     && *projectile_damage > 0
                 {
                     // deal damage to mob
-                    damage_dealt_event_writer.send(DamageDealtEvent {
-                        damage: *projectile_damage,
+                    damage_dealt_event_writer.send(TakeDamageEvent {
+                        damage: Damage::from_amount(*projectile_damage),
                         target: *mob_entity,
                     });
                 }
@@ -306,8 +307,8 @@ fn deal_damage_on_intersection(
                     && *projectile_damage > 0
                 {
                     // deal damage to mob
-                    damage_dealt_event_writer.send(DamageDealtEvent {
-                        damage: *projectile_damage,
+                    damage_dealt_event_writer.send(TakeDamageEvent {
+                        damage: Damage::from_amount(*projectile_damage),
                         target: *mob_segment_entity,
                     });
                 }

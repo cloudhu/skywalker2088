@@ -1,9 +1,9 @@
 use crate::animation::AnimationComponent;
 use crate::assets::effect::EffectAssets;
-use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::spawnable::{EffectType, SpawnableType, TextEffectType};
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
 use crate::options::GameOptions;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};

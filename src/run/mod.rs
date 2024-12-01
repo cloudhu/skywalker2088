@@ -12,7 +12,6 @@ use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType};
 use crate::components::events::{
@@ -22,10 +21,15 @@ use crate::components::input::PlayerAction;
 use crate::components::objectives::{DefenseInteraction, Objective};
 use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent};
 use crate::components::spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent};
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
+use crate::run::gameplay::{
+    close_pause_menu_system, open_pause_menu_system, start_mainmenu_system,
+};
 use crate::spawnable::BossesDestroyedEvent;
 
 mod formation;
+mod gameplay;
 mod level;
 pub(crate) mod level_phase;
 pub(crate) mod tutorial;
@@ -81,6 +85,34 @@ impl Plugin for RunPlugin {
                 .run_if(in_state(GameStates::Playing)),
         );
 
+        app.add_systems(
+            Update,
+            close_pause_menu_system.run_if(in_state(GameStates::Paused)),
+        );
+
+        app.add_systems(
+            Update,
+            open_pause_menu_system
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
+        );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system.run_if(in_state(AppStates::Victory)),
+        );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system.run_if(in_state(AppStates::GameOver)),
+        );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Paused)),
+        );
         // reset the run after exiting the end game screens and when entering the main menu
         app.add_systems(OnExit(AppStates::GameOver), run_reset_system);
         app.add_systems(OnExit(AppStates::Victory), run_reset_system);
@@ -97,7 +129,7 @@ pub(super) struct PremadeRunsResource {
 /// state required to transition to new sections of the level.
 #[derive(Resource, Debug)]
 pub struct CurrentRunProgressResource {
-    /// List of string level keys that are matched to values in the levelsresource
+    /// List of string level keys that are matched to values in the levels resource
     pub queued_levels: VecDeque<Level>,
     pub completed_levels: VecDeque<Level>,
     /// Tracks the level currently being played
@@ -144,10 +176,12 @@ impl CurrentRunProgressResource {
             self.current_level = None;
         }
 
-        // pop the next level (if it exists) into the the current level
+        // pop the next level (if it exists) into the current level
         self.current_level = self.queued_levels.pop_front();
-
-        info!("Level cycled");
+        info!(
+            "Level cycled,current level is {:?}",
+            self.current_level.as_ref().unwrap().name.clone()
+        );
     }
 
     fn init_current_level(
@@ -353,7 +387,6 @@ fn run_reset_system(
 
 #[cfg(test)]
 mod test {
-    use crate::assets::game_assets::AppStates;
     use crate::components::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use crate::components::events::MobReachedBottomGateEvent;
     use crate::components::objectives::DefenseInteraction;
@@ -361,7 +394,8 @@ mod test {
     use crate::components::spawnable::{
         MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent,
     };
-    use crate::gameplay::GameStates;
+    use crate::components::states::AppStates;
+    use crate::components::states::GameStates;
     use crate::run::{RunPlugin, SpawnFormationEvent};
     use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent};
     use bevy::app::App;

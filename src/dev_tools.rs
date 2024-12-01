@@ -1,7 +1,7 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
-use crate::assets::game_assets::AppStates;
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
 use bevy::{
     dev_tools::{
         states::log_transitions,

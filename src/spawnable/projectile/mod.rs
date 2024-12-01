@@ -1,4 +1,3 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::projectile::ProjectileAssets;
 use crate::collision::{
     ALLY_PROJECTILE_COLLIDER_GROUP, ENEMY_PROJECTILE_COLLIDER_GROUP,
@@ -6,9 +5,11 @@ use crate::collision::{
 };
 use crate::components::audio::PlaySoundEffectEvent;
 use crate::components::spawnable::{Faction, ProjectileType, SpawnPosition, SpawnableType};
+use crate::components::states::AppStates;
 use crate::components::weapon::WeaponProjectileData;
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
+use crate::util::RenderLayer;
 use crate::weapon::WeaponProjectileInitialVelocitiesExt;
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -158,7 +159,7 @@ pub fn spawn_projectile_from_weapon(
             SpawnPosition::Global(pos) => pos,
             SpawnPosition::Local(pos) => {
                 // Apply the rotation to the local position
-                let rotated_pos = source_transform.rotation * pos.extend(0.0);
+                let rotated_pos = source_transform.rotation * pos.extend(0.);
                 // Convert back to Vec2 and add to the source translation
                 source_transform.translation.xy() + rotated_pos.xy()
             }

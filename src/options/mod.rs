@@ -14,8 +14,8 @@ mod input;
 pub mod resources;
 
 use self::display::set_window_icon;
-use crate::assets::game_assets::AppStates;
 use crate::components::input::{InputsResource, MenuAction};
+use crate::components::states::AppStates;
 use crate::options::resources::GameParametersResource;
 use input::get_input_bindings;
 use ron::de::from_bytes;

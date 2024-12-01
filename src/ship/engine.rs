@@ -1,5 +1,5 @@
-use crate::assets::game_assets::AppStates;
 use crate::components::health::Seeker;
+use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::Physics;
 use crate::AppSet;
@@ -103,7 +103,7 @@ pub fn engine_system(
             }
             let clamped_steer = desired_steer.clamp(-max_steer_this_step, max_steer_this_step);
             let to_target = Vec2::from_angle(clamped_steer).rotate(to_target);
-            // println!("to target: {:?}", to_target);
+            debug!("to target: {:?}", to_target);
             physics.add_force(to_target.normalize() * engine.speed);
         } else {
             engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;

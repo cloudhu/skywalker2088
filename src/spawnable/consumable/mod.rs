@@ -1,9 +1,9 @@
 use crate::animation::{AnimationComponent, AnimationData};
 use crate::assets::consumable::ConsumableAssets;
-use crate::assets::game_assets::AppStates;
 use crate::components::spawnable::{
     AttractToClosestPlayerComponent, ConsumableType, SpawnableType,
 };
+use crate::components::states::AppStates;
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
 use crate::spawnable::{SpawnableBehavior, SpawnableComponent};

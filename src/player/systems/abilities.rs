@@ -48,8 +48,8 @@ pub(in crate::player) fn player_ability_input_system(
             if let Ok((mut ability_cooldown, ability_id)) = ability_query.get_mut(*child) {
                 match ability_id {
                     AbilitySlotIDComponent::One => {
-                        if action_state.pressed(&PlayerAction::SlotOneAbility)
-                            && ability_cooldown.cooldown_timer.finished()
+                        if ability_cooldown.cooldown_timer.finished()
+                        // && action_state.pressed(&PlayerAction::SlotOneAbility)//TODO:more abilities
                         {
                             ability_cooldown.cooldown_timer = Timer::from_seconds(
                                 ability_cooldown.base_cooldown_time
@@ -61,8 +61,8 @@ pub(in crate::player) fn player_ability_input_system(
                         }
                     }
                     AbilitySlotIDComponent::Two => {
-                        if action_state.pressed(&PlayerAction::SlotTwoAbility)
-                            && ability_cooldown.cooldown_timer.finished()
+                        if ability_cooldown.cooldown_timer.finished()
+                        // && action_state.pressed(&PlayerAction::SlotTwoAbility)
                         {
                             ability_cooldown.cooldown_timer = Timer::from_seconds(
                                 ability_cooldown.base_cooldown_time
@@ -79,7 +79,7 @@ pub(in crate::player) fn player_ability_input_system(
     }
 }
 
-/// Activates a standard waeapon ability (abilities with `StandardWeaponAbilityComponent`)
+/// Activates a standard weapon ability (abilities with `StandardWeaponAbilityComponent`)
 /// for a player for corresponding ActivateAbilityEvents.
 /// Combines the stats in the player's `PlayerOutgoingDamageComponent` of the player with
 /// the stats in `StandardWeaponAbilityComponent`.

@@ -3,7 +3,6 @@
 use super::button::{
     ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
 };
-use crate::assets::game_assets::AppStates;
 use crate::assets::player_assets::PlayerAssets;
 use crate::assets::ui::UiAssets;
 use crate::components::abilities::AbilityDescriptionsResource;
@@ -11,6 +10,7 @@ use crate::components::character::{Character, CharacterStatType, CharacterType};
 use crate::components::events::PlayerJoinEvent;
 use crate::components::input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer};
 use crate::components::player::{PlayerData, PlayerInput, PlayersResource};
+use crate::components::states::AppStates;
 use crate::options::resources::GameParametersResource;
 use crate::player::CharactersResource;
 use bevy::prelude::StateScoped;

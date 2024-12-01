@@ -1,4 +1,3 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::player_assets::PlayerAssets;
 use crate::components::abilities::{
     AbilitiesResource, ChargeAbilityBundle, SlotOneAbilityType, SlotTwoAbilityType,
@@ -7,11 +6,12 @@ use crate::components::abilities::{
 use crate::components::health::{HealthComponent, ShipBundle};
 use crate::components::input::{InputsResource, PlayerAction};
 use crate::components::player::{PlayerBundle, PlayerIDComponent, PlayerInput};
+use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::{Allegiance, Targettable, WillTarget};
 use crate::gameplay::loot::{Cargo, Magnet};
 use crate::gameplay::physics::{BaseGlyphRotation, Physics};
 use crate::options::resources::GameParametersResource;
-use crate::player::PlayersResource;
+use crate::player::{CharactersResource, PlayersResource};
 use crate::ship::engine::Engine;
 use crate::util::RenderLayer;
 use bevy::color::Color;
@@ -130,7 +130,7 @@ impl Command for SpawnPlayer {
 fn spawn_player(
     In(config): In<SpawnPlayer>,
     mut commands: Commands,
-    characters: Res<crate::components::character::CharactersResource>,
+    characters: Res<CharactersResource>,
     game_parameters: Res<GameParametersResource>,
     player_assets: Res<PlayerAssets>,
     players_resource: Res<PlayersResource>,
@@ -139,7 +139,7 @@ fn spawn_player(
 ) {
     // check if more than one player is playing
     let is_multiplayer = players_resource.player_data.get(1).is_some();
-    println!(
+    debug!(
         "spawning player is_multiplayer:{},player_data:{}",
         is_multiplayer,
         players_resource.player_data.get(0).is_some()
@@ -159,7 +159,7 @@ fn spawn_player(
                 character.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
             let collider_size_hy =
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-            println!("spawning Player:{}", &character.name);
+            debug!("spawning Player:{}", &character.name);
             // create player component from character
             let player_bundle = PlayerBundle::from(character).with_id(player_id);
 
@@ -200,8 +200,8 @@ fn spawn_player(
                         }
                     },
                     scale: Vec3::new(
-                        game_parameters.sprite_scale * 8.0,
-                        game_parameters.sprite_scale * 8.0,
+                        game_parameters.sprite_scale,
+                        game_parameters.sprite_scale,
                         1.0,
                     ),
                     ..Default::default()
@@ -233,17 +233,17 @@ fn spawn_player(
                     parent.spawn_slot_1_ability(&abilities_res, &character.slot_1_ability);
                     parent.spawn_slot_2_ability(&abilities_res, &character.slot_2_ability);
                 })
-                .insert(ShipBundle {
-                    physics: Physics::new(config.drag),
-                    engine: Engine::new_with_steering(
-                        config.power,
-                        config.max_speed,
-                        config.steering_factor,
-                    ),
-                    targettable: Targettable(Allegiance::Friend),
-                    will_target: WillTarget(vec![Allegiance::Enemy]),
-                    ..default()
-                })
+                // .insert(ShipBundle {
+                //     physics: Physics::new(config.drag),
+                //     engine: Engine::new_with_steering(
+                //         config.power,
+                //         config.max_speed,
+                //         config.steering_factor,
+                //     ),
+                //     targettable: Targettable(Allegiance::Friend),
+                //     will_target: WillTarget(vec![Allegiance::Enemy]),
+                //     ..default()
+                // })
                 .insert(BaseGlyphRotation {
                     rotation: Quat::from_rotation_z(PI / 2.0),
                 })

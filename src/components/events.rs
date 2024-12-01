@@ -1,3 +1,4 @@
+use crate::components::health::Damage;
 use crate::components::objectives::DefenseInteraction;
 use crate::components::player::PlayerInput;
 use crate::components::spawnable::{MobSegmentType, MobType};
@@ -46,4 +47,10 @@ pub struct AnimationCompletedEvent(pub Entity);
 pub struct PlayerJoinEvent {
     pub player_idx: u8,
     pub input: PlayerInput,
+}
+
+#[derive(Event)]
+pub struct TakeDamageEvent {
+    pub target: Entity,
+    pub damage: Damage,
 }

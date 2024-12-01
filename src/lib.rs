@@ -28,6 +28,7 @@ pub mod weapon;
 use crate::animation::SpriteAnimationPlugin;
 use crate::arena::ArenaPlugin;
 use crate::camera::CameraPlugin;
+use crate::components::states::{AppStates, GameStates};
 use crate::loot::LootPlugin;
 use crate::options::display::DisplayConfig;
 use crate::options::generate_config_files;
@@ -125,18 +126,23 @@ impl Plugin for AppPlugin {
             assets::plugin,
             stats::plugin,
             // screens::plugin,//TODO:Merge with ui(UiPlugin)
-            theme::plugin,
+            // theme::plugin,
             gameplay::plugin,
-            ship::plugin,
-            enemy::plugin,
+            // ship::plugin,
+            // enemy::plugin,
             audio::plugin,
         ));
-
+        app.init_state::<GameStates>();
+        app.enable_state_scoped_entities::<GameStates>();
+        app.init_state::<AppStates>();
+        app.enable_state_scoped_entities::<AppStates>();
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
         app.add_plugins(dev_tools::plugin);
-        #[cfg(feature = "dev")]
-        app.add_plugins(RapierDebugRenderPlugin::default());
+
+        if cfg!(debug_assertions) && !cfg!(test) {
+            app.add_plugins(RapierDebugRenderPlugin::default());
+        }
     }
 }
 

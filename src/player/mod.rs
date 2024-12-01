@@ -9,14 +9,17 @@ use self::systems::{
     player_death_system, players_reset_system,
     upgrades::scale_ability_cooldowns_system,
 };
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameUpdateSet;
 use crate::components::abilities::{
     AbilitiesResource, AbilityDescriptionsResource, ActivateAbilityEvent,
 };
 use crate::components::input::PlayerAction;
 use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent, PlayersResource};
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
+use crate::player::spawn::SpawnPlayer;
+use bevy::ecs::world::Command;
+use bevy::prelude::{Commands, World};
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoSystemConfigs,
@@ -27,6 +30,7 @@ use bevy::{
 };
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
+use tracing::debug;
 
 mod resources;
 pub mod spawn;
@@ -45,7 +49,7 @@ impl Plugin for PlayerPlugin {
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
                 .unwrap(),
         );
-
+        debug!("PlayerPlugin build");
         app.insert_resource(
             from_bytes::<AbilitiesResource>(include_bytes!("../../assets/data/abilities.ron"))
                 .unwrap(),
@@ -60,7 +64,7 @@ impl Plugin for PlayerPlugin {
 
         app.insert_resource(PlayersResource::default())
             .insert_resource(InputRestrictionsAtSpawn::default());
-
+        app.add_systems(OnEnter(AppStates::Game), setup_new_game);
         app.add_systems(
             Update,
             (
@@ -83,4 +87,18 @@ impl Plugin for PlayerPlugin {
         app.add_systems(OnExit(AppStates::Victory), players_reset_system);
         app.add_systems(OnEnter(AppStates::MainMenu), players_reset_system);
     }
+}
+
+fn setup_new_game(mut commands: Commands) {
+    commands.add(spawn_level);
+}
+
+/// A [`Command`] to spawn the level.
+/// Functions that accept only `&mut World` as their parameter implement [`Command`].
+/// We use this style when a command requires no configuration.
+pub fn spawn_level(world: &mut World) {
+    debug!("spawning level");
+    // The only thing we have in our level is a player,
+    // but add things like walls etc. here.
+    SpawnPlayer::default().apply(world);
 }

@@ -82,6 +82,8 @@ ______
 - Rust格式化： `cargo fmt`
 - clippy提交检查：`cargo clippy --locked --workspace --all-targets --all-features -- --deny warnings`
 - 本地开发运行：`cargo run`
+- Powershell打开调试日志：`$env:RUST_LOG="debug"`
+- Powershell打开追踪日志：`$env:RUST_BACKTRACE=1; cargo run`
 
 # 4. 发布
 [Itch.io](https://cloudhu.itch.io/skywalker2088)

@@ -1,6 +1,6 @@
+use crate::components::states::GameStates;
 use crate::gameplay::gamelogic::PlayerLevel;
 use crate::gameplay::upgrade::{PlayerUpgrades, UpgradeEvent};
-use crate::gameplay::GameStates;
 use crate::ship::turret::TurretClass;
 use crate::theme::language::Localize;
 use crate::util::Colour;
@@ -171,7 +171,7 @@ fn button(
         UpgradeEvent::Passive(_) => Colour::SHIELD,
         UpgradeEvent::Heal => Colour::GREEN,
     };
-    // println!("{}",format!("{}", upgrade));
+    debug!("{}", format!("{}", upgrade));
     parent
         .spawn((
             ButtonBundle {

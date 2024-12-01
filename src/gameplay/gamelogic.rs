@@ -1,13 +1,13 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::Fonts;
-use crate::components::health::{DamageDealtEvent, HealthComponent};
+use crate::components::events::TakeDamageEvent;
+use crate::components::game::{ExplosionRender, ShouldDespawn};
+use crate::components::health::HealthComponent;
 use crate::components::player::{PlayerComponent, PlayersResource};
 use crate::components::spawnable::{EffectType, TextEffectType};
+use crate::components::states::*;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
-use crate::gameplay::GameStates;
-use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
 use crate::spawnable::SpawnEffectEvent;
 use crate::util::{Colour, Math, RenderLayer};
 use crate::AppSet;
@@ -63,18 +63,6 @@ impl PlayerLevel {
     }
 }
 
-#[derive(Component, Copy, Clone)]
-pub struct Damage {
-    pub amount: usize,
-    pub is_crit: bool,
-}
-
-#[derive(Event)]//TODO:replace DamageDealtEvent
-pub struct TakeDamageEvent {
-    pub entity: Entity,
-    pub damage: Damage,
-}
-
 #[derive(PartialEq)]
 pub enum Allegiance {
     Friend,
@@ -101,17 +89,16 @@ impl Default for WillTarget {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TakeDamageEvent>()
-        .add_event::<DamageDealtEvent>()
         .add_systems(OnEnter(AppStates::Game), setup_new_game);
     app.add_systems(OnExit(AppStates::Game), reset_game);
     app.add_systems(
         Update,
         (
-            game_time_system,
+            // game_time_system,
             camera_follow.before(ParallaxSystems),
-            combat_system,
+            shield_recharge_system,
             take_damage_events,
-            death_system,
+            drop_loot_system,
         )
             .chain()
             .in_set(AppSet::TickTimers)
@@ -180,14 +167,12 @@ pub fn camera_follow(
     }
 }
 
-pub fn combat_system(
-    mut commands: Commands,
+pub fn shield_recharge_system(
     time: Res<Time>,
-    mut query: Query<(&mut HealthComponent, Entity), Without<ShouldDespawn>>,
+    mut query: Query<(&mut HealthComponent, Entity), With<PlayerComponent>>,
 ) {
     for (mut health, entity) in &mut query {
         if health.get_health() <= 0 {
-            commands.entity(entity).insert(ShouldDespawn);
             continue;
         }
 
@@ -203,15 +188,11 @@ pub fn take_damage_events(
     mut commands: Commands,
     fonts: Res<Fonts>,
     mut take_damage_events: EventReader<TakeDamageEvent>,
-    mut query: Query<(
-        &Transform,
-        &mut HealthComponent,
-        Option<&mut HitFlash>,
-    )>,
+    mut query: Query<(&Transform, &mut HealthComponent, Option<&mut HitFlash>)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
     for ev in take_damage_events.read() {
-        if let Ok((transform, mut health, hit_flash)) = query.get_mut(ev.entity) {
+        if let Ok((transform, mut health, hit_flash)) = query.get_mut(ev.target) {
             // take damage from health
             health.take_damage(ev.damage.amount);
             // spawn damage dealt text effect
@@ -246,7 +227,7 @@ pub fn take_damage_events(
                             },
                         },
                     )
-                        .with_justify(JustifyText::Center),
+                    .with_justify(JustifyText::Center),
                     transform: Transform::from_xyz(
                         transform.translation.x,
                         transform.translation.y + 10.0,
@@ -259,24 +240,21 @@ pub fn take_damage_events(
     }
 }
 
-pub fn death_system(
+pub fn drop_loot_system(
     mut commands: Commands,
     fonts: Res<Fonts>,
     mut query: Query<
         (
-            Entity,
-            Option<&DropsLoot>,
             Option<&Transform>,
             Option<&ExplodesOnDespawn>,
             Option<&WorthPoints>,
+            Option<&DropsLoot>
         ),
-        With<ShouldDespawn>,
+        With<HealthComponent>,
     >,
     mut points: ResMut<Points>,
 ) {
-    for (entity, drops_loot, transform, explodes, worth_points) in &mut query {
-        commands.entity(entity).despawn_recursive();
-
+    for (transform, explodes, worth_points,drops_loot) in &mut query {
         if let Some(transform) = transform {
             if let Some(_drops_loot) = drops_loot {
                 spawn_loot(&mut commands, &fonts, transform.translation);

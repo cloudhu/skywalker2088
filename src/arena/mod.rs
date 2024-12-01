@@ -1,11 +1,11 @@
 //! Exposes a plugin that renders a rectangular boundary that the player cannot cross, but mobs
 //! can. Also handles sending events when mobs reach the botton of the screen.
 
-use crate::assets::game_assets::AppStates;
 use crate::assets::game_assets::GameEnterSet;
 use crate::components::events::MobReachedBottomGateEvent;
-use crate::gameplay::GameStates;
-use barrier::spawn_barriers_system;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
+// use barrier::spawn_barriers_system;
 use bevy::{
     app::{App, Plugin, Update},
     prelude::{in_state, IntoSystemConfigs, OnEnter},
@@ -28,7 +28,7 @@ impl Plugin for ArenaPlugin {
 
         app.add_systems(
             OnEnter(AppStates::Game),
-            (spawn_barriers_system, spawn_despawn_gates_system).in_set(GameEnterSet::BuildLevel),
+            spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel), //TODO: spawn_barriers_system
         );
 
         app.add_systems(

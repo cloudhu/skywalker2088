@@ -8,7 +8,7 @@
         acceleration: (8.0, 8.0),
         deceleration: (5.0, 5.0),
         speed: (0.0, 120.0),
-        z_level: 15.0,
+        z_level: 915.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
@@ -33,7 +33,7 @@
         acceleration: (8.0, 8.0),
         deceleration: (5.0, 5.0),
         speed: (0.0, 120.0),
-        z_level: 15.0,
+        z_level: 915.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
@@ -58,7 +58,7 @@
         acceleration: (8.0, 8.0),
         deceleration: (5.0, 5.0),
         speed: (0.0, 120.0),
-        z_level: 15.0,
+        z_level: 915.0,
         initial_motion: (
             random_linvel: Some(((-120, 50), (120, 120))),
             random_angvel: Some((-5.0, 5.0)),
@@ -83,7 +83,7 @@
         acceleration: (8.0, 8.0),
         deceleration: (5.0, 5.0),
         speed: (0.0, 120.0),
-        z_level: 15.0,
+        z_level: 915.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
@@ -108,7 +108,7 @@
         acceleration: (8.0, 8.0),
         deceleration: (5.0, 5.0),
         speed: (0.0, 120.0),
-        z_level: 15.0,
+        z_level: 915.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),

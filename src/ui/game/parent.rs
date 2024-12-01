@@ -1,9 +1,9 @@
 use super::border_gradient::BorderGradientType;
-use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::abilities::AbilitySlotIDComponent;
 use crate::components::character::Character;
 use crate::components::player::{PlayerIDComponent, PlayersResource};
+use crate::components::states::AppStates;
 use crate::player::CharactersResource;
 use bevy::prelude::StateScoped;
 use bevy::{

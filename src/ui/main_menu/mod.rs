@@ -1,9 +1,9 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
 //! guides the user into the `AppStates::CharacterSelection` state.
 use crate::animation::{AnimationComponent, AnimationDirection};
-use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
+use crate::components::states::AppStates;
 use bevy::prelude::StateScoped;
 use bevy::{
     color::Srgba,
@@ -19,6 +19,7 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
+use tracing::info;
 
 mod button;
 use self::button::main_menu_button_selection_and_click_system;
@@ -55,7 +56,7 @@ fn setup_main_menu_system(
         fade_in: Some(Duration::from_secs(2)),
         fade_out: Some(Duration::from_secs(2)),
     });
-
+    // info!("setup main menu");
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -93,22 +94,19 @@ fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent
-                                .spawn((
-                                    ImageBundle {
-                                        image: ui_assets.bevy_logo_light.clone().into(),
-                                        style: Style {
-                                            max_width: Val::Px(520.0),
-                                            width: Val::Percent(100.0),
-                                            min_width: Val::Px(130.0),
-                                            aspect_ratio: Some(520.0 / 130.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            ..default()
-                                        },
-                                        ..default()
-                                    },
-                                ));
+                            parent.spawn((ImageBundle {
+                                image: ui_assets.bevy_logo_light.clone().into(),
+                                style: Style {
+                                    max_width: Val::Px(520.0),
+                                    width: Val::Percent(100.0),
+                                    min_width: Val::Px(130.0),
+                                    aspect_ratio: Some(520.0 / 130.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                ..default()
+                            },));
                         });
                     parent
                         .spawn(NodeBundle {

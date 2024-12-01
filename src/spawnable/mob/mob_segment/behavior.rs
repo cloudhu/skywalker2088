@@ -1,6 +1,7 @@
 use super::{MobSegmentComponent, MobSegmentsResource};
 use crate::components::audio::{PlaySoundEffectEvent, SoundEffectType};
-use crate::components::health::{DamageDealtEvent, HealthComponent};
+use crate::components::events::TakeDamageEvent;
+use crate::components::health::{Damage, HealthComponent};
 use crate::components::player::PlayerIncomingDamageComponent;
 use crate::components::spawnable::{
     EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
@@ -83,7 +84,7 @@ pub fn mob_segment_execute_behavior_system(
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
     game_parameters: Res<GameParametersResource>,
-    mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
+    mut damage_dealt_event_writer: EventWriter<TakeDamageEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.read() {
@@ -297,7 +298,7 @@ fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &Query<(Entity, &PlayerIncomingDamageComponent)>,
-    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
+    damage_dealt_event_writer: &mut EventWriter<TakeDamageEvent>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToMobSegmentContact {
@@ -313,8 +314,8 @@ fn deal_damage_to_player_on_impact(
                     let damage = (*mob_segment_damage as f32 * player_incoming_damage.multiplier)
                         .round() as usize;
                     if player_entity_q == *player_entity && damage > 0 {
-                        damage_dealt_event_writer.send(DamageDealtEvent {
-                            damage,
+                        damage_dealt_event_writer.send(TakeDamageEvent {
+                            damage: Damage::from_amount(damage),
                             target: player_entity_q,
                         });
                     }
@@ -329,7 +330,7 @@ fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &Query<(Entity, &PlayerIncomingDamageComponent)>,
-    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
+    damage_dealt_event_writer: &mut EventWriter<TakeDamageEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -342,8 +343,8 @@ fn receive_damage_on_impact(
                 if entity == *mob_segment_entity {
                     for (player_entity_q, _) in player_query.iter() {
                         if player_entity_q == *player_entity && *player_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *player_damage,
+                            damage_dealt_event_writer.send(TakeDamageEvent {
+                                damage: Damage::from_amount(*player_damage),
                                 target: *mob_segment_entity,
                             });
                         }
@@ -357,8 +358,8 @@ fn receive_damage_on_impact(
                 mob_damage,
             } => {
                 if entity == *mob_segment_entity && *mob_damage > 0 {
-                    damage_dealt_event_writer.send(DamageDealtEvent {
-                        damage: *mob_damage,
+                    damage_dealt_event_writer.send(TakeDamageEvent {
+                        damage: Damage::from_amount(*mob_damage),
                         target: *mob_segment_entity,
                     });
                 }
@@ -368,8 +369,8 @@ fn receive_damage_on_impact(
                 mob_segment_damage_2,
             } => {
                 if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0 {
-                    damage_dealt_event_writer.send(DamageDealtEvent {
-                        damage: *mob_segment_damage_2,
+                    damage_dealt_event_writer.send(TakeDamageEvent {
+                        damage: Damage::from_amount(*mob_segment_damage_2),
                         target: *mob_segment_entity_1,
                     });
                 }

@@ -1,8 +1,9 @@
 //! A credits screen that can be accessed from the title screen.
 use bevy::prelude::*;
 
-use crate::assets::game_assets::{AppStates, Fonts, Music};
-use crate::{theme::prelude::*};
+use crate::assets::game_assets::Fonts;
+use crate::components::states::AppStates;
+use crate::theme::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppStates::Credits), spawn_credits_screen);

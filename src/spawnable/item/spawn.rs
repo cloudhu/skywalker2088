@@ -2,12 +2,12 @@ use super::{
     behavior::{ItemBehavior, OnCollectFullHeal, OnCollectIncreaseMaxHealth},
     ItemResource,
 };
-use crate::assets::game_assets::AppStates;
 use crate::assets::item::ItemAssets;
 use crate::components::spawnable::{
     AttractToClosestPlayerComponent, ItemComponent, ItemType, SpawnItemEvent,
 };
-use crate::gameplay::GameStates;
+use crate::components::states::AppStates;
+use crate::components::states::GameStates;
 use crate::options::resources::GameParametersResource;
 use crate::spawnable::SpawnableBehavior;
 use crate::{animation::AnimationComponent, spawnable::SpawnableComponent};

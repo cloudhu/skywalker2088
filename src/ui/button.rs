@@ -1,6 +1,6 @@
-use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::player::PlayerInput;
+use crate::components::states::AppStates;
 use bevy::{
     app::AppExit,
     asset::Handle,

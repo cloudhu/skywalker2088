@@ -1,10 +1,10 @@
 use std::{f32::consts::PI, time::Duration};
 
 use super::parent::BorderGradientCommandsExt;
-use crate::assets::game_assets::AppStates;
 use crate::assets::ui::UiAssets;
 use crate::components::events::MobReachedBottomGateEvent;
 use crate::components::objectives::DefenseInteraction;
+use crate::components::states::AppStates;
 use bevy::prelude::StateScoped;
 use bevy::{
     color::Color,
