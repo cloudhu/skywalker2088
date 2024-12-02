@@ -1,40 +1,21 @@
-use std::f32::consts::PI;
-
-use bevy::prelude::*;
-
 use super::AI;
-use crate::assets::game_assets::Fonts;
 use crate::components::health::{HealthComponent, ShipBundle};
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
+use crate::gameplay::physics::BaseRotation;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass};
-use crate::util::Colour;
+use bevy::prelude::*;
+use std::f32::consts::PI;
 
-pub fn spawn_drone_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_drone_boss(commands: &mut Commands) {
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "冞",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 32.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
-                physics: Physics::new(8.0),
                 engine: Engine::new(8.0, 8.0),
                 health: HealthComponent::new(10, 40, 3.0),
-                collider: Collider { radius: 30.0 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
+            BaseRotation {
                 rotation: Quat::from_rotation_z(-PI),
             },
             AI,

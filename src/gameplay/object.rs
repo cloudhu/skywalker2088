@@ -1,7 +1,7 @@
 use crate::components::health::HealthComponent;
 use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
-use crate::gameplay::physics::{Collider, Physics, Rotator};
+use crate::gameplay::physics::Rotator;
 use crate::util;
 use crate::util::{Colour, RenderLayer};
 use bevy::prelude::*;
@@ -36,12 +36,6 @@ fn spawn_space_object(commands: &mut Commands) {
     let size: f32 = rng.gen_range(20.0..50.0);
     commands.spawn((
         SpaceObject,
-        Collider { radius: size },
-        Physics {
-            velocity: util::Math::random_2d_unit_vector() * rng.gen_range(3.0..8.0),
-            face_velocity: false,
-            ..Default::default()
-        },
         Rotator {
             speed: rng.gen_range(-0.4..0.4),
         },

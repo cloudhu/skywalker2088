@@ -17,9 +17,7 @@ use crate::components::input::PlayerAction;
 use crate::components::player::{InputRestrictionsAtSpawn, PlayerComponent, PlayersResource};
 use crate::components::states::AppStates;
 use crate::components::states::GameStates;
-use crate::player::spawn::SpawnPlayer;
-use bevy::ecs::world::Command;
-use bevy::prelude::{Commands, World};
+use crate::player::spawn::spawn_player;
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoSystemConfigs,
@@ -64,7 +62,7 @@ impl Plugin for PlayerPlugin {
 
         app.insert_resource(PlayersResource::default())
             .insert_resource(InputRestrictionsAtSpawn::default());
-        app.add_systems(OnEnter(AppStates::Game), setup_new_game);
+        app.add_systems(OnEnter(AppStates::Game), spawn_player);
         app.add_systems(
             Update,
             (
@@ -87,18 +85,4 @@ impl Plugin for PlayerPlugin {
         app.add_systems(OnExit(AppStates::Victory), players_reset_system);
         app.add_systems(OnEnter(AppStates::MainMenu), players_reset_system);
     }
-}
-
-fn setup_new_game(mut commands: Commands) {
-    commands.add(spawn_level);
-}
-
-/// A [`Command`] to spawn the level.
-/// Functions that accept only `&mut World` as their parameter implement [`Command`].
-/// We use this style when a command requires no configuration.
-pub fn spawn_level(world: &mut World) {
-    debug!("spawning level");
-    // The only thing we have in our level is a player,
-    // but add things like walls etc. here.
-    SpawnPlayer::default().apply(world);
 }

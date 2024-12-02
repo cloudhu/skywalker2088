@@ -1,35 +1,19 @@
 use super::{FinalBoss, AI};
-use crate::assets::game_assets::Fonts;
 use crate::{
     components::health::{HealthComponent, ShipBundle},
-    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    gameplay::physics::BaseRotation,
     ship::{
         engine::{Engine, EngineMethod},
         turret::{DoesDamage, EffectSize, FireRate, Range, TurretBundle, TurretClass},
     },
-    util::Colour,
 };
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_final_boss(commands: &mut Commands) {
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "Œ",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 50.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
-                physics: Physics::new(8.0),
                 engine: Engine {
                     power: 40.0,
                     max_speed: 80.0,
@@ -37,10 +21,9 @@ pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     ..Default::default()
                 },
                 health: HealthComponent::new(1000, 4000, 3.0),
-                collider: Collider { radius: 50.0 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
+            BaseRotation {
                 rotation: Quat::from_rotation_z(-PI),
             },
             AI,

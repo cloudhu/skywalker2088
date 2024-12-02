@@ -80,19 +80,16 @@ pub fn floating_text_system(
     }
 }
 
-pub fn hit_flash_system(time: Res<Time>, mut query: Query<(&mut Text, &mut HitFlash)>) {
-    for (mut text, mut hit_flash) in &mut query {
+pub fn hit_flash_system(time: Res<Time>, mut query: Query<(&mut Sprite, &mut HitFlash)>) {
+    for (mut sprite, mut hit_flash) in &mut query {
         // First time
         if !hit_flash.timer.paused() && hit_flash.timer.elapsed().is_zero() {
             // Store the actual colour once
             if hit_flash.original_colour.is_none() {
-                hit_flash.original_colour =
-                    text.sections.first().map(|section| section.style.color);
+                hit_flash.original_colour = Option::from(sprite.color);
             }
             // Set to flash colour
-            text.sections
-                .iter_mut()
-                .for_each(|section| section.style.color = hit_flash.flash_colour);
+            sprite.color = hit_flash.flash_colour;
         }
 
         hit_flash.timer.tick(time.delta());
@@ -100,9 +97,7 @@ pub fn hit_flash_system(time: Res<Time>, mut query: Query<(&mut Text, &mut HitFl
         // End
         if hit_flash.timer.just_finished() {
             // Reset to original colour
-            text.sections.iter_mut().for_each(|section| {
-                section.style.color = hit_flash.original_colour.unwrap_or(Colour::PURPLE)
-            });
+            sprite.color = hit_flash.original_colour.unwrap_or(Colour::PURPLE);
             // Stop the timer
             hit_flash.timer.pause();
         }

@@ -1,13 +1,12 @@
 use crate::assets::game_assets::Fonts;
 use crate::components::events::TakeDamageEvent;
-use crate::components::game::{ExplosionRender, ShouldDespawn};
+use crate::components::game::ExplosionRender;
 use crate::components::health::HealthComponent;
 use crate::components::player::{PlayerComponent, PlayersResource};
 use crate::components::spawnable::{EffectType, TextEffectType};
 use crate::components::states::*;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
-use crate::gameplay::physics::{Collider, Physics};
 use crate::spawnable::SpawnEffectEvent;
 use crate::util::{Colour, Math, RenderLayer};
 use crate::AppSet;
@@ -95,7 +94,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             // game_time_system,
-            camera_follow.before(ParallaxSystems),
+            // camera_follow.before(ParallaxSystems),
             shield_recharge_system,
             take_damage_events,
             drop_loot_system,
@@ -169,9 +168,9 @@ pub fn camera_follow(
 
 pub fn shield_recharge_system(
     time: Res<Time>,
-    mut query: Query<(&mut HealthComponent, Entity), With<PlayerComponent>>,
+    mut query: Query<&mut HealthComponent, With<PlayerComponent>>,
 ) {
-    for (mut health, entity) in &mut query {
+    for mut health in &mut query {
         if health.get_health() <= 0 {
             continue;
         }
@@ -248,13 +247,13 @@ pub fn drop_loot_system(
             Option<&Transform>,
             Option<&ExplodesOnDespawn>,
             Option<&WorthPoints>,
-            Option<&DropsLoot>
+            Option<&DropsLoot>,
         ),
         With<HealthComponent>,
     >,
     mut points: ResMut<Points>,
 ) {
-    for (transform, explodes, worth_points,drops_loot) in &mut query {
+    for (transform, explodes, worth_points, drops_loot) in &mut query {
         if let Some(transform) = transform {
             if let Some(_drops_loot) = drops_loot {
                 spawn_loot(&mut commands, &fonts, transform.translation);
@@ -289,17 +288,6 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
                     transform: Transform::from_translation(position),
                     ..Default::default()
                 },
-                Physics {
-                    acceleration: Vec2 {
-                        x: rng.gen_range(-1.0..1.0),
-                        y: rng.gen_range(-1.0..1.0),
-                    }
-                    .normalize_or_zero()
-                        * rng.gen_range(50.0..100.0),
-                    drag: 1.0,
-                    ..Default::default()
-                },
-                Collider { radius: 20.0 },
                 DespawnWithScene,
                 WorthPoints { value: 1 },
             )

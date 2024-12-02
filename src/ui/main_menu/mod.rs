@@ -1,6 +1,5 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
 //! guides the user into the `AppStates::CharacterSelection` state.
-use crate::animation::{AnimationComponent, AnimationDirection};
 use crate::assets::ui::UiAssets;
 use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use crate::components::states::AppStates;
@@ -13,13 +12,10 @@ use bevy::{
     },
     hierarchy::BuildChildren,
     prelude::{in_state, App, ImageBundle, IntoSystemConfigs, OnEnter, Plugin, Update},
-    sprite::TextureAtlas,
-    time::{Timer, TimerMode},
     ui::{node_bundles::NodeBundle, AlignItems, FlexDirection, JustifyContent, Style, Val},
     utils::default,
 };
 use std::time::Duration;
-use tracing::info;
 
 mod button;
 use self::button::main_menu_button_selection_and_click_system;

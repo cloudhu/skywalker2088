@@ -49,7 +49,7 @@ impl Plugin for CameraPlugin {
 fn setup_cameras_system(
     mut commands: Commands,
     game_parameters: Res<GameParametersResource>,
-    mut create_parallax: EventWriter<CreateParallaxEvent>,
+    // mut create_parallax: EventWriter<CreateParallaxEvent>,
 ) {
     // setup cameras
     // 2d camera for sprites
@@ -98,26 +98,26 @@ fn setup_cameras_system(
         .id();
 
     // Setup parallax
-    create_parallax.send(CreateParallaxEvent {
-        layers_data: vec![
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.95, 0.95),
-                path: "background/black.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                scale: Vec2::splat(5.0),
-                z: RenderLayer::Background.as_z_with_offset(-10.),
-                ..default()
-            },
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.9, 0.9),
-                path: "background/stars-tile.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                z: RenderLayer::Background.as_z(),
-                ..default()
-            },
-        ],
-        camera,
-    });
+    // create_parallax.send(CreateParallaxEvent {
+    //     layers_data: vec![
+    //         LayerData {
+    //             speed: LayerSpeed::Bidirectional(0.95, 0.95),
+    //             path: "background/black.png".to_string(),
+    //             tile_size: UVec2::new(1024, 1024),
+    //             scale: Vec2::splat(5.0),
+    //             z: RenderLayer::Background.as_z_with_offset(-10.),
+    //             ..default()
+    //         },
+    //         LayerData {
+    //             speed: LayerSpeed::Bidirectional(0.9, 0.9),
+    //             path: "background/stars-tile.png".to_string(),
+    //             tile_size: UVec2::new(1024, 1024),
+    //             z: RenderLayer::Background.as_z(),
+    //             ..default()
+    //         },
+    //     ],
+    //     camera,
+    // });
 
     // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
     commands.spawn((ShapeBundle {

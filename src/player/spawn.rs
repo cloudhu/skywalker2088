@@ -3,28 +3,25 @@ use crate::components::abilities::{
     AbilitiesResource, ChargeAbilityBundle, SlotOneAbilityType, SlotTwoAbilityType,
     StandardWeaponAbilityBundle,
 };
-use crate::components::health::{HealthComponent, ShipBundle};
+use crate::components::health::HealthComponent;
 use crate::components::input::{InputsResource, PlayerAction};
 use crate::components::player::{PlayerBundle, PlayerIDComponent, PlayerInput};
 use crate::components::states::AppStates;
-use crate::gameplay::gamelogic::{Allegiance, Targettable, WillTarget};
 use crate::gameplay::loot::{Cargo, Magnet};
-use crate::gameplay::physics::{BaseGlyphRotation, Physics};
+use crate::gameplay::physics::BaseRotation;
 use crate::options::resources::GameParametersResource;
 use crate::player::{CharactersResource, PlayersResource};
-use crate::ship::engine::Engine;
 use crate::util::RenderLayer;
 use bevy::color::Color;
 use bevy::core::Name;
-use bevy::ecs::system::{Commands, Res, RunSystemOnce};
-use bevy::ecs::world::Command;
+use bevy::ecs::system::{Commands, Res};
 use bevy::hierarchy::{BuildChildren, ChildBuilder};
 use bevy::input::gamepad::Gamepad;
 use bevy::math::Vec3;
 use bevy::prelude::*;
 use bevy::sprite::{Sprite, SpriteBundle};
 use bevy::transform::components::Transform;
-use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
+use bevy_rapier2d::dynamics::{Damping, ExternalImpulse, LockedAxes, RigidBody, Velocity};
 use bevy_rapier2d::geometry::{ActiveEvents, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use std::f32::consts::PI;
@@ -79,56 +76,8 @@ impl PlayerAbilityChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-/// A command to spawn the player character.
-#[derive(Debug)]
-pub struct SpawnPlayer {
-    /// 可配置的飞船参数.
-    pub max_speed: f32,
-    pub drag: f32,
-    pub power: f32,
-    pub steering_factor: f32,
-    pub max_health: usize,
-    pub max_shield: usize,
-    pub radius: f32,
-}
-
-impl Default for SpawnPlayer {
-    fn default() -> Self {
-        SpawnPlayer::new(16.0, 5.0, 8.0, 10.0, 100, 100, 10.0)
-    }
-}
-
-impl SpawnPlayer {
-    pub fn new(
-        max_speed: f32,
-        drag: f32,
-        power: f32,
-        steering_factor: f32,
-        max_health: usize,
-        max_shield: usize,
-        radius: f32,
-    ) -> SpawnPlayer {
-        SpawnPlayer {
-            max_speed,
-            drag,
-            power,
-            steering_factor,
-            max_health,
-            max_shield,
-            radius,
-        }
-    }
-}
-
-impl Command for SpawnPlayer {
-    fn apply(self, world: &mut World) {
-        world.run_system_once_with(self, spawn_player);
-    }
-}
-
 /// Spawns player into the game
-fn spawn_player(
-    In(config): In<SpawnPlayer>,
+pub fn spawn_player(
     mut commands: Commands,
     characters: Res<CharactersResource>,
     game_parameters: Res<GameParametersResource>,
@@ -168,11 +117,6 @@ fn spawn_player(
             player_entity
                 .insert(SpriteBundle {
                     texture: player_assets.get_asset(&character.character_type),
-                    // transform: Transform::from_translation(Vec3 {
-                    //     x: 100.0,
-                    //     y: 100.0,
-                    //     z: RenderLayer::Player.as_z(),
-                    // }),
                     ..Default::default()
                 })
                 .insert(RigidBody::Dynamic)
@@ -224,6 +168,10 @@ fn spawn_player(
                 .insert(Velocity::default())
                 .insert(Restitution::new(1.0))
                 .insert(ColliderMassProperties::Density(character.collider_density))
+                .insert(Damping {
+                    linear_damping: 0.5,
+                    angular_damping: 1.0,
+                })
                 .insert(player_bundle)
                 .insert(HealthComponent::from(character))
                 .insert(ActiveEvents::COLLISION_EVENTS)
@@ -233,18 +181,7 @@ fn spawn_player(
                     parent.spawn_slot_1_ability(&abilities_res, &character.slot_1_ability);
                     parent.spawn_slot_2_ability(&abilities_res, &character.slot_2_ability);
                 })
-                // .insert(ShipBundle {
-                //     physics: Physics::new(config.drag),
-                //     engine: Engine::new_with_steering(
-                //         config.power,
-                //         config.max_speed,
-                //         config.steering_factor,
-                //     ),
-                //     targettable: Targettable(Allegiance::Friend),
-                //     will_target: WillTarget(vec![Allegiance::Enemy]),
-                //     ..default()
-                // })
-                .insert(BaseGlyphRotation {
+                .insert(BaseRotation {
                     rotation: Quat::from_rotation_z(PI / 2.0),
                 })
                 .insert(Cargo::default())

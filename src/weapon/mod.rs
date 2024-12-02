@@ -37,7 +37,7 @@ impl Plugin for WeaponPlugin {
     }
 }
 trait WeaponExt {
-    /// Updates the weapon's timers. Returns Some iff the weapon can be fired
+    /// Updates the weapon's timers. Returns Some if the weapon can be fired
     fn update(&mut self, delta_time: Duration) -> Option<WeaponProjectileData>;
 }
 impl WeaponExt for Weapon {
@@ -52,7 +52,7 @@ impl WeaponExt for Weapon {
                 self.reload_timer.tick(delta_time);
 
                 // fire the weapon and return the projectile data if automatic
-                // othewise return none
+                // otherwise return none
                 match self.fire_mode {
                     FireMode::Automatic => self.fire_weapon(),
                     FireMode::Manual => None,

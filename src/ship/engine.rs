@@ -1,9 +1,9 @@
 use crate::components::health::Seeker;
 use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::gameplay::physics::Physics;
 use crate::AppSet;
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::Velocity;
 use std::f32::consts::PI;
 
 #[derive(Component)]
@@ -78,8 +78,8 @@ pub(super) fn plugin(app: &mut App) {
 pub fn engine_system(
     time: Res<Time>,
     mut query: Query<
-        (&Transform, &mut Physics, &mut Engine),
-        (With<Transform>, With<Physics>, With<Engine>),
+        (&Transform, &mut Velocity, &mut Engine),
+        (With<Transform>, With<Velocity>, With<Engine>),
     >,
 ) {
     for (transform, mut physics, mut engine) in &mut query {
@@ -96,7 +96,7 @@ pub fn engine_system(
             };
             // Can only steer so many degrees per second
             let max_steer_this_step = time.delta_seconds() * PI * engine.steering_factor;
-            let mut desired_steer = to_target.angle_between(physics.velocity);
+            let mut desired_steer = to_target.angle_between(physics.linvel);
             if desired_steer.is_nan() {
                 // When 0 velocity
                 desired_steer = 0.0;
@@ -104,7 +104,7 @@ pub fn engine_system(
             let clamped_steer = desired_steer.clamp(-max_steer_this_step, max_steer_this_step);
             let to_target = Vec2::from_angle(clamped_steer).rotate(to_target);
             debug!("to target: {:?}", to_target);
-            physics.add_force(to_target.normalize() * engine.speed);
+            physics.linvel += to_target.normalize() * engine.speed;
         } else {
             engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;
             if engine.speed < 0.0 {

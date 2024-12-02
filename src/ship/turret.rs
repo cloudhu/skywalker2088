@@ -7,7 +7,7 @@ use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{
     game_not_paused, DespawnWithScene, ExplodesOnDespawn, Targettable, WillTarget,
 };
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
+use crate::gameplay::physics::BaseRotation;
 use crate::ship::bullet::{AoeDamage, Bullet, DirectDamage, ExpandingCollider, LaserRender};
 use crate::ship::engine::Engine;
 use crate::util::{Colour, Math, RenderLayer};
@@ -480,13 +480,11 @@ pub fn fire_auto_cannon(
                 fonts.primary.clone(),
                 colour,
                 origin.extend(RenderLayer::Bullet.as_z()),
-                direction * bullet_speed,
                 parent,
                 damage,
                 &".".to_string(),
                 1.2,
                 16.0,
-                5.0,
             );
         }
     }
@@ -658,7 +656,6 @@ pub fn fire_emp(
                     ..Default::default()
                 },
                 Transform::from_translation(parent_transform.translation),
-                Collider { radius: 0.0 },
                 ExpandingCollider {
                     final_radius: size.0,
                 },
@@ -716,7 +713,6 @@ pub fn fire_mine_launcher(
                     ..default()
                 },
                 HealthComponent::new(1, 0, 3.0),
-                Collider { radius: size.0 },
                 Owner(parent.get()),
                 ExplodesOnDespawn {
                     amount_min: shots.amount as u32,
@@ -743,7 +739,7 @@ pub fn fire_pierce_laser(
     turret_query: Query<(&Parent, &Targets, &DoesDamage, &EffectSize, &EffectColour)>,
     parent_query: Query<(&Transform, &WillTarget)>,
     target_query: Query<&Transform>,
-    potential_query: Query<(Entity, &Transform, &Targettable, &Collider)>,
+    potential_query: Query<(Entity, &Transform, &Targettable)>,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
     for ev in fire_event.read() {
@@ -796,7 +792,7 @@ pub fn fire_pierce_laser(
                 .filter(|a| a.0 != parent.get() && parent_will_target.0.contains(&a.2 .0))
                 .filter(|a| {
                     Math::distance_from_point_to_line(a.1.translation.truncate(), origin, end)
-                        <= a.3.radius + size.0
+                        <= 1.0 + size.0
                 })
                 .map(|hit| TakeDamageEvent {
                     target: hit.0,
@@ -859,16 +855,11 @@ pub fn fire_rocket_launcher(
                         },
                         ..default()
                     },
-                    BaseGlyphRotation {
+                    BaseRotation {
                         rotation: Quat::from_rotation_z(PI / 2.0),
-                    },
-                    Physics {
-                        velocity: Math::random_2d_unit_vector() * 100.0,
-                        ..Default::default()
                     },
                     Engine::new_with_steering(40.0, 10.0, 0.5),
                     Seeker(target),
-                    Collider { radius: 5.0 },
                     Owner(parent.get()),
                     ExplodesOnDespawn {
                         colour: colour.0,
@@ -935,13 +926,11 @@ pub fn fire_shrapnel_cannon(
                     fonts.primary.clone(),
                     colour,
                     origin.extend(RenderLayer::Bullet.as_z()),
-                    spread_direction * random_speed,
                     parent,
                     damage,
                     &".".to_string(),
                     1.2,
                     16.0,
-                    5.0,
                 );
             }
         }
@@ -953,13 +942,11 @@ fn spawn_bullet(
     font: Handle<Font>,
     colour: &EffectColour,
     translation: Vec3,
-    velocity: Vec2,
     parent: &Parent,
     damage: &DoesDamage,
     bullet_text: &String,
     seconds2live: f32,
     font_size: f32,
-    radius: f32,
 ) {
     commands.spawn((
         Bullet::new(seconds2live),
@@ -979,11 +966,6 @@ fn spawn_bullet(
             },
             ..default()
         },
-        Physics {
-            velocity,
-            ..Default::default()
-        },
-        Collider { radius },
         Owner(parent.get()),
         DirectDamage(damage.roll()),
         DespawnWithScene,

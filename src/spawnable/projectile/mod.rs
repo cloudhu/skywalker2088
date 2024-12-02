@@ -9,7 +9,6 @@ use crate::components::states::AppStates;
 use crate::components::weapon::WeaponProjectileData;
 use crate::options::resources::GameParametersResource;
 use crate::options::GameOptions;
-use crate::util::RenderLayer;
 use crate::weapon::WeaponProjectileInitialVelocitiesExt;
 use crate::{
     animation::{AnimationComponent, AnimationData},

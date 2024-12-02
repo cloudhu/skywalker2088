@@ -22,6 +22,10 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         toggle_debug_ui.run_if(input_just_pressed(TOGGLE_KEY)),
     );
+    //if you need to debug with Rapier you can unlock this codes and enable "debug-render-2d" feature in the Cargo.toml file
+    // if cfg!(debug_assertions) && !cfg!(test) {
+    //     app.add_plugins(RapierDebugRenderPlugin::default());
+    // }
 }
 
 const TOGGLE_KEY: KeyCode = KeyCode::Backspace;

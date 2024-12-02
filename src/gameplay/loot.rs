@@ -1,6 +1,5 @@
 use crate::components::states::AppStates;
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::gameplay::physics::{Collider, Physics};
 use crate::AppSet;
 use bevy::app::{App, Update};
 use bevy::prelude::*;
@@ -63,18 +62,10 @@ pub(super) fn plugin(app: &mut App) {
 
 pub fn loot_magnet_system(
     query: Query<(&Magnet, &Transform), (With<Magnet>, With<Transform>)>,
-    mut loot_query: Query<
-        (&mut Physics, &Transform),
-        (
-            With<IsLoot>,
-            With<Physics>,
-            With<Transform>,
-            Without<Magnet>,
-        ),
-    >,
+    mut loot_query: Query<&Transform, (With<IsLoot>, With<Transform>, Without<Magnet>)>,
 ) {
     for (magnet, transform) in &query {
-        for (mut physics, loot_transform) in &mut loot_query {
+        for loot_transform in &mut loot_query {
             if loot_transform
                 .translation
                 .truncate()
@@ -83,38 +74,29 @@ pub fn loot_magnet_system(
             {
                 continue;
             }
-            let direction = (transform.translation.truncate()
-                - loot_transform.translation.truncate())
-            .normalize_or_zero();
-            physics.add_force(direction * magnet.strength);
+            // let direction = (transform.translation.truncate()
+            //     - loot_transform.translation.truncate())
+            // .normalize_or_zero();
         }
     }
 }
 
 pub fn loot_cargo_collision(
     mut commands: Commands,
-    mut query: Query<
-        (&mut Cargo, &Transform, &Collider),
-        (With<Cargo>, With<Transform>, With<Collider>),
-    >,
+    mut query: Query<(&mut Cargo, &Transform), (With<Cargo>, With<Transform>)>,
     loot_query: Query<
-        (&Transform, Entity, &Collider, Option<&WorthPoints>),
-        (
-            With<IsLoot>,
-            With<Transform>,
-            With<Collider>,
-            Without<Cargo>,
-        ),
+        (&Transform, Entity, Option<&WorthPoints>),
+        (With<IsLoot>, With<Transform>, Without<Cargo>),
     >,
     mut points: ResMut<Points>,
 ) {
-    for (mut cargo, transform, collider) in &mut query {
-        for (loot_transform, loot_entity, loot_collider, worth_points) in &loot_query {
+    for (mut cargo, transform) in &mut query {
+        for (loot_transform, loot_entity, worth_points) in &loot_query {
             if loot_transform
                 .translation
                 .truncate()
                 .distance(transform.translation.truncate())
-                <= loot_collider.radius + collider.radius
+                <= 2.0
             {
                 // Increase cargo
                 cargo.amount += 1;

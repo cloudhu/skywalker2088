@@ -42,7 +42,7 @@ use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_kira_audio::{AudioPlugin, AudioSettings};
 use bevy_parallax::ParallaxPlugin;
 use bevy_prototype_lyon::prelude::ShapePlugin;
-use bevy_rapier2d::prelude::{NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
+use bevy_rapier2d::prelude::{NoUserData, RapierPhysicsPlugin};
 
 /// Used by a physics engine to translate physics calculations to graphics
 const PHYSICS_PIXELS_PER_METER: f32 = 10.0;
@@ -102,7 +102,7 @@ impl Plugin for AppPlugin {
         )
         .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
-        .add_plugins(ParallaxPlugin)
+        // .add_plugins(ParallaxPlugin)
         .add_plugins(AudioPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(ArenaPlugin)
@@ -139,10 +139,6 @@ impl Plugin for AppPlugin {
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
         app.add_plugins(dev_tools::plugin);
-
-        if cfg!(debug_assertions) && !cfg!(test) {
-            app.add_plugins(RapierDebugRenderPlugin::default());
-        }
     }
 }
 

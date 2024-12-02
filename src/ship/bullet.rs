@@ -5,7 +5,6 @@ use crate::components::health::*;
 use crate::components::states::AppStates;
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::gameplay::physics::Collider;
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_kira_audio::prelude::Volume;
@@ -66,7 +65,6 @@ pub(super) fn plugin(app: &mut App) {
             bullet_collision_system,
             laser_render_system,
             explosion_render_system,
-            expanding_collider_system,
         )
             .chain()
             .in_set(AppSet::Update)
@@ -79,10 +77,7 @@ pub fn bullet_system(
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(&mut Bullet, Entity, &Transform, &Owner, Option<&AoeDamage>), With<Bullet>>,
-    potential_query: Query<
-        (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<HealthComponent>),
-    >,
+    potential_query: Query<(&Transform, Entity), (Without<Bullet>, With<HealthComponent>)>,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
     for (mut bullet, entity, transform, owner, aoe_damage) in &mut query {
@@ -92,7 +87,7 @@ pub fn bullet_system(
             if let Some(aoe_damage) = aoe_damage {
                 let potentials = potential_query
                     .iter()
-                    .filter(|&potential| potential.2 != owner.0)
+                    .filter(|&potential| potential.1 != owner.0)
                     .collect::<Vec<_>>();
                 do_aoe_damage(
                     potentials,
@@ -110,7 +105,6 @@ pub fn bullet_collision_system(
     mut commands: Commands,
     mut query: Query<
         (
-            &Collider,
             &Transform,
             Entity,
             &Owner,
@@ -118,24 +112,16 @@ pub fn bullet_collision_system(
             Option<&AoeDamage>,
             &mut Bullet,
         ),
-        (
-            With<Bullet>,
-            With<Collider>,
-            With<Owner>,
-            Without<ShouldDespawn>,
-        ),
+        (With<Bullet>, With<Owner>, Without<ShouldDespawn>),
     >,
-    potential_query: Query<
-        (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<HealthComponent>),
-    >,
+    potential_query: Query<(&Transform, Entity), (Without<Bullet>, With<HealthComponent>)>,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
-    for (collider, transform, entity, owner, direct_damage, aoe_damage, mut bullet) in &mut query {
+    for (transform, entity, owner, direct_damage, aoe_damage, mut bullet) in &mut query {
         // Get all potentials
         let potentials = potential_query
             .iter()
-            .filter(|&potential| potential.2 != owner.0)
+            .filter(|&potential| potential.1 != owner.0)
             .collect::<Vec<_>>();
 
         // Sort by distance to bullet
@@ -143,12 +129,12 @@ pub fn bullet_collision_system(
             transform
                 .translation
                 .truncate()
-                .distance(potential.1.translation.truncate())
-                <= collider.radius + potential.0.radius
-                && bullet.entities_hit.get(&potential.2).unwrap_or(&0) < &bullet.max_hits_per_entity
+                .distance(potential.0.translation.truncate())
+                <= 1.0
+                && bullet.entities_hit.get(&potential.1).unwrap_or(&0) < &bullet.max_hits_per_entity
         });
 
-        if let Some((_collider, _transform, potential_entity)) = hit {
+        if let Some((_transform, potential_entity)) = hit {
             if let Some(direct_damage) = direct_damage {
                 let number_of_times_hit = bullet.entities_hit.entry(*potential_entity).or_insert(0);
                 *number_of_times_hit += 1;
@@ -176,7 +162,7 @@ pub fn bullet_collision_system(
 }
 
 fn do_aoe_damage(
-    potentials: Vec<(&Collider, &Transform, Entity)>,
+    potentials: Vec<(&Transform, Entity)>,
     bullet: (&mut Bullet, &Transform, &AoeDamage),
     take_damage_event: &mut EventWriter<TakeDamageEvent>,
 ) {
@@ -187,17 +173,17 @@ fn do_aoe_damage(
             transform
                 .translation
                 .truncate()
-                .distance(potential.1.translation.truncate())
-                <= aoe_damage.range + potential.0.radius
-                && bullet.entities_hit.get(&potential.2).unwrap_or(&0) < &bullet.max_hits_per_entity
+                .distance(potential.0.translation.truncate())
+                <= aoe_damage.range + 1.0
+                && bullet.entities_hit.get(&potential.1).unwrap_or(&0) < &bullet.max_hits_per_entity
         })
         .collect();
     for h in all_hits.iter() {
-        let number_of_times_hit = bullet.entities_hit.entry(h.2).or_insert(0);
+        let number_of_times_hit = bullet.entities_hit.entry(h.1).or_insert(0);
         *number_of_times_hit += 1;
 
         take_damage_event.send(TakeDamageEvent {
-            target: h.2,
+            target: h.1,
             damage: aoe_damage.damage,
         });
     }
@@ -252,11 +238,5 @@ pub fn explosion_render_system(
                 .handle();
             commands.entity(entity).insert(ShouldDespawn);
         }
-    }
-}
-
-pub fn expanding_collider_system(mut query: Query<(&mut Collider, &ExpandingCollider, &Bullet)>) {
-    for (mut collider, expanding, bullet) in &mut query {
-        collider.radius = bullet.time2live.fraction() * expanding.final_radius;
     }
 }

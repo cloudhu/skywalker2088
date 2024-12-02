@@ -4,7 +4,6 @@ pub mod control;
 pub mod effects;
 pub mod gamelogic;
 mod hud;
-pub mod level;
 pub mod loot;
 mod object;
 pub mod physics;

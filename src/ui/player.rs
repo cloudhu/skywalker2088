@@ -1,21 +1,13 @@
 //! Systems to draw/update the in-game UI compoenents related to the player's stats, health, fire
 //! rate, etc.
-use crate::components::abilities::StandardWeaponAbilityComponent;
 use crate::components::character::CharacterType;
-use crate::components::health::HealthComponent;
 use crate::components::player::{PlayerIDComponent, PlayersResource};
-use crate::components::weapon::WeaponsComponent;
 use crate::util::Colour;
 use bevy::prelude::*;
 use bevy::{
     asset::AssetServer,
-    ecs::{
-        component::Component,
-        entity::Entity,
-        query::{Changed, Or, With},
-        system::{Commands, ParamSet, Query},
-    },
-    hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
+    ecs::component::Component,
+    hierarchy::{BuildChildren, ChildBuilder},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
         FlexDirection, Style, UiRect, Val,

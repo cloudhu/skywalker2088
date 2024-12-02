@@ -1,38 +1,22 @@
 use super::AI;
-use crate::assets::game_assets::Fonts;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
 use crate::ship::turret::MultiShot;
 use crate::{
     components::health::{HealthComponent, ShipBundle},
-    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    gameplay::physics::BaseRotation,
     ship::{
         engine::{Engine, EngineMethod},
         turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass},
     },
-    util::Colour,
 };
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_mothership(commands: &mut Commands) {
     commands
         .spawn((
             ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "王",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 60.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
-                physics: Physics::new(12.0),
                 engine: Engine {
                     max_speed: 3.0,
                     power: 3.0,
@@ -40,7 +24,6 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     ..Default::default()
                 },
                 health: HealthComponent::new(100, 80, 3.0),
-                collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 55.0,
                     size_max: 65.0,
@@ -48,7 +31,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
+            BaseRotation {
                 rotation: Quat::from_rotation_z(-PI),
             },
             AI,

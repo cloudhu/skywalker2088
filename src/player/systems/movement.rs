@@ -1,12 +1,14 @@
+use std::f32::consts::PI;
 use crate::components::input::PlayerAction;
 use crate::components::player::{PlayerComponent, PlayerMovementComponent};
 use crate::options::resources::GameParametersResource;
+use crate::util::Math;
 use bevy::ecs::query::With;
 use bevy::ecs::system::{Query, Res};
+use bevy::math::Vec2;
 use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
-use std::f32::consts::PI;
 use tracing::debug;
 
 /// Move player by modifying velocity with input
@@ -63,7 +65,10 @@ pub(in crate::player) fn player_movement_system(
 
 /// Tilt facing direction of player based on its velocity
 pub(in crate::player) fn player_tilt_system(
-    mut player_info: Query<(&Velocity, &mut Transform), With<PlayerComponent>>,
+    mut player_info: Query<
+        (&Velocity, &mut Transform),
+        With<PlayerComponent>,
+    >,
 ) {
     for (vel, mut player_trans) in player_info.iter_mut() {
         let rotation_amount = -vel.linvel.x.atan2(vel.linvel.y.abs()) / PI;

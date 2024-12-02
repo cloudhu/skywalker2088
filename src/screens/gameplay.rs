@@ -1,7 +1,6 @@
 //! The screen state for the main gameplay.
 use crate::assets::game_assets::Fonts;
 use crate::components::states::*;
-use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
 use crate::theme::interaction::OnPress;
 use crate::theme::prelude::*;
@@ -9,18 +8,12 @@ use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppStates::Game), spawn_level);
-
     app.add_systems(OnEnter(GameStates::GameOver), setup_game_over);
     app.add_systems(
         Update,
         return_to_title_screen
             .run_if(in_state(AppStates::Game).and_then(input_just_pressed(KeyCode::Escape))),
     );
-}
-
-fn spawn_level(mut commands: Commands) {
-    commands.add(spawn_level_command);
 }
 
 fn return_to_title_screen(mut next_screen: ResMut<NextState<AppStates>>) {
