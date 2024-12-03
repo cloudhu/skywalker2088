@@ -1,0 +1,257 @@
+{
+	AllyBlastExplosion: (
+		effect_type: AllyBlastExplosion,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
+	),
+	EnemyBlastExplosion: (
+		effect_type: EnemyBlastExplosion,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.5,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
+	),
+	AllyBlastDespawn: (
+		effect_type: AllyBlastDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
+	),
+	EnemyBlastDespawn: (
+		effect_type: EnemyBlastDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
+	),
+	MobExplosion: (
+		effect_type: MobExplosion,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 904.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 5.0,
+            green: 5.0,
+            blue: 5.0,
+            alpha: 1.0,
+        ),
+	),
+	ConsumableDespawn: (
+		effect_type: ConsumableDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.05,
+		),
+		bloom_color: Srgba (
+            red: 2.0,
+            green: 2.0,
+            blue: 2.0,
+            alpha: 1.0,
+        ),
+	),
+	BarrierGlow: (
+		effect_type: BarrierGlow,
+		effect_behaviors_data: [],
+		z_level: 925.0,
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.2,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.4,
+            alpha: 1.0,
+        ),
+	),
+	AllyBulletDespawn: (
+		effect_type: AllyBulletDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
+	),
+	EnemyBulletDespawn: (
+		effect_type: EnemyBulletDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
+	),
+	AllyBulletExplosion: (
+		effect_type: AllyBulletExplosion,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
+	),
+	EnemyBulletExplosion: (
+		effect_type: EnemyBulletExplosion,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 909.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(DamageDealt): (
+		effect_type: Text(DamageDealt),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(ConsumableCollected(Money1)): (
+		effect_type: Text(ConsumableCollected(Money1)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(ConsumableCollected(Money3)): (
+		effect_type: Text(ConsumableCollected(Money3)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(ConsumableCollected(HealthWrench)): (
+		effect_type: Text(ConsumableCollected(HealthWrench)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(ConsumableCollected(Armor)): (
+		effect_type: Text(ConsumableCollected(Armor)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+	Text(ConsumableCollected(GainProjectiles)): (
+		effect_type: Text(ConsumableCollected(GainProjectiles)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 909.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+		bloom_color: Srgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
+	),
+}

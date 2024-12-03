@@ -1,34 +1,31 @@
 use super::AI;
+use crate::assets::enemy_assets::MobAssets;
+use crate::components::health::FighterBundle;
+use crate::components::spawnable::{EnemyMobType, MobType};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
+use crate::ship::animation::AnimationComponent;
+use crate::ship::animation::AnimationDirection::PingPong;
+use crate::ship::animation::PingPongDirection::Forward;
 use crate::ship::turret::MultiShot;
 use crate::{
-    assets::Fonts,
-    components::common::{Health, ShipBundle},
-    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    components::health::HealthComponent,
+    gameplay::physics::{BaseRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
         turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass},
     },
-    util::Colour,
 };
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_mothership(commands: &mut Commands, mob_assets: &MobAssets, position: Vec3) {
+    let mob_type = MobType::Enemy(EnemyMobType::Ferritharax);
     commands
         .spawn((
-            ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "王",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 60.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
+            FighterBundle {
+                sprite: SpriteBundle {
+                    texture: mob_assets.get_mob_image(&mob_type),
                     transform: Transform::from_translation(position),
                     ..default()
                 },
@@ -39,7 +36,7 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     method: EngineMethod::Keep(500.0),
                     ..Default::default()
                 },
-                health: Health::new(100, 80),
+                health: HealthComponent::new(100, 80, 2.0),
                 collider: Collider { radius: 50.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 55.0,
@@ -48,8 +45,16 @@ pub fn spawn_mothership(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
-                rotation: Quat::from_rotation_z(-PI),
+            BaseRotation {
+                rotation: Quat::from_rotation_z(-PI / 2.0),
+            },
+            TextureAtlas {
+                layout: mob_assets.get_mob_texture_atlas_layout(&mob_type),
+                ..default()
+            },
+            AnimationComponent {
+                timer: Timer::from_seconds(0.25, TimerMode::Repeating),
+                direction: PingPong(Forward),
             },
             AI,
             DropsLoot,

@@ -1,12 +1,12 @@
-use crate::assets::{AudioAssets, Fonts};
-use crate::components::common::Health;
+use crate::assets::audio_assets::{AudioAssets, Fonts};
+use crate::components::health::HealthComponent;
 use crate::config::GameConfig;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
-use crate::gameplay::player::IsPlayer;
-use crate::gameplay::GameState;
-use crate::screens::AppState;
+use crate::gameplay::player::PlayerComponent;
+use crate::gameplay::GameStates;
+use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
 use crate::util::{Colour, Math, RenderLayer};
 use crate::{AppSet, CameraShake, MainCamera};
@@ -55,18 +55,18 @@ pub struct GameTime(pub Stopwatch);
 
 #[derive(Resource)]
 pub struct PlayerLevel {
-    pub value: u32,
+    pub value: usize,
 }
 
 impl PlayerLevel {
-    pub fn required_cargo_to_level(&self) -> u32 {
+    pub fn required_cargo_to_level(&self) -> usize {
         self.value * 4 // TODO make exponential?
     }
 }
 
 #[derive(Component, Copy, Clone)]
 pub struct Damage {
-    pub amount: i32,
+    pub amount: usize,
     pub is_crit: bool,
 }
 
@@ -102,8 +102,8 @@ impl Default for WillTarget {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TakeDamageEvent>()
-        .add_systems(OnEnter(AppState::InGame), setup_new_game);
-    app.add_systems(OnExit(AppState::InGame), reset_game);
+        .add_systems(OnEnter(AppStates::Game), setup_new_game);
+    app.add_systems(OnExit(AppStates::Game), reset_game);
     app.add_systems(
         Update,
         (
@@ -116,7 +116,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::TickTimers)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 fn setup_new_game(mut commands: Commands) {
@@ -130,8 +130,8 @@ fn setup_new_game(mut commands: Commands) {
     commands.insert_resource(PlayerLevel { value: 0 });
 }
 
-pub fn game_not_paused(game_state: Res<State<GameState>>) -> bool {
-    *game_state.get() != GameState::Paused && *game_state.get() != GameState::Selection
+pub fn game_not_paused(game_state: Res<State<GameStates>>) -> bool {
+    *game_state.get() != GameStates::Paused && *game_state.get() != GameStates::Selection
 }
 
 fn game_time_system(time: Res<Time>, mut game_time: ResMut<GameTime>) {
@@ -141,20 +141,20 @@ fn game_time_system(time: Res<Time>, mut game_time: ResMut<GameTime>) {
 fn reset_game(
     mut commands: Commands,
     query: Query<Entity, With<DespawnWithScene>>,
-    mut next_game_state: ResMut<NextState<GameState>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-    next_game_state.set(GameState::Running);
+    next_game_state.set(GameStates::Playing);
 }
 
 pub fn camera_follow(
     time: Res<Time>,
-    player_q: Query<&Transform, (With<Transform>, With<IsPlayer>, Without<MainCamera>)>,
+    player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>, Without<MainCamera>)>,
     mut camera_q: Query<
         (Entity, &Transform, &mut CameraShake),
-        (With<Transform>, With<MainCamera>, Without<IsPlayer>),
+        (With<Transform>, With<MainCamera>, Without<PlayerComponent>),
     >,
     mut move_event_writer: EventWriter<ParallaxMoveEvent>,
 ) {
@@ -186,7 +186,7 @@ pub fn camera_follow(
 pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
+    mut query: Query<(&mut HealthComponent, Entity), Without<ShouldDespawn>>,
     sound_assets: Res<AudioAssets>,
     audio: Res<Audio>,
     config: Res<GameConfig>,
@@ -198,14 +198,14 @@ pub fn combat_system(
         }
 
         // Recharge shield
-        health.shield_recharge_cooldown.tick(time.delta());
-        if health.shield_recharge_cooldown.finished() {
-            health.shield_recharge_timer.tick(time.delta());
-            if health.shield_recharge_timer.just_finished() {
-                if health.shield == health.max_shield {
-                    return;
-                }
-                health.shield += 1;
+        if health.shields == health.max_shields {
+            continue;
+        }
+        health.shields_recharge_cooldown.tick(time.delta());
+        if health.shields_recharge_cooldown.finished() {
+            health.shields_recharge_timer.tick(time.delta());
+            if health.shields_recharge_timer.just_finished() {
+                health.shields += 1;
                 //播放增加护盾的音效
                 // play_sound_effects(&audio,&config, sound_assets.shield_up.clone(),position.translation.truncate());
                 audio
@@ -222,8 +222,8 @@ pub fn take_damage_events(
     mut take_damage_events: EventReader<TakeDamageEvent>,
     mut query: Query<(
         &Transform,
-        &mut Health,
-        Option<&IsPlayer>,
+        &mut HealthComponent,
+        Option<&PlayerComponent>,
         Option<&mut HitFlash>,
     )>,
     mut camera: Query<&mut CameraShake>,
@@ -291,13 +291,13 @@ pub fn death_system(
             Entity,
             Option<&DropsLoot>,
             Option<&Transform>,
-            Option<&IsPlayer>,
+            Option<&PlayerComponent>,
             Option<&ExplodesOnDespawn>,
             Option<&WorthPoints>,
         ),
         With<ShouldDespawn>,
     >,
-    mut game_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<GameStates>>,
     mut points: ResMut<Points>,
     sound_assets: Res<AudioAssets>,
     audio: Res<Audio>,
@@ -324,7 +324,7 @@ pub fn death_system(
             audio
                 .play(sound_assets.game_over.clone())
                 .with_volume(Volume::Amplitude(config.sfx_volume as f64));
-            game_state.set(GameState::GameOver);
+            game_state.set(GameStates::GameOver);
         }
     }
 }

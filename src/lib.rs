@@ -1,7 +1,7 @@
 pub mod audio;
-mod components;
+pub mod components;
 mod config;
-// mod demo;
+
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod enemy;
@@ -73,7 +73,6 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             config::plugin,
             assets::plugin,
-            // demo::plugin,
             screens::plugin,
             theme::plugin,
             gameplay::plugin,

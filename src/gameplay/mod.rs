@@ -13,8 +13,8 @@ mod upgrade;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_state::<GameState>();
-    app.enable_state_scoped_entities::<GameState>();
+    app.init_state::<GameStates>();
+    app.enable_state_scoped_entities::<GameStates>();
 
     app.add_plugins((
         gamelogic::plugin,
@@ -31,9 +31,9 @@ pub(super) fn plugin(app: &mut App) {
 
 /// The game's gameplay states.
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-pub enum GameState {
+pub enum GameStates {
     #[default]
-    Running,
+    Playing,
     Selection,
     Paused,
     GameOver,

@@ -1,11 +1,11 @@
 use crate::gameplay::gamelogic::game_not_paused;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::util::Math;
 use crate::AppSet;
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct BaseGlyphRotation {
+pub struct BaseRotation {
     pub rotation: Quat,
 }
 
@@ -58,19 +58,18 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 
 pub fn physics_system(
     time: Res<Time>,
     mut query: Query<
-        (&mut Transform, &mut Physics, Option<&BaseGlyphRotation>),
+        (&mut Transform, &mut Physics, Option<&BaseRotation>),
         (With<Transform>, With<Physics>),
     >,
 ) {
     for (mut transform, mut physics, base_rotation) in &mut query {
-        // Not sure how to avoid cloning here
         let current_acceleration = physics.acceleration;
         let drag = physics.drag;
         physics.velocity += current_acceleration;

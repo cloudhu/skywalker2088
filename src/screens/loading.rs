@@ -3,16 +3,16 @@
 
 use bevy::prelude::*;
 
-use crate::{screens::AppState, theme::prelude::*};
+use crate::{screens::AppStates, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::Loading), spawn_loading_screen);
+    app.add_systems(OnEnter(AppStates::Loading), spawn_loading_screen);
 }
 
 fn spawn_loading_screen(mut commands: Commands) {
     commands
         .ui_root()
-        .insert(StateScoped(AppState::Loading))
+        .insert(StateScoped(AppStates::Loading))
         .with_children(|children| {
             children.content("Loading...").insert(Style {
                 justify_content: JustifyContent::Center,

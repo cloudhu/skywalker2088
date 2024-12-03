@@ -1,21 +1,21 @@
 //! A credits screen that can be accessed from the title screen.
 use bevy::prelude::*;
 
-use crate::assets::{Fonts, Music};
+use crate::assets::audio_assets::{Fonts, Music};
 use crate::audio::NextBgm;
-use crate::{screens::AppState, theme::prelude::*};
+use crate::{screens::AppStates, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(AppState::Credits), spawn_credits_screen);
+    app.add_systems(OnEnter(AppStates::Credits), spawn_credits_screen);
 
-    app.add_systems(OnEnter(AppState::Credits), play_credits_music);
-    app.add_systems(OnExit(AppState::Credits), stop_music);
+    app.add_systems(OnEnter(AppStates::Credits), play_credits_music);
+    app.add_systems(OnExit(AppStates::Credits), stop_music);
 }
 
 fn spawn_credits_screen(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .ui_root()
-        .insert(StateScoped(AppState::Credits))
+        .insert(StateScoped(AppStates::Credits))
         .with_children(|children| {
             children.header("Made by", fonts.primary.clone());
             children.label("Developer", fonts.primary.clone());
@@ -29,8 +29,8 @@ fn spawn_credits_screen(mut commands: Commands, fonts: Res<Fonts>) {
         });
 }
 
-fn enter_title_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppState>>) {
-    next_screen.set(AppState::Title);
+fn enter_title_screen(_trigger: Trigger<OnPress>, mut next_screen: ResMut<NextState<AppStates>>) {
+    next_screen.set(AppStates::MainMenu);
 }
 
 fn play_credits_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {

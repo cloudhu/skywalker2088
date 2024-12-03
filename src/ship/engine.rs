@@ -1,7 +1,7 @@
-use crate::components::common::Seeker;
+use crate::components::health::Seeker;
 use crate::gameplay::gamelogic::game_not_paused;
 use crate::gameplay::physics::Physics;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::prelude::*;
 use std::f32::consts::PI;
@@ -71,7 +71,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 

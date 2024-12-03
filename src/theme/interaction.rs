@@ -1,4 +1,4 @@
-use crate::assets::AudioAssets;
+use crate::assets::audio_assets::AudioAssets;
 use crate::config::GameConfig;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;

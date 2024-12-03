@@ -1,39 +1,36 @@
 use super::AI;
+use crate::assets::enemy_assets::MobAssets;
+use crate::components::health::FighterBundle;
+use crate::components::spawnable::{EnemyMobType, MobType};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
+use crate::ship::animation::AnimationComponent;
+use crate::ship::animation::AnimationDirection::PingPong;
+use crate::ship::animation::PingPongDirection::Forward;
 use crate::{
-    assets::Fonts,
-    components::common::{Health, ShipBundle},
-    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    components::health::HealthComponent,
+    gameplay::physics::{BaseRotation, Collider, Physics},
     ship::{
         engine::Engine,
         turret::{DoesDamage, FireRate, TurretBundle, TurretClass},
     },
-    util::Colour,
 };
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_fighter(commands: &mut Commands, mob_assets: &MobAssets, position: Vec3) {
+    let mob_type = MobType::Enemy(EnemyMobType::CrustlingLeft);
     commands
         .spawn((
-            ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "W",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 18.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
+            FighterBundle {
+                sprite: SpriteBundle {
+                    texture: mob_assets.get_mob_image(&mob_type),
                     transform: Transform::from_translation(position),
                     ..default()
                 },
                 physics: Physics::new(5.0),
                 engine: Engine::new(14.0, 14.0),
-                health: Health::new(10, 0),
+                health: HealthComponent::new(10, 0, 2.0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 20.0,
@@ -42,8 +39,16 @@ pub fn spawn_fighter(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3
                 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
-                rotation: Quat::from_rotation_z(PI / 2.0),
+            BaseRotation {
+                rotation: Quat::from_rotation_z(-PI / 2.0),
+            },
+            TextureAtlas {
+                layout: mob_assets.get_mob_texture_atlas_layout(&mob_type),
+                ..default()
+            },
+            AnimationComponent {
+                timer: Timer::from_seconds(0.25, TimerMode::Repeating),
+                direction: PingPong(Forward),
             },
             AI,
             DropsLoot,

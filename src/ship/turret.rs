@@ -1,12 +1,12 @@
-use crate::assets::{AudioAssets, Fonts};
-use crate::components::common::{Health, Owner, Seeker};
+use crate::assets::audio_assets::{AudioAssets, Fonts};
+use crate::components::health::{HealthComponent, Owner, Seeker};
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{
     game_not_paused, Damage, DespawnWithScene, ExplodesOnDespawn, TakeDamageEvent, Targettable,
     WillTarget,
 };
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
-use crate::screens::AppState;
+use crate::gameplay::physics::{BaseRotation, Collider, Physics};
+use crate::screens::AppStates;
 use crate::ship::bullet::{
     AoeDamage, Bullet, DirectDamage, ExpandingCollider, ExplosionRender, LaserRender,
 };
@@ -102,12 +102,12 @@ impl Distribution<TurretClass> for Standard {
 
 #[derive(Component, Default)]
 pub struct DoesDamage {
-    pub amount: i32,
+    pub amount: usize,
     pub crit_chance: f32,
 }
 
 impl DoesDamage {
-    pub fn from_amount(amount: i32) -> Self {
+    pub fn from_amount(amount: usize) -> Self {
         Self {
             amount,
             ..Default::default()
@@ -270,7 +270,7 @@ pub(super) fn plugin(app: &mut App) {
             Update,
             (turret_targetting_system, turret_fire_system)
                 .distributive_run_if(game_not_paused)
-                .distributive_run_if(in_state(AppState::InGame)),
+                .distributive_run_if(in_state(AppStates::Game)),
         )
         .add_systems(
             Update,
@@ -284,7 +284,7 @@ pub(super) fn plugin(app: &mut App) {
                 fire_pierce_laser,
                 fire_emp,
             )
-                .distributive_run_if(in_state(AppState::InGame)),
+                .distributive_run_if(in_state(AppStates::Game)),
         );
 }
 
@@ -716,7 +716,7 @@ pub fn fire_mine_launcher(
                     },
                     ..default()
                 },
-                Health::new(1, 0),
+                HealthComponent::new(1, 0, 2.0),
                 Collider { radius: size.0 },
                 Owner(parent.get()),
                 ExplodesOnDespawn {
@@ -860,7 +860,7 @@ pub fn fire_rocket_launcher(
                         },
                         ..default()
                     },
-                    BaseGlyphRotation {
+                    BaseRotation {
                         rotation: Quat::from_rotation_z(PI / 2.0),
                     },
                     Physics {

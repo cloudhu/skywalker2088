@@ -6,12 +6,12 @@ use bevy::{
     render::texture::{ImageLoaderSettings, ImageSampler},
 };
 
-use crate::{screens::AppState, theme::prelude::*, AppSet};
+use crate::{screens::AppStates, theme::prelude::*, AppSet};
 
 pub(super) fn plugin(app: &mut App) {
     // Spawn splash screen.
     app.insert_resource(ClearColor(SPLASH_BACKGROUND_COLOR));
-    app.add_systems(OnEnter(AppState::Splash), spawn_splash_screen);
+    app.add_systems(OnEnter(AppStates::Splash), spawn_splash_screen);
 
     // Animate splash screen.
     app.add_systems(
@@ -20,27 +20,27 @@ pub(super) fn plugin(app: &mut App) {
             tick_fade_in_out.in_set(AppSet::TickTimers),
             apply_fade_in_out.in_set(AppSet::Update),
         )
-            .run_if(in_state(AppState::Splash)),
+            .run_if(in_state(AppStates::Splash)),
     );
 
     // Add splash timer.
     app.register_type::<SplashTimer>();
-    app.add_systems(OnEnter(AppState::Splash), insert_splash_timer);
-    app.add_systems(OnExit(AppState::Splash), remove_splash_timer);
+    app.add_systems(OnEnter(AppStates::Splash), insert_splash_timer);
+    app.add_systems(OnExit(AppStates::Splash), remove_splash_timer);
     app.add_systems(
         Update,
         (
             tick_splash_timer.in_set(AppSet::TickTimers),
             check_splash_timer.in_set(AppSet::Update),
         )
-            .run_if(in_state(AppState::Splash)),
+            .run_if(in_state(AppStates::Splash)),
     );
 
     // Exit the splash screen early if the player hits escape.
     app.add_systems(
         Update,
         continue_to_loading_screen
-            .run_if(input_just_pressed(KeyCode::Escape).and_then(in_state(AppState::Splash))),
+            .run_if(input_just_pressed(KeyCode::Escape).and_then(in_state(AppStates::Splash))),
     );
 }
 
@@ -54,7 +54,7 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert((
             Name::new("Splash screen"),
             BackgroundColor(SPLASH_BACKGROUND_COLOR),
-            StateScoped(AppState::Splash),
+            StateScoped(AppStates::Splash),
         ))
         .with_children(|children| {
             children.spawn((
@@ -142,12 +142,12 @@ fn tick_splash_timer(time: Res<Time>, mut timer: ResMut<SplashTimer>) {
     timer.0.tick(time.delta());
 }
 
-fn check_splash_timer(timer: ResMut<SplashTimer>, mut next_screen: ResMut<NextState<AppState>>) {
+fn check_splash_timer(timer: ResMut<SplashTimer>, mut next_screen: ResMut<NextState<AppStates>>) {
     if timer.0.just_finished() {
-        next_screen.set(AppState::Loading);
+        next_screen.set(AppStates::Loading);
     }
 }
 
-fn continue_to_loading_screen(mut next_screen: ResMut<NextState<AppState>>) {
-    next_screen.set(AppState::Loading);
+fn continue_to_loading_screen(mut next_screen: ResMut<NextState<AppStates>>) {
+    next_screen.set(AppStates::Loading);
 }

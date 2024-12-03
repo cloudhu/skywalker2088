@@ -1,15 +1,16 @@
+use crate::assets::player_assets::PlayerAssets;
+use crate::components::character::CharacterType;
 use crate::{
-    assets::Fonts,
-    components::{common::Health, common::ShipBundle},
+    components::health::{FighterBundle, HealthComponent},
     gameplay::{
         gamelogic::{game_not_paused, Allegiance, PlayerLevel, Targettable, WillTarget},
         loot::{Cargo, Magnet},
-        physics::{BaseGlyphRotation, Collider, Physics},
-        GameState,
+        physics::{BaseRotation, Collider, Physics},
+        GameStates,
     },
-    screens::AppState,
+    screens::AppStates,
     ship::engine::Engine,
-    util::{Colour, RenderLayer},
+    util::RenderLayer,
     AppSet, CameraShake, MainCamera,
 };
 use bevy::input::mouse::MouseWheel;
@@ -22,7 +23,7 @@ use bevy::{
 use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<IsPlayer>();
+    app.register_type::<PlayerComponent>();
 
     app.add_systems(
         Update,
@@ -34,7 +35,7 @@ pub(super) fn plugin(app: &mut App) {
         )
             .chain()
             .in_set(AppSet::Update)
-            .run_if(in_state(AppState::InGame)),
+            .run_if(in_state(AppStates::Game)),
     );
     app.add_systems(
         Update,
@@ -42,7 +43,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 
@@ -54,8 +55,8 @@ pub struct SpawnPlayer {
     pub drag: f32,
     pub power: f32,
     pub steering_factor: f32,
-    pub max_health: i32,
-    pub max_shield: i32,
+    pub max_health: usize,
+    pub max_shield: usize,
     pub radius: f32,
 }
 
@@ -71,8 +72,8 @@ impl SpawnPlayer {
         drag: f32,
         power: f32,
         steering_factor: f32,
-        max_health: i32,
-        max_shield: i32,
+        max_health: usize,
+        max_shield: usize,
         radius: f32,
     ) -> SpawnPlayer {
         SpawnPlayer {
@@ -96,29 +97,25 @@ impl Command for SpawnPlayer {
 // Simple components
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 #[reflect(Component)]
-pub struct IsPlayer;
+pub struct PlayerComponent;
 
 // Spawn the player
-fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_assets: Res<Fonts>) {
+fn spawn_player(
+    In(config): In<SpawnPlayer>,
+    mut commands: Commands,
+    player_assets: Res<PlayerAssets>,
+) {
     commands.spawn((
         Name::new("Player"),
-        ShipBundle {
-            glyph: Text2dBundle {
-                text: Text::from_section(
-                    "中",
-                    TextStyle {
-                        font: player_assets.primary.clone(),
-                        font_size: 20.0,
-                        color: Colour::PLAYER,
-                    },
-                )
-                .with_justify(JustifyText::Center),
+        FighterBundle {
+            sprite: SpriteBundle {
+                texture: player_assets.get_asset(&CharacterType::Captain),
                 transform: Transform::from_translation(Vec3 {
                     x: 100.0,
                     y: 100.0,
                     z: RenderLayer::Player.as_z(),
                 }),
-                ..default()
+                ..Default::default()
             },
             physics: Physics::new(config.drag),
             engine: Engine::new_with_steering(
@@ -126,7 +123,7 @@ fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_asse
                 config.max_speed,
                 config.steering_factor,
             ),
-            health: Health::new(config.max_health, config.max_shield),
+            health: HealthComponent::new(config.max_health, config.max_shield, 2.0),
             collider: Collider {
                 radius: config.radius,
             },
@@ -134,22 +131,22 @@ fn spawn_player(In(config): In<SpawnPlayer>, mut commands: Commands, player_asse
             will_target: WillTarget(vec![Allegiance::Enemy]),
             ..default()
         },
-        BaseGlyphRotation {
-            rotation: Quat::from_rotation_z(PI / 2.0),
+        BaseRotation {
+            rotation: Quat::from_rotation_z(-PI / 2.0),
         },
-        IsPlayer,
+        PlayerComponent,
         Cargo::default(),
         Magnet::default(),
-        StateScoped(AppState::InGame),
+        StateScoped(AppStates::Game),
     ));
-    // println!("spawning Player");
+    info!("Player spawned");
 }
 
 pub fn player_control(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
     camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
-    mut query: Query<(&IsPlayer, &mut Engine), (With<IsPlayer>, With<Engine>)>,
+    mut query: Query<(&PlayerComponent, &mut Engine), (With<PlayerComponent>, With<Engine>)>,
 ) {
     for (_, mut engine) in &mut query {
         if mouse_button_input.pressed(MouseButton::Left) {
@@ -170,14 +167,14 @@ pub fn player_control(
 
 pub fn pause_control(
     key_input: Res<ButtonInput<KeyCode>>,
-    game_state: Res<State<GameState>>,
-    mut change_game_state: ResMut<NextState<GameState>>,
+    game_state: Res<State<GameStates>>,
+    mut change_game_state: ResMut<NextState<GameStates>>,
     mut query: Query<&mut CameraShake>,
 ) {
     if key_input.just_pressed(KeyCode::Space) {
         match game_state.get() {
-            GameState::Running => change_game_state.set(GameState::Paused),
-            GameState::Paused => change_game_state.set(GameState::Running),
+            GameStates::Playing => change_game_state.set(GameStates::Paused),
+            GameStates::Paused => change_game_state.set(GameStates::Playing),
             _ => (),
         }
     }
@@ -192,14 +189,14 @@ pub fn pause_control(
 
 pub fn level_up_system(
     mut level: ResMut<PlayerLevel>,
-    mut query: Query<&mut Cargo, With<IsPlayer>>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut query: Query<&mut Cargo, With<PlayerComponent>>,
+    mut next_state: ResMut<NextState<GameStates>>,
 ) {
     for mut cargo in &mut query {
         if cargo.amount >= level.required_cargo_to_level() {
             cargo.amount -= level.required_cargo_to_level();
             level.value += 1;
-            next_state.set(GameState::Selection);
+            next_state.set(GameStates::Selection);
         }
     }
 }

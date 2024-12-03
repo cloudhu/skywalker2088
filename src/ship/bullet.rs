@@ -1,9 +1,9 @@
-use crate::assets::AudioAssets;
-use crate::components::common::*;
+use crate::assets::audio_assets::AudioAssets;
+use crate::components::health::*;
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{game_not_paused, Damage, TakeDamageEvent};
 use crate::gameplay::physics::Collider;
-use crate::screens::AppState;
+use crate::screens::AppStates;
 use crate::AppSet;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_kira_audio::prelude::Volume;
@@ -80,7 +80,7 @@ pub(super) fn plugin(app: &mut App) {
             .chain()
             .in_set(AppSet::Update)
             .distributive_run_if(game_not_paused)
-            .distributive_run_if(in_state(AppState::InGame)),
+            .distributive_run_if(in_state(AppStates::Game)),
     );
 }
 
@@ -90,7 +90,7 @@ pub fn bullet_system(
     mut query: Query<(&mut Bullet, Entity, &Transform, &Owner, Option<&AoeDamage>), With<Bullet>>,
     potential_query: Query<
         (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<Health>),
+        (Without<Bullet>, With<Collider>, With<HealthComponent>),
     >,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
@@ -136,7 +136,7 @@ pub fn bullet_collision_system(
     >,
     potential_query: Query<
         (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<Health>),
+        (Without<Bullet>, With<Collider>, With<HealthComponent>),
     >,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {

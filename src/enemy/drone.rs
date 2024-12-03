@@ -1,37 +1,32 @@
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
-
 use super::AI;
-use crate::assets::Fonts;
-use crate::components::common::{Health, ShipBundle};
+use crate::assets::enemy_assets::MobAssets;
+use crate::components::health::{FighterBundle, HealthComponent};
+use crate::components::spawnable::{EnemyMobType, MobType};
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::loot::{DropsLoot, WorthPoints};
-use crate::gameplay::physics::{BaseGlyphRotation, Collider, Physics};
+use crate::gameplay::physics::{BaseRotation, Collider, Physics};
+use crate::ship::animation::AnimationComponent;
+use crate::ship::animation::AnimationDirection::PingPong;
+use crate::ship::animation::PingPongDirection::Forward;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, FireRate, Range, TurretBundle, TurretClass};
-use crate::util::Colour;
+use bevy::prelude::*;
 
-pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_drone(commands: &mut Commands, mob_assets: &MobAssets, position: Vec3) {
+    let mob_type = MobType::Enemy(EnemyMobType::Drone);
     commands
         .spawn((
-            ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "米",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 18.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
+            FighterBundle {
+                sprite: SpriteBundle {
+                    texture: mob_assets.get_mob_image(&mob_type),
                     transform: Transform::from_translation(position),
                     ..default()
                 },
                 physics: Physics::new(5.0),
                 engine: Engine::new(10.0, 10.0),
-                health: Health::new(1, 4),
+                health: HealthComponent::new(1, 4, 2.0),
                 collider: Collider { radius: 10.0 },
                 explodes_on_despawn: ExplodesOnDespawn {
                     size_min: 15.0,
@@ -40,8 +35,16 @@ pub fn spawn_drone(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) 
                 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
-                rotation: Quat::from_rotation_z(-PI),
+            BaseRotation {
+                rotation: Quat::from_rotation_z(-PI / 2.0),
+            },
+            TextureAtlas {
+                layout: mob_assets.get_mob_texture_atlas_layout(&mob_type),
+                ..default()
+            },
+            AnimationComponent {
+                timer: Timer::from_seconds(0.25, TimerMode::Repeating),
+                direction: PingPong(Forward),
             },
             AI,
             DropsLoot,

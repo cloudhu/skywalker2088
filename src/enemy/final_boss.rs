@@ -1,8 +1,8 @@
 use super::{FinalBoss, AI};
 use crate::{
-    assets::Fonts,
-    components::common::{Health, ShipBundle},
-    gameplay::physics::{BaseGlyphRotation, Collider, Physics},
+    assets::audio_assets::Fonts,
+    components::health::{HealthComponent, ShipBundle},
+    gameplay::physics::{BaseRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
         turret::{DoesDamage, EffectSize, FireRate, Range, TurretBundle, TurretClass},
@@ -36,11 +36,11 @@ pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
                     method: EngineMethod::Keep(200.0),
                     ..Default::default()
                 },
-                health: Health::new(1000, 4000),
+                health: HealthComponent::new(1000, 4000, 2.0),
                 collider: Collider { radius: 50.0 },
                 ..Default::default()
             },
-            BaseGlyphRotation {
+            BaseRotation {
                 rotation: Quat::from_rotation_z(-PI),
             },
             AI,
