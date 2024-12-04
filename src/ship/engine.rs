@@ -103,7 +103,7 @@ pub fn engine_system(
             }
             let clamped_steer = desired_steer.clamp(-max_steer_this_step, max_steer_this_step);
             let to_target = Vec2::from_angle(clamped_steer).rotate(to_target);
-            // println!("to target: {:?}", to_target);
+            // info!("to target: {:?}", to_target);
             physics.add_force(to_target.normalize() * engine.speed);
         } else {
             engine.speed -= engine.power * time.delta_seconds() * engine.depower_factor;

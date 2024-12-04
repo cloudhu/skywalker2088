@@ -7,7 +7,6 @@ use bevy::prelude::*;
 
 use std::{cmp::min, time::Duration};
 
-use crate::assets::audio_assets::Fonts;
 use crate::assets::enemy_assets::MobAssets;
 use crate::enemy::drone::spawn_drone;
 use crate::enemy::drone_boss::spawn_drone_boss;
@@ -166,7 +165,7 @@ fn separation(position: Vec2, neighbours: &[Vec2]) -> Vec2 {
 
 fn spawn_final_boss_system(
     mut commands: Commands,
-    fonts: Res<Fonts>,
+    mob_assets: Res<MobAssets>,
     game_time: Res<GameTime>,
     query: Query<(), With<FinalBoss>>,
     player_query: Query<&Transform, With<PlayerComponent>>,
@@ -180,7 +179,7 @@ fn spawn_final_boss_system(
         let spawn_point = pos + Math::random_2d_unit_vector() * 1000.0;
         spawn_final_boss(
             &mut commands,
-            &fonts,
+            &mob_assets,
             spawn_point.extend(RenderLayer::Enemy.as_z()),
         )
     }

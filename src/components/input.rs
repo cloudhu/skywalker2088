@@ -5,7 +5,7 @@ use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
 
 /// Used by players to access their matching menu ui
-/// has a u8 index matching the player (0-3) for a 4 player game
+/// has an u8 index matching the player (0-3) for a 4 player game
 #[derive(Component)]
 pub struct MenuExplorer(pub u8);
 
@@ -55,4 +55,30 @@ pub struct InputsResource {
     pub menu: InputMap<MenuAction>,
     pub player_keyboard: InputMap<PlayerAction>,
     pub player_gamepad: InputMap<PlayerAction>,
+}
+
+/// Event and Component for giving and sending menu buttons actions to move the user from
+/// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
+/// sprinkles.
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum ButtonActionType {
+    CharacterSelectReady(u8),
+    CharacterSelectJoin,
+    CharacterSelectRight(u8),
+    CharacterSelectLeft(u8),
+    EnterCharacterSelection,
+    EnterOptions,
+    EnterCompendium,
+    QuitGame,
+}
+
+#[derive(Component, Clone, PartialEq, Eq, Copy, Debug)]
+pub struct ButtonActionComponent {
+    pub action: ButtonActionType,
+}
+
+impl From<ButtonActionType> for ButtonActionComponent {
+    fn from(value: ButtonActionType) -> Self {
+        ButtonActionComponent { action: value }
+    }
 }

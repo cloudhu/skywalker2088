@@ -1,5 +1,7 @@
 use crate::assets::player_assets::PlayerAssets;
 use crate::components::character::CharacterType;
+use crate::components::input::{InputsResource, MainMenuExplorer, MenuAction, PlayerAction};
+use crate::components::player::{PlayerInput, PlayersResource};
 use crate::{
     components::health::{FighterBundle, HealthComponent},
     gameplay::{
@@ -13,6 +15,7 @@ use crate::{
     util::RenderLayer,
     AppSet, CameraShake, MainCamera,
 };
+use bevy::input::gamepad::GamepadButtonChangedEvent;
 use bevy::input::mouse::MouseWheel;
 use bevy::window::WindowMode;
 use bevy::{
@@ -20,6 +23,8 @@ use bevy::{
     ecs::{system::RunSystemOnce, world::Command},
     prelude::*,
 };
+use leafwing_input_manager::prelude::ActionState;
+use leafwing_input_manager::InputManagerBundle;
 use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
@@ -104,6 +109,8 @@ fn spawn_player(
     In(config): In<SpawnPlayer>,
     mut commands: Commands,
     player_assets: Res<PlayerAssets>,
+    inputs_res: Res<InputsResource>,
+    // players_resource: Res<PlayersResource>,
 ) {
     commands.spawn((
         Name::new("Player"),
@@ -138,6 +145,18 @@ fn spawn_player(
         Cargo::default(),
         Magnet::default(),
         StateScoped(AppStates::Game),
+        InputManagerBundle::<PlayerAction> {
+            action_state: ActionState::default(),
+            input_map: inputs_res.player_keyboard.clone(),
+            // match player_data.input {
+            //     PlayerInput::Keyboard => inputs_res.player_keyboard.clone(),
+            //     PlayerInput::Gamepad(id) => inputs_res
+            //         .player_gamepad
+            //         .clone()
+            //         .set_gamepad(Gamepad { id })
+            //         .to_owned(),
+            // },
+        },
     ));
     info!("Player spawned");
 }
@@ -146,9 +165,21 @@ pub fn player_control(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window>,
     camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
-    mut query: Query<(&PlayerComponent, &mut Engine), (With<PlayerComponent>, With<Engine>)>,
+    mut query: Query<
+        (&Transform, &mut Engine, &ActionState<PlayerAction>),
+        (With<PlayerComponent>, With<Engine>),
+    >,
 ) {
-    for (_, mut engine) in &mut query {
+    for (trans, mut engine, action_state) in &mut query {
+        let up = action_state.pressed(&PlayerAction::MoveUp);
+        let down = action_state.pressed(&PlayerAction::MoveDown);
+        let left = action_state.pressed(&PlayerAction::MoveLeft);
+        let right = action_state.pressed(&PlayerAction::MoveRight);
+
+        // convert to axis multipliers
+        let x_axis = -(left as i8) + right as i8;
+        let y_axis = -(down as i8) + up as i8;
+
         if mouse_button_input.pressed(MouseButton::Left) {
             // Calculate current position to mouse position
             let (camera, camera_transform) = camera_q.single();
@@ -158,7 +189,14 @@ pub fn player_control(
                 .cursor_position()
                 .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
                 .map(|ray| ray.origin.truncate());
-            // println!("Player controlled at {:?}", engine.target);
+            info!("Player controlled at {:?}", engine.target);
+        } else if x_axis != 0 || y_axis != 0 {
+            let player_pos = trans.translation.clone();
+            engine.target = Option::from(Vec2::new(
+                player_pos.x + x_axis as f32,
+                player_pos.y + y_axis as f32,
+            ));
+            info!("Player moved to  {:?}", engine.target);
         } else {
             engine.target = None;
         }

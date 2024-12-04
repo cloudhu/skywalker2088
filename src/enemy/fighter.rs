@@ -19,7 +19,7 @@ use bevy::prelude::*;
 use std::f32::consts::PI;
 
 pub fn spawn_fighter(commands: &mut Commands, mob_assets: &MobAssets, position: Vec3) {
-    let mob_type = MobType::Enemy(EnemyMobType::CrustlingLeft);
+    let mob_type = MobType::Enemy(EnemyMobType::MissileLauncher);
     commands
         .spawn((
             FighterBundle {

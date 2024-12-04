@@ -1,31 +1,28 @@
 use super::{FinalBoss, AI};
+use crate::assets::enemy_assets::MobAssets;
+use crate::components::health::FighterBundle;
+use crate::components::spawnable::{EnemyMobType, MobType};
+use crate::ship::animation::AnimationComponent;
+use crate::ship::animation::AnimationDirection::PingPong;
+use crate::ship::animation::PingPongDirection::Forward;
 use crate::{
-    assets::audio_assets::Fonts,
-    components::health::{HealthComponent, ShipBundle},
+    components::health::HealthComponent,
     gameplay::physics::{BaseRotation, Collider, Physics},
     ship::{
         engine::{Engine, EngineMethod},
         turret::{DoesDamage, EffectSize, FireRate, Range, TurretBundle, TurretClass},
     },
-    util::Colour,
 };
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
+pub fn spawn_final_boss(commands: &mut Commands, mob_assets: &MobAssets, position: Vec3) {
+    let mob_type = MobType::Enemy(EnemyMobType::Shelly);
     commands
         .spawn((
-            ShipBundle {
-                glyph: Text2dBundle {
-                    text: Text::from_section(
-                        "Œ",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 50.0,
-                            color: Colour::ENEMY,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
+            FighterBundle {
+                sprite: SpriteBundle {
+                    texture: mob_assets.get_mob_image(&mob_type),
                     transform: Transform::from_translation(position),
                     ..default()
                 },
@@ -42,6 +39,14 @@ pub fn spawn_final_boss(commands: &mut Commands, fonts: &Res<Fonts>, position: V
             },
             BaseRotation {
                 rotation: Quat::from_rotation_z(-PI),
+            },
+            TextureAtlas {
+                layout: mob_assets.get_mob_texture_atlas_layout(&mob_type),
+                ..default()
+            },
+            AnimationComponent {
+                timer: Timer::from_seconds(0.25, TimerMode::Repeating),
+                direction: PingPong(Forward),
             },
             AI,
             FinalBoss,
