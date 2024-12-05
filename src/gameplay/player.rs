@@ -144,7 +144,6 @@ fn spawn_player(
         PlayerComponent,
         Cargo::default(),
         Magnet::default(),
-        StateScoped(AppStates::Game),
         InputManagerBundle::<PlayerAction> {
             action_state: ActionState::default(),
             input_map: inputs_res.player_keyboard.clone(),

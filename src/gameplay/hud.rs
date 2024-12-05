@@ -215,7 +215,7 @@ pub fn hud_system(
                             format!(
                                 "{} {:>16}",
                                 bar((fire_rate.timer.fraction() * 10.0).round() as usize, 10, 10),
-                                class
+                                localize.get(format!("{:>16}", class).as_str()),
                             )
                         })
                         .collect::<Vec<String>>();
@@ -223,7 +223,7 @@ pub fn hud_system(
                     display
                 }
                 UINode::Upgrades => {
-                    let mut display = upgrades.display_for_ui();
+                    let mut display = upgrades.display_for_ui(&localize);
                     display.resize_with(10, Default::default);
                     display
                 }

@@ -14,7 +14,6 @@ use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<GameStates>();
-    app.enable_state_scoped_entities::<GameStates>();
 
     app.add_plugins((
         gamelogic::plugin,

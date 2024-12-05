@@ -4,6 +4,7 @@ use crate::gameplay::player::PlayerComponent;
 use crate::screens::AppStates;
 use crate::ship::engine::Engine;
 use crate::ship::turret::{DoesDamage, EffectSize, FireRate, MultiShot, TurretBundle, TurretClass};
+use crate::theme::prelude::Localize;
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
@@ -17,11 +18,17 @@ use std::time::Duration;
 pub struct PlayerUpgrades(pub HashMap<UpgradeEvent, u8>);
 
 impl PlayerUpgrades {
-    pub fn display_for_ui(&self) -> Vec<String> {
+    pub fn display_for_ui(&self, localize: &Localize) -> Vec<String> {
         self.0
             .iter()
             .filter(|(_, level)| **level > 0)
-            .map(|(upgrade, level)| format!("{:0>2} {:>16}", level, upgrade))
+            .map(|(upgrade, level)| {
+                format!(
+                    "{:0>2} {:>16}",
+                    level,
+                    localize.get(format!("{}", upgrade).as_str())
+                )
+            })
             .collect()
     }
 
