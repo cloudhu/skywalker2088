@@ -29,7 +29,7 @@ EM Pulsar,电磁脉冲（electromagnetic pulse）,EM Pulsar,电磁脉冲
 EmpDes,电磁脉冲（electromagnetic pulse）,Creates a shockwave around you that deals damage to enemies.,在你周围制造冲击波，对敌人造成伤害。
 Mine Launcher,地雷陷阱,Mine Launcher,太空地雷
 MineLauncherDes,地雷陷阱,Drops mines that explode when enemies are in close proximity.,投下地雷，当敌人靠近时爆炸。
-Pierce Laser,Pierce Laser,Pierce Laser,激光镭射
+Pierce Laser,穿透激光,Pierce Laser,激光镭射
 PierceLaserDes,穿透攻击镭射激光,Shoots a heavy damaging laser that pierces through enemies.,发射强烈的破坏性激光穿透敌人。
 Rocket Launcher,火箭攻击,Rocket Launcher,火箭导弹
 RocketLauncherDes,火箭攻击,Shoots a seeking missile that explodes on impact.,发射一枚追踪导弹并在撞击时爆炸。
