@@ -30,13 +30,18 @@ ______
 | Zoom               | mouse wheel /PageUp, PageDown          | Triggers         |
 
 ______
-##  1.2. Level Design
+## 1.2 Spacecraft design
+The spaceship can be divided into multiple components, and the diversity of the spaceship can be completed through the modular design, 
+base on this design the spaceship can be upgraded with equipment components, which provides the basis for the spaceship cultivation system.
+![Modular design for spacecraft](https://github.com/cloudhu/skywalker2088/blob/v0.14.2/docs/design/draw/designs-Spaceship.png "Spacecraft layout")
+
+##  1.3. Level Design
 The levels are mainly divided into: 1. Drama level; 2. Relic exploration level; 3. Infinite Abyss Level.
-###  1.2.1  Drama level
+###  1.3.1  Drama level
 todo……
-###  1.2.2  Relic exploration level
+###  1.3.2  Relic exploration level
 todo……
-###  1.2.3  Infinite Abyss Level
+###  1.3.3  Infinite Abyss Level
 todo……
 
 ______
