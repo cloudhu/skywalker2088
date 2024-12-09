@@ -3,7 +3,7 @@
 ______
 Vampire survivor like game, cosmic science fiction wasteland, players drive the spaceship to roam in the universe, fight monsters to collect equipment to upgrade the spaceship, research technology tree, explore the remains of civilization.
 ______
-[English](https://github.com/cloudhu/skywalker2088/blob/main/README-EN.md)
+[English](https://github.com/cloudhu/skywalker2088/blob/v0.14.2/README-EN.md)
 ______
 # 0. 简介
 - 游戏类型：吸血鬼幸存者like
