@@ -1,7 +1,7 @@
 //! The title screen that appears when the game starts.
 
-use crate::assets::audio_assets::{Fonts, Music};
-use crate::audio::NextBgm;
+use crate::assets::audio_assets::Fonts;
+use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use crate::components::character::CharacterType;
 use crate::components::events::{ButtonActionEvent, PlayerJoinEvent};
 use crate::components::input::{
@@ -14,24 +14,24 @@ use bevy::input::gamepad::GamepadButtonChangedEvent;
 use bevy::prelude::*;
 use bevy::window::WindowMode;
 use leafwing_input_manager::action_state::ActionState;
+use std::time::Duration;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<PlayerJoinEvent>();
     app.add_event::<ButtonActionEvent>();
-    app.add_systems(OnEnter(AppStates::MainMenu), spawn_title_screen);
-    app.add_systems(OnEnter(AppStates::MainMenu), play_title_music);
-    app.add_systems(OnExit(AppStates::MainMenu), stop_title_music);
+    app.add_systems(OnEnter(AppStates::MainMenu), setup_title_screen);
     app.add_systems(
         Update,
         (player_join_system,).run_if(in_state(AppStates::MainMenu)),
     );
 }
 
-fn spawn_title_screen(
+fn setup_title_screen(
     mut commands: Commands,
     mut localize: ResMut<Localize>,
     config: Res<GameConfig>,
     fonts: Res<Fonts>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
 ) {
     localize.set_language(config.language.clone());
     commands
@@ -55,6 +55,13 @@ fn spawn_title_screen(
                 .button("Exit", fonts.primary.clone())
                 .observe(exit_app);
         });
+    // change music
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        bg_music_type: Some(BGMusicType::Main),
+        loop_from: Some(0.0),
+        fade_in: Some(Duration::from_secs(2)),
+        fade_out: Some(Duration::from_secs(2)),
+    });
 }
 
 fn enter_gameplay_screen(
@@ -88,14 +95,6 @@ fn set_lang(
 #[cfg(not(target_family = "wasm"))]
 fn exit_app(_trigger: Trigger<OnPress>, mut app_exit: EventWriter<AppExit>) {
     app_exit.send(AppExit::Success);
-}
-
-fn play_title_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {
-    *next_bgm = NextBgm(Some(music.title.clone()));
-}
-
-fn stop_title_music(mut next_bgm: ResMut<NextBgm>) {
-    *next_bgm = NextBgm(None);
 }
 
 fn toggle_fullscreen(_trigger: Trigger<OnPress>, mut window_query: Query<&mut Window>) {

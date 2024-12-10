@@ -1,7 +1,6 @@
 use crate::assets::player_assets::PlayerAssets;
 use crate::components::character::CharacterType;
-use crate::components::input::{InputsResource, MainMenuExplorer, MenuAction, PlayerAction};
-use crate::components::player::{PlayerInput, PlayersResource};
+use crate::components::input::{InputsResource, PlayerAction};
 use crate::{
     components::health::{FighterBundle, HealthComponent},
     gameplay::{
@@ -15,7 +14,6 @@ use crate::{
     util::RenderLayer,
     AppSet, CameraShake, MainCamera,
 };
-use bevy::input::gamepad::GamepadButtonChangedEvent;
 use bevy::input::mouse::MouseWheel;
 use bevy::window::WindowMode;
 use bevy::{

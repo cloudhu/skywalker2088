@@ -1,7 +1,6 @@
 //! The screen state for the main gameplay.
-
-use crate::assets::audio_assets::{Fonts, Music};
-use crate::audio::NextBgm;
+use crate::assets::audio_assets::Fonts;
+use crate::components::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use crate::gameplay::level::spawn_level as spawn_level_command;
 use crate::gameplay::loot::Points;
 use crate::gameplay::GameStates;
@@ -9,11 +8,10 @@ use crate::theme::interaction::OnPress;
 use crate::{screens::AppStates, theme::prelude::*};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
+use std::time::Duration;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(AppStates::Game), spawn_level);
-    app.add_systems(OnEnter(AppStates::Game), play_gameplay_music);
-    app.add_systems(OnExit(AppStates::Game), stop_music);
     app.add_systems(OnEnter(GameStates::GameOver), setup_game_over);
     app.add_systems(
         Update,
@@ -22,19 +20,28 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_level(mut commands: Commands) {
+fn spawn_level(
+    mut commands: Commands,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
+) {
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        bg_music_type: Some(BGMusicType::Game),
+        loop_from: Some(0.0),
+        fade_in: Some(Duration::from_secs(2)),
+        fade_out: Some(Duration::from_secs(2)),
+    });
     commands.add(spawn_level_command);
 }
 
-fn play_gameplay_music(mut next_bgm: ResMut<NextBgm>, music: Res<Music>) {
-    *next_bgm = NextBgm(Some(music.gameplay.clone()));
-}
-
-fn stop_music(mut next_bgm: ResMut<NextBgm>) {
-    *next_bgm = NextBgm(None);
-}
-
-fn return_to_title_screen(mut next_screen: ResMut<NextState<AppStates>>) {
+fn return_to_title_screen(
+    mut next_screen: ResMut<NextState<AppStates>>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
+) {
+    // fade music out
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        fade_out: Some(Duration::from_secs(2)),
+        ..default()
+    });
     next_screen.set(AppStates::MainMenu);
 }
 
