@@ -33,6 +33,7 @@ ______
 ## 1.2 Spacecraft design
 The spaceship can be divided into multiple components, and the diversity of the spaceship can be completed through the modular design, 
 base on this design the spaceship can be upgraded with equipment components, which provides the basis for the spaceship cultivation system.
+______
 ![Modular design for spacecraft](https://github.com/cloudhu/skywalker2088/blob/v0.14.2/docs/design/draw/designs-Spaceship.png "Spacecraft layout")
 
 ##  1.3. Level Design
@@ -58,9 +59,7 @@ ______
 - [x] Supports full screen/window switching and mouse wheel zooming (November 15, 2024)
 - [x] Configure property values and multiple languages with csv (English and Chinese are supported first)
 - [x] Merging [Thetawave](https://github.com/thetawavegame/thetawave)'s codes and resources to improve code structure and gameplay logics (November 29, 2024)
-- [x] Support gamepad handle operation input （employ [leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager) as input plugin）
 - [x] Spawner for different type of enemies
-- [x] Collision detection with a physics engine（bevy_rapier2d）
 - [x] Animation module
 - [x] Game UI
 
@@ -70,6 +69,8 @@ ______
 - [ ] Level switching
 - [ ] Game saving, file reading, auto save(employ [bevy_pkv](https://github.com/johanhelsing/bevy_pkv) plugin)
 - [ ] Multiplayer support
+- [ ] Support gamepad handle operation input （employ [leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager) as input plugin）
+- [ ] Collision detection with a physics engine（bevy_rapier2d）
 
 # 3.  For Developers
 ## 3.1  Game Engine

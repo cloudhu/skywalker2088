@@ -58,9 +58,7 @@ ______
 - [x] 支持全屏/窗口切换和鼠标滚轮缩放（2024年11月15日）
 - [x] 通过csv来配置数值和多语言（先支持中英双语）
 - [x] 融合[Thetawave](https://github.com/thetawavegame/thetawave)的代码和资源，改进代码结构和游戏玩法（2024年11月29日）
-- [x] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）
 - [x] 玩家定点和敌人随机点出生
-- [x] 利用物理引擎进行碰撞检测（bevy_rapier2d）
 - [x] 游戏UI
 
 ## 2.2 待实现列表
@@ -70,6 +68,8 @@ ______
 - [ ] 玩家出生、护盾、爆炸、水波等精灵动画
 - [ ] 游戏存档、读档、自动保存(考虑使用[bevy_pkv](https://github.com/johanhelsing/bevy_pkv)插件开发)
 - [ ] 本地多人模式
+- [ ] 支持手柄操作输入（我喜欢用手柄玩，没有手柄可以用键鼠，考虑使用[leafwing-input-manager](https://github.com/leafwing-studios/leafwing-input-manager)插件）
+- [ ] 利用物理引擎进行碰撞检测（bevy_rapier2d）
 
 # 3. 开发指南
 ## 3.1 游戏引擎
