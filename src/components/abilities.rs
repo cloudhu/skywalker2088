@@ -70,9 +70,9 @@ pub enum AbilitySlotIDComponent {
     Two,
 }
 /// Component for tracking ability cooldowns
-#[derive(Component, Deserialize, Clone)]
+#[derive(Component, Clone)]
 pub struct AbilityCooldownComponent {
-    /// Stored seperately so that it can used with the player's cooldown multiplier
+    /// Stored separately so that it can be used with the player's cooldown multiplier
     /// to set the duration of the cooldown timer
     pub base_cooldown_time: f32,
     /// Tracks a cooldown for an ability
@@ -123,7 +123,7 @@ pub struct ChargeAbilityData {
 
 /// Stores ability values unique to the charge ability
 /// Which applies an external impulse and damage reduction to the player
-#[derive(Component, Deserialize, Clone)]
+#[derive(Component, Clone)]
 pub struct ChargeAbilityComponent {
     /// Tracks how long the player has been charging, stops charging when completed
     pub action_timer: Timer,
@@ -158,7 +158,7 @@ struct ChargeAbilityComponentData {
 /// Standard weapon bundle for spawning entity as a child of player component
 #[derive(Bundle, Clone)]
 pub struct StandardWeaponAbilityBundle {
-    /// Slot ID that that the ability occupies
+    /// Slot ID that the ability occupies
     slot: AbilitySlotIDComponent,
     /// Tracks cooldown time
     cooldown: AbilityCooldownComponent,
@@ -180,7 +180,7 @@ impl From<&StandardWeaponAbilityData> for StandardWeaponAbilityBundle {
 /// Stores minimum data required to instantiate
 #[derive(Deserialize)]
 pub struct StandardWeaponAbilityData {
-    /// Slot ID that that the ability occupies
+    /// Slot ID that the ability occupies
     slot: AbilitySlotIDComponent,
     /// Base cooldown duration, before player's multiplier
     base_cooldown_time: f32,
@@ -206,8 +206,8 @@ pub struct StandardWeaponAbilityComponent {
     pub despawn_time_multiplier: f32,
     /// Multiplied by the player's projectile size to get size of fired projectile
     pub size_multiplier: f32,
-    /// Multiplied by the the player's projectile_count and rounded to nearest integer
-    /// to get number of projetctiles fired
+    /// Multiplied by the player's projectile_count and rounded to nearest integer
+    /// to get number of projectiles fired
     pub count_multiplier: f32,
     /// Sound that plays when the ability is activated
     pub sound: SoundEffectType,

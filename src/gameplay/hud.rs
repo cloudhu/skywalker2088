@@ -1,6 +1,6 @@
 use crate::assets::audio_assets::Fonts;
-use crate::components::health::HealthComponent;
-use crate::gameplay::gamelogic::{DespawnWithScene, GameTime, PlayerLevel};
+use crate::components::health::Health;
+use crate::gameplay::gamelogic::{GameTime, PlayerLevel};
 use crate::gameplay::loot::Cargo;
 use crate::gameplay::player::PlayerComponent;
 use crate::gameplay::upgrade::PlayerUpgrades;
@@ -28,124 +28,126 @@ pub enum UINode {
 fn setup_hud(mut commands: Commands, fonts: Res<Fonts>) {
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::Column,
-                    ..default()
-                },
+            Node {
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::Column,
                 ..default()
             },
             UINode::Status,
-            DespawnWithScene,
         ))
+        .insert(StateScoped(AppStates::Game))
         .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
-                    font_size: 12.0,
-                    color: Colour::WHITE,
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.primary.clone().into(),
+                    font_size: 60.0,
+                    ..Default::default()
                 },
+                TextColor(Colour::WHITE.into()),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
+
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.primary.clone().into(),
                     font_size: 12.0,
-                    color: Colour::SHIELD,
+                    ..Default::default()
                 },
+                TextColor(Colour::SHIELD.into()),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
+
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.primary.clone().into(),
                     font_size: 12.0,
-                    color: Colour::RED,
+                    ..Default::default()
                 },
+                TextColor(Colour::RED.into()),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
+
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.primary.clone().into(),
                     font_size: 12.0,
-                    color: Colour::INACTIVE,
+                    ..Default::default()
                 },
+                TextColor(Colour::INACTIVE.into()),
             ));
-            parent.spawn(TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: fonts.primary.clone(),
+
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.primary.clone().into(),
                     font_size: 12.0,
-                    color: Colour::PLAYER,
+                    ..Default::default()
                 },
+                TextColor(Colour::PLAYER.into()),
             ));
         });
 
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    right: Val::Px(0.0),
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(0.0),
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::End,
                 ..default()
             },
             UINode::Equipment,
-            DespawnWithScene,
         ))
+        .insert(StateScoped(AppStates::Game))
         .with_children(|parent| {
             for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "",
-                    TextStyle {
-                        font: fonts.primary.clone(),
+                parent.spawn((
+                    Text::new(""),
+                    TextFont {
+                        font: fonts.primary.clone().into(),
                         font_size: 12.0,
-                        color: Colour::WHITE,
+                        ..Default::default()
                     },
+                    TextColor(Colour::WHITE.into()),
                 ));
             }
         });
 
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    right: Val::Px(0.0),
-                    bottom: Val::Px(0.0),
-                    width: Val::Percent(20.0),
-                    height: Val::Percent(20.0),
-                    margin: UiRect::all(Val::Px(5.0)),
-                    column_gap: Val::Px(2.0),
-                    flex_direction: FlexDirection::ColumnReverse,
-                    align_items: AlignItems::End,
-                    ..default()
-                },
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+                width: Val::Percent(20.0),
+                height: Val::Percent(20.0),
+                margin: UiRect::all(Val::Px(5.0)),
+                column_gap: Val::Px(2.0),
+                flex_direction: FlexDirection::ColumnReverse,
+                align_items: AlignItems::End,
                 ..default()
             },
             UINode::Upgrades,
-            DespawnWithScene,
         ))
+        .insert(StateScoped(AppStates::Game))
         .with_children(|parent| {
             for _ in 0..10 {
-                parent.spawn(TextBundle::from_section(
-                    "",
-                    TextStyle {
-                        font: fonts.primary.clone(),
+                parent.spawn((
+                    Text::new(""),
+                    TextFont {
+                        font: fonts.primary.clone().into(),
                         font_size: 12.0,
-                        color: Colour::WHITE,
+                        ..default()
                     },
+                    TextColor(Colour::WHITE.into()),
                 ));
             }
         });
@@ -167,10 +169,10 @@ fn bar(current: usize, max: usize, width: usize) -> String {
 
 pub fn hud_system(
     upgrades: Res<PlayerUpgrades>,
-    player_query: Query<(&Engine, &HealthComponent, &Cargo, &Children), With<PlayerComponent>>,
+    player_query: Query<(&Engine, &Health, &Cargo, &Children), With<PlayerComponent>>,
     turret_query: Query<(&FireRate, &TurretClass)>,
     mut query: Query<(&Children, &UINode)>,
-    mut q_child: Query<&mut Text>,
+    mut q_child: Query<&mut TextSpan, With<Text>>,
     level: Res<PlayerLevel>,
     game_time: Res<GameTime>,
     localize: Res<Localize>,
@@ -231,10 +233,8 @@ pub fn hud_system(
 
             for (i, display) in displays.iter().enumerate() {
                 if let Some(&child) = children.get(i) {
-                    if let Ok(mut text) = q_child.get_mut(child) {
-                        if let Some(section) = text.sections.get_mut(0) {
-                            section.value = display.to_string();
-                        }
+                    if let Ok(mut span) = q_child.get_mut(child) {
+                        *span = TextSpan::from(display.to_string());
                     }
                 }
             }

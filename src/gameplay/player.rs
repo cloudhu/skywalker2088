@@ -1,8 +1,7 @@
 use crate::assets::player_assets::PlayerAssets;
 use crate::components::character::CharacterType;
-use crate::components::input::{InputsResource, PlayerAction};
 use crate::{
-    components::health::{FighterBundle, HealthComponent},
+    components::health::{Health, Spacecraft},
     gameplay::{
         gamelogic::{game_not_paused, Allegiance, PlayerLevel, Targettable, WillTarget},
         loot::{Cargo, Magnet},
@@ -15,14 +14,12 @@ use crate::{
     AppSet, CameraShake, MainCamera,
 };
 use bevy::input::mouse::MouseWheel;
-use bevy::window::WindowMode;
+use bevy::window::{PrimaryWindow, WindowMode};
 use bevy::{
     app::App,
     ecs::{system::RunSystemOnce, world::Command},
     prelude::*,
 };
-use leafwing_input_manager::prelude::ActionState;
-use leafwing_input_manager::InputManagerBundle;
 use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
@@ -93,7 +90,9 @@ impl SpawnPlayer {
 
 impl Command for SpawnPlayer {
     fn apply(self, world: &mut World) {
-        world.run_system_once_with(self, spawn_player);
+        world
+            .run_system_once_with(self, spawn_player)
+            .expect("Can not spawn player");
     }
 }
 
@@ -107,92 +106,74 @@ fn spawn_player(
     In(config): In<SpawnPlayer>,
     mut commands: Commands,
     player_assets: Res<PlayerAssets>,
-    inputs_res: Res<InputsResource>,
-    // players_resource: Res<PlayersResource>,
 ) {
-    commands.spawn((
-        Name::new("Player"),
-        FighterBundle {
-            sprite: SpriteBundle {
-                texture: player_assets.get_asset(&CharacterType::Captain),
-                transform: Transform::from_translation(Vec3 {
-                    x: 100.0,
-                    y: 100.0,
-                    z: RenderLayer::Player.as_z(),
-                }),
-                ..Default::default()
-            },
-            physics: Physics::new(config.drag),
-            engine: Engine::new_with_steering(
-                config.power,
-                config.max_speed,
-                config.steering_factor,
-            ),
-            health: HealthComponent::new(config.max_health, config.max_shield, 2.0),
-            collider: Collider {
+    commands
+        .spawn((
+            Spacecraft,
+            Sprite::from_image(player_assets.get_asset(&CharacterType::Captain)),
+            Transform::from_translation(Vec3 {
+                x: 100.0,
+                y: 100.0,
+                z: RenderLayer::Player.as_z(),
+            }),
+            Physics::new(config.drag),
+            Engine::new_with_steering(config.power, config.max_speed, config.steering_factor),
+            Health::new(config.max_health, config.max_shield, 2.0),
+            Collider {
                 radius: config.radius,
             },
-            targettable: Targettable(Allegiance::Friend),
-            will_target: WillTarget(vec![Allegiance::Enemy]),
-            ..default()
-        },
-        BaseRotation {
-            rotation: Quat::from_rotation_z(-PI / 2.0),
-        },
-        PlayerComponent,
-        Cargo::default(),
-        Magnet::default(),
-        InputManagerBundle::<PlayerAction> {
-            action_state: ActionState::default(),
-            input_map: inputs_res.player_keyboard.clone(),
-            // match player_data.input {
-            //     PlayerInput::Keyboard => inputs_res.player_keyboard.clone(),
-            //     PlayerInput::Gamepad(id) => inputs_res
-            //         .player_gamepad
-            //         .clone()
-            //         .set_gamepad(Gamepad { id })
-            //         .to_owned(),
-            // },
-        },
-    ));
+            Targettable(Allegiance::Friend),
+            WillTarget(vec![Allegiance::Enemy]),
+            BaseRotation {
+                rotation: Quat::from_rotation_z(-PI / 2.0),
+            },
+            Name::new("Player"),
+            PlayerComponent,
+            Cargo::default(),
+            Magnet::default(),
+        ))
+        .insert(StateScoped(AppStates::Game));
     info!("Player spawned");
 }
 
 pub fn player_control(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    windows: Query<&Window>,
-    camera_q: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
-    mut query: Query<
-        (&Transform, &mut Engine, &ActionState<PlayerAction>),
-        (With<PlayerComponent>, With<Engine>),
-    >,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut query: Query<(&Transform, &mut Engine), (With<PlayerComponent>, With<Engine>)>,
+    primary_window: Single<&Window, With<PrimaryWindow>>,
+    q_camera: Single<(&Camera, &GlobalTransform)>,
 ) {
-    for (trans, mut engine, action_state) in &mut query {
-        let up = action_state.pressed(&PlayerAction::MoveUp);
-        let down = action_state.pressed(&PlayerAction::MoveDown);
-        let left = action_state.pressed(&PlayerAction::MoveLeft);
-        let right = action_state.pressed(&PlayerAction::MoveRight);
-
-        // convert to axis multipliers
-        let x_axis = -(left as i8) + right as i8;
-        let y_axis = -(down as i8) + up as i8;
+    for (trans, mut engine) in query.iter_mut() {
+        // Collect directional input.
+        let mut intent = Vec2::ZERO;
+        if keyboard_input.pressed(KeyCode::KeyW) || keyboard_input.pressed(KeyCode::ArrowUp) {
+            intent.y += 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyS) || keyboard_input.pressed(KeyCode::ArrowDown) {
+            intent.y -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyA) || keyboard_input.pressed(KeyCode::ArrowLeft) {
+            intent.x -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::KeyD) || keyboard_input.pressed(KeyCode::ArrowRight) {
+            intent.x += 1.0;
+        }
 
         if mouse_button_input.pressed(MouseButton::Left) {
-            // Calculate current position to mouse position
-            let (camera, camera_transform) = camera_q.single();
-            let window = windows.get_single().expect("no primary window");
-
-            engine.target = window
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin.truncate());
-            info!("Player controlled at {:?}", engine.target);
-        } else if x_axis != 0 || y_axis != 0 {
+            let (main_camera, main_camera_transform) = *q_camera;
+            let world_cursor_pos = primary_window.cursor_position().and_then(|cursor_pos| {
+                main_camera
+                    .viewport_to_world_2d(main_camera_transform, cursor_pos)
+                    .ok()
+            });
+            if world_cursor_pos.is_some() {
+                engine.target = world_cursor_pos;
+                info!("Player controlled at {:?}", engine.target);
+            }
+        } else if intent != Vec2::ZERO {
             let player_pos = trans.translation.clone();
-            engine.target = Option::from(Vec2::new(
-                player_pos.x + x_axis as f32,
-                player_pos.y + y_axis as f32,
-            ));
+            engine.target =
+                Option::from(Vec2::new(player_pos.x + intent.x, player_pos.y + intent.y));
             info!("Player moved to  {:?}", engine.target);
         } else {
             engine.target = None;
@@ -273,14 +254,18 @@ fn handle_mouse_wheel_input(
     }
 }
 
-fn toggle_fullscreen(mut window_query: Query<&mut Window>, keys: Res<ButtonInput<KeyCode>>) {
+fn toggle_fullscreen(mut window: Single<&mut Window>, keys: Res<ButtonInput<KeyCode>>) {
+    if !window.focused {
+        return;
+    }
+
     if keys.just_pressed(KeyCode::F11) {
-        let mut window = window_query.single_mut();
         window.mode = match window.mode {
-            WindowMode::Windowed => WindowMode::SizedFullscreen,
-            WindowMode::BorderlessFullscreen => WindowMode::Windowed,
-            WindowMode::SizedFullscreen => WindowMode::Windowed,
-            WindowMode::Fullscreen => WindowMode::Windowed,
+            WindowMode::Windowed => WindowMode::SizedFullscreen(MonitorSelection::Current),
+            WindowMode::BorderlessFullscreen(MonitorSelection::Current) => WindowMode::Windowed,
+            WindowMode::SizedFullscreen(MonitorSelection::Current) => WindowMode::Windowed,
+            WindowMode::Fullscreen(MonitorSelection::Current) => WindowMode::Windowed,
+            _ => WindowMode::Windowed,
         };
     }
 }

@@ -90,7 +90,7 @@ pub fn bullet_system(
     mut query: Query<(&mut Bullet, Entity, &Transform, &Owner, Option<&AoeDamage>), With<Bullet>>,
     potential_query: Query<
         (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<HealthComponent>),
+        (Without<Bullet>, With<Collider>, With<Health>),
     >,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {
@@ -136,7 +136,7 @@ pub fn bullet_collision_system(
     >,
     potential_query: Query<
         (&Collider, &Transform, Entity),
-        (Without<Bullet>, With<Collider>, With<HealthComponent>),
+        (Without<Bullet>, With<Collider>, With<Health>),
     >,
     mut take_damage_event: EventWriter<TakeDamageEvent>,
 ) {

@@ -1,5 +1,5 @@
 use crate::assets::audio_assets::{AudioAssets, Fonts};
-use crate::components::health::HealthComponent;
+use crate::components::health::Health;
 use crate::config::GameConfig;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
@@ -8,14 +8,13 @@ use crate::gameplay::player::PlayerComponent;
 use crate::gameplay::GameStates;
 use crate::screens::AppStates;
 use crate::ship::bullet::{ExplosionRender, ShouldDespawn};
-use crate::util::{Colour, Math, RenderLayer};
-use crate::{AppSet, CameraShake, MainCamera};
+use crate::util::{Colour, RenderLayer};
+use crate::{AppSet, CameraShake};
 use bevy::app::App;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use bevy_kira_audio::prelude::Volume;
 use bevy_kira_audio::{Audio, AudioControl};
-use bevy_parallax::{ParallaxMoveEvent, ParallaxSystems};
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
 use rand::Rng;
@@ -108,7 +107,6 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             game_time_system,
-            camera_follow.before(ParallaxSystems),
             combat_system,
             take_damage_events,
             death_system,
@@ -149,44 +147,10 @@ fn reset_game(
     next_game_state.set(GameStates::Playing);
 }
 
-pub fn camera_follow(
-    time: Res<Time>,
-    player_q: Query<&Transform, (With<Transform>, With<PlayerComponent>, Without<MainCamera>)>,
-    mut camera_q: Query<
-        (Entity, &Transform, &mut CameraShake),
-        (With<Transform>, With<MainCamera>, Without<PlayerComponent>),
-    >,
-    mut move_event_writer: EventWriter<ParallaxMoveEvent>,
-) {
-    if let Ok((camera_entity, camera_transform, mut shake)) = camera_q.get_single_mut() {
-        if let Ok(player_transform) = player_q.get_single() {
-            // Calculate the new camera position based on the player's position
-            let target_position = Vec2::new(
-                player_transform.translation.x + 1.0,
-                player_transform.translation.y,
-            );
-
-            let current_position = camera_transform.translation.truncate();
-
-            let smooth_move_position = current_position
-                .lerp(target_position, 5.0 * time.delta_seconds())
-                + shake.trauma * Math::random_2d_unit_vector();
-
-            shake.trauma = f32::max(shake.trauma - shake.decay * time.delta_seconds(), 0.0);
-
-            move_event_writer.send(ParallaxMoveEvent {
-                translation: smooth_move_position - current_position,
-                rotation: 0.0,
-                camera: camera_entity,
-            });
-        }
-    }
-}
-
 pub fn combat_system(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(&mut HealthComponent, Entity), Without<ShouldDespawn>>,
+    mut query: Query<(&mut Health, Entity), Without<ShouldDespawn>>,
     sound_assets: Res<AudioAssets>,
     audio: Res<Audio>,
     config: Res<GameConfig>,
@@ -222,7 +186,7 @@ pub fn take_damage_events(
     mut take_damage_events: EventReader<TakeDamageEvent>,
     mut query: Query<(
         &Transform,
-        &mut HealthComponent,
+        &mut Health,
         Option<&PlayerComponent>,
         Option<&mut HitFlash>,
     )>,
@@ -252,27 +216,26 @@ pub fn take_damage_events(
                 // Floating Text
                 commands.spawn((
                     FloatingText::default(),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            format!("{}", ev.damage.amount),
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
-                                color: if ev.damage.is_crit {
-                                    Colour::YELLOW
-                                } else {
-                                    Colour::WHITE
-                                },
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y + 10.0,
-                            RenderLayer::Effects.as_z(),
-                        ),
+                    Text2d::new(format!("{}", ev.damage.amount)),
+                    TextFont {
+                        font: fonts.primary.clone(),
+                        font_size: if ev.damage.is_crit { 14.0 } else { 12.0 },
                         ..default()
                     },
+                    TextColor::from(if ev.damage.is_crit {
+                        Colour::YELLOW
+                    } else {
+                        Colour::WHITE
+                    }),
+                    TextLayout {
+                        justify: JustifyText::Center,
+                        ..default()
+                    },
+                    Transform::from_xyz(
+                        transform.translation.x,
+                        transform.translation.y + 10.0,
+                        RenderLayer::Effects.as_z(),
+                    ),
                 ));
             }
 
@@ -335,19 +298,18 @@ fn spawn_loot(commands: &mut Commands, fonts: &Res<Fonts>, position: Vec3) {
         .map(|_| {
             (
                 IsLoot,
-                Text2dBundle {
-                    text: Text::from_section(
-                        "*",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 12.0,
-                            color: Colour::PURPLE,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform::from_translation(position),
-                    ..Default::default()
+                Text2d::new("*"),
+                TextFont {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
+                    ..default()
                 },
+                TextColor::from(Colour::PURPLE),
+                TextLayout {
+                    justify: JustifyText::Center,
+                    ..default()
+                },
+                Transform::from_translation(position),
                 Physics {
                     acceleration: Vec2 {
                         x: rng.gen_range(-1.0..1.0),
@@ -391,11 +353,7 @@ fn explode(commands: &mut Commands, explodes: &ExplodesOnDespawn, position: Vec2
                     center: position,
                     radius: 0.0,
                 }),
-                spatial: SpatialBundle::from_transform(Transform::from_xyz(
-                    0.,
-                    0.,
-                    RenderLayer::Effects.as_z(),
-                )),
+                transform: Transform::from_xyz(0., 0., RenderLayer::Effects.as_z()),
                 ..default()
             },
             Stroke::new(explodes.colour, 1.0),

@@ -1,5 +1,5 @@
 use crate::assets::audio_assets::{AudioAssets, Fonts};
-use crate::components::health::{HealthComponent, Owner, Seeker};
+use crate::components::health::{Health, Owner, Seeker};
 use crate::config::GameConfig;
 use crate::gameplay::gamelogic::{
     game_not_paused, Damage, DespawnWithScene, ExplodesOnDespawn, TakeDamageEvent, Targettable,
@@ -12,7 +12,6 @@ use crate::ship::bullet::{
 };
 use crate::ship::engine::Engine;
 use crate::util::{Colour, Math, RenderLayer};
-use bevy::ecs::query::QueryEntityError;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_prototype_lyon::prelude::*;
@@ -420,11 +419,7 @@ pub fn fire_blast_laser(
                 LaserRender,
                 ShapeBundle {
                     path: GeometryBuilder::build_as(&shapes::Line(origin, target_pos)),
-                    spatial: SpatialBundle::from_transform(Transform::from_xyz(
-                        0.,
-                        0.,
-                        RenderLayer::Bullet.as_z(),
-                    )),
+                    transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                     ..default()
                 },
                 Stroke::new(colour.0, 1.0),
@@ -496,28 +491,21 @@ pub fn fire_auto_cannon(
 fn spawn_link(
     commands: &mut Commands,
     take_damage_event: &mut EventWriter<TakeDamageEvent>,
-    target_query: &Query<&Transform>,
+    target_position: Vec2,
     origin: Vec2,
     target: Entity,
     damage: &DoesDamage,
     jump: u8,
     colour: &EffectColour,
     owner: Entity,
-) -> Result<Vec2, QueryEntityError> {
-    // Get Target Info
-    let target_transform = target_query.get(target)?;
-    let target_position = target_transform.translation.truncate();
+) -> Option<Vec2> {
     // Spawn graphic
     commands.spawn((
         Bullet::new(0.2 + (jump as f32) * 0.1),
         LaserRender,
         ShapeBundle {
             path: GeometryBuilder::build_as(&shapes::Line(origin, target_position)),
-            spatial: SpatialBundle::from_transform(Transform::from_xyz(
-                0.,
-                0.,
-                RenderLayer::Bullet.as_z(),
-            )),
+            transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
             ..default()
         },
         Stroke::new(colour.0, 2.0),
@@ -529,7 +517,7 @@ fn spawn_link(
         entity: target,
         damage: damage.roll(),
     });
-    Ok(target_position)
+    Some(target_position)
 }
 
 pub fn fire_chain_laser(
@@ -585,7 +573,7 @@ pub fn fire_chain_laser(
                 let result = spawn_link(
                     &mut commands,
                     &mut take_damage_event,
-                    &target_query,
+                    target_query.get(target).unwrap().translation.truncate(),
                     previous_position,
                     target,
                     damage,
@@ -593,12 +581,8 @@ pub fn fire_chain_laser(
                     colour,
                     parent.get(),
                 );
-
-                match result {
-                    Ok(pos) => {
-                        previous_position = pos;
-                    }
-                    Err(_) => break,
+                if let Some(pos) = result {
+                    previous_position = pos;
                 }
 
                 current_target = get_closest_target(&mut potential_targets, previous_position)
@@ -641,11 +625,7 @@ pub fn fire_emp(
                         center: origin,
                         radius: 0.0,
                     }),
-                    spatial: SpatialBundle::from_transform(Transform::from_xyz(
-                        0.0,
-                        0.0,
-                        RenderLayer::Effects.as_z(),
-                    )),
+                    transform: Transform::from_xyz(0.0, 0.0, RenderLayer::Effects.as_z()),
                     ..default()
                 },
                 Stroke::new(colour.0, 1.0),
@@ -700,23 +680,19 @@ pub fn fire_mine_launcher(
                 .with_volume(Volume::Amplitude(config.sfx_volume as f64));
             commands.spawn((
                 Bullet::new(30.0),
-                Text2dBundle {
-                    text: Text::from_section(
-                        "¤",
-                        TextStyle {
-                            font: fonts.primary.clone(),
-                            font_size: 12.0,
-                            color: colour.0,
-                        },
-                    )
-                    .with_justify(JustifyText::Center),
-                    transform: Transform {
-                        translation: origin.extend(RenderLayer::Bullet.as_z()),
-                        ..Default::default()
-                    },
+                Text2d::new("¤"),
+                TextFont {
+                    font: fonts.primary.clone(),
+                    font_size: 12.0,
                     ..default()
                 },
-                HealthComponent::new(1, 0, 2.0),
+                TextColor::from(colour.0),
+                TextLayout {
+                    justify: JustifyText::Center,
+                    ..default()
+                },
+                Transform::from_translation(origin.extend(RenderLayer::Bullet.as_z())),
+                Health::new(1, 0, 2.0),
                 Collider { radius: size.0 },
                 Owner(parent.get()),
                 ExplodesOnDespawn {
@@ -779,11 +755,7 @@ pub fn fire_pierce_laser(
                 LaserRender,
                 ShapeBundle {
                     path: GeometryBuilder::build_as(&shapes::Line(origin, end)),
-                    spatial: SpatialBundle::from_transform(Transform::from_xyz(
-                        0.,
-                        0.,
-                        RenderLayer::Bullet.as_z(),
-                    )),
+                    transform: Transform::from_xyz(0., 0., RenderLayer::Bullet.as_z()),
                     ..default()
                 },
                 Stroke::new(colour.0, size.0),
@@ -844,22 +816,18 @@ pub fn fire_rocket_launcher(
                     .with_volume(Volume::Amplitude(config.sfx_volume as f64));
                 commands.spawn((
                     Bullet::new(3.0),
-                    Text2dBundle {
-                        text: Text::from_section(
-                            "!",
-                            TextStyle {
-                                font: fonts.primary.clone(),
-                                font_size: 12.0,
-                                color: colour.0,
-                            },
-                        )
-                        .with_justify(JustifyText::Center),
-                        transform: Transform {
-                            translation: origin.extend(RenderLayer::Bullet.as_z()),
-                            ..Default::default()
-                        },
+                    Text2d::new("!"),
+                    TextFont {
+                        font: fonts.primary.clone(),
+                        font_size: 12.0,
                         ..default()
                     },
+                    TextColor::from(colour.0),
+                    TextLayout {
+                        justify: JustifyText::Center,
+                        ..default()
+                    },
+                    Transform::from_translation(origin.extend(RenderLayer::Bullet.as_z())),
                     BaseRotation {
                         rotation: Quat::from_rotation_z(PI / 2.0),
                     },
@@ -964,22 +932,18 @@ fn spawn_bullet(
 ) {
     commands.spawn((
         Bullet::new(seconds2live),
-        Text2dBundle {
-            text: Text::from_section(
-                bullet_text,
-                TextStyle {
-                    font,
-                    font_size,
-                    color: colour.0,
-                },
-            )
-            .with_justify(JustifyText::Center),
-            transform: Transform {
-                translation,
-                ..Default::default()
-            },
+        Text2d::new(bullet_text),
+        TextFont {
+            font,
+            font_size,
             ..default()
         },
+        TextColor::from(colour.0),
+        TextLayout {
+            justify: JustifyText::Center,
+            ..default()
+        },
+        Transform::from_translation(translation),
         Physics {
             velocity,
             ..Default::default()

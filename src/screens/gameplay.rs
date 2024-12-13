@@ -16,7 +16,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         return_to_title_screen
-            .run_if(in_state(AppStates::Game).and_then(input_just_pressed(KeyCode::Escape))),
+            .run_if(in_state(AppStates::Game).and(input_just_pressed(KeyCode::Escape))),
     );
 }
 
@@ -30,7 +30,7 @@ fn spawn_level(
         fade_in: Some(Duration::from_secs(2)),
         fade_out: Some(Duration::from_secs(2)),
     });
-    commands.add(spawn_level_command);
+    commands.queue(spawn_level_command);
 }
 
 fn return_to_title_screen(

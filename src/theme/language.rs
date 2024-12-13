@@ -1,9 +1,10 @@
 use bevy::{
-    asset::{io::Reader, AssetLoader, AsyncReadExt, LoadContext},
+    asset::{io::Reader, AssetLoader, LoadContext},
     prelude::*,
     reflect::TypePath,
     utils::{ConditionalSendFuture, HashMap},
 };
+use std::future::Future;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_asset_loader(TranslationsAssetLoader)
@@ -145,7 +146,8 @@ fn update_text(
     translation_assets: ResMut<Assets<Translation>>,
     mut ev_asset: EventReader<AssetEvent<Translation>>,
     asset_server: Res<AssetServer>,
-    mut text: Query<(&mut Text, &mut LocalizeText)>,
+    mut text: Query<(Entity, &mut LocalizeText)>,
+    mut writer: TextUiWriter,
 ) {
     if let Some(mut localize) = localize {
         if let Some(asset_handle_path) = localize.asset_handle_path.clone() {
@@ -166,14 +168,18 @@ fn update_text(
             }
         }
         if localize.is_initialized {
-            for (mut text, mut localize_text) in &mut text {
+            // info!("is_initialized!");
+            for (entity, mut localize_text) in &mut text {
                 if localize_text.translated_language.is_none()
                     || localize_text.translated_language.unwrap_or(0)
                         != localize.current_language_id
                 {
                     localize_text.translated_language = Some(localize.current_language_id);
                     for (id, keyword) in localize_text.sections.iter().enumerate() {
-                        text.sections[id].value = localize.get(keyword).to_string();
+                        // info!("keyword:{},id:{}", keyword,id);
+                        if keyword != "" {
+                            *writer.text(entity, id) = localize.get(keyword).to_string();
+                        }
                     }
                 }
             }
@@ -189,12 +195,12 @@ impl AssetLoader for TranslationsAssetLoader {
     type Asset = Translation;
     type Settings = ();
     type Error = std::io::Error;
-    fn load<'a>(
-        &'a self,
-        reader: &'a mut Reader,
-        _: &'a Self::Settings,
-        _: &'a mut LoadContext,
-    ) -> impl ConditionalSendFuture<Output = Result<Translation, std::io::Error>> {
+    fn load(
+        &self,
+        reader: &mut dyn Reader,
+        _: &Self::Settings,
+        _: &mut LoadContext,
+    ) -> impl ConditionalSendFuture + Future<Output = Result<Self::Asset, Self::Error>> {
         Box::pin(async move {
             let mut bytes: Vec<u8> = Vec::new();
             reader.read_to_end(&mut bytes).await?;

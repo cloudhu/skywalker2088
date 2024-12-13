@@ -1,4 +1,4 @@
-use crate::components::health::HealthComponent;
+use crate::components::health::Health;
 use crate::gameplay::gamelogic::ExplodesOnDespawn;
 use crate::gameplay::physics::{Collider, Physics, Rotator};
 use crate::screens::AppStates;
@@ -45,13 +45,11 @@ fn spawn_space_object(commands: &mut Commands) {
         Rotator {
             speed: rng.gen_range(-0.4..0.4),
         },
-        HealthComponent::new(size as usize, 0, 2.0),
+        Health::new(size as usize, 0, 2.0),
         Stroke::new(Colour::WHITE, 2.0),
         ShapeBundle {
             path: generate_object_geometry(10, size - 10., size + 10.),
-            spatial: SpatialBundle::from_transform(Transform::from_translation(
-                position.extend(RenderLayer::Background.as_z()),
-            )),
+            transform: Transform::from_translation(position.extend(RenderLayer::Background.as_z())),
             ..default()
         },
         ExplodesOnDespawn {

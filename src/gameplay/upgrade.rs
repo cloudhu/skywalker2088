@@ -1,4 +1,4 @@
-use crate::components::health::HealthComponent;
+use crate::components::health::Health;
 use crate::gameplay::loot::{Cargo, Magnet};
 use crate::gameplay::player::PlayerComponent;
 use crate::screens::AppStates;
@@ -296,7 +296,7 @@ fn upgrade_speed_event(
 
 fn upgrade_health_events(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut HealthComponent, With<PlayerComponent>>,
+    mut query: Query<&mut Health, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         match ev {
@@ -346,7 +346,7 @@ fn upgrade_experience_event(
 
 fn upgrade_heal_event(
     mut upgrade_event: EventReader<UpgradeEvent>,
-    mut query: Query<&mut HealthComponent, With<PlayerComponent>>,
+    mut query: Query<&mut Health, With<PlayerComponent>>,
 ) {
     for ev in upgrade_event.read() {
         if let UpgradeEvent::Heal = ev {

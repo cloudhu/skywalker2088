@@ -13,17 +13,14 @@ mod ship;
 mod theme;
 mod util;
 
-use bevy::core_pipeline::bloom::{BloomCompositeMode, BloomSettings};
+use bevy::core_pipeline::bloom::{Bloom, BloomCompositeMode};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_kira_audio::{AudioPlugin, AudioSettings};
-use bevy_parallax::{
-    CreateParallaxEvent, LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin,
-};
-use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, ShapePlugin};
-use bevy_prototype_lyon::shapes;
-use util::RenderLayer;
-
+use bevy_prototype_lyon::prelude::ShapePlugin;
+// use bevy_parallax::{
+//     CreateParallaxEvent, LayerData, LayerSpeed, ParallaxCameraComponent, ParallaxPlugin,
+// };
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
@@ -63,7 +60,7 @@ impl Plugin for AppPlugin {
         )
         .insert_resource(ClearColor(Color::srgb(0.04, 0.005, 0.04)))
         .add_plugins(ShapePlugin)
-        .add_plugins(ParallaxPlugin)
+        // .add_plugins(ParallaxPlugin)
         .add_plugins(AudioPlugin);
 
         // Spawn the main camera.
@@ -116,63 +113,61 @@ impl Default for CameraShake {
     }
 }
 
-fn spawn_camera(mut commands: Commands, mut create_parallax: EventWriter<CreateParallaxEvent>) {
+// mut create_parallax: EventWriter<CreateParallaxEvent>
+fn spawn_camera(mut commands: Commands) {
     // Spawn the Camera
-    let camera = commands
-        .spawn((
-            Name::new("Camera"),
-            Camera2dBundle {
-                camera: Camera {
-                    hdr: true, // 1. HDR is required for bloom
-                    ..default()
-                },
-                tonemapping: Tonemapping::TonyMcMapface, // 2. Using a tonemapper that desaturates to white is recommended
-                ..default()
-            },
-            MainCamera,
-            CameraShake::default(),
-            BloomSettings {
-                // 3. Enable bloom for the camera
-                intensity: 0.15,
-                composite_mode: BloomCompositeMode::Additive,
-                ..default()
-            },
-            // Render all UI to this camera.
-            // Not strictly necessary since we only use one camera,
-            // but if we don't use this component, our UI will disappear as soon
-            // as we add another camera. This includes indirect ways of adding cameras like using
-            // [ui node outlines](https://bevyengine.org/news/bevy-0-14/#ui-node-outline-gizmos)
-            // for debugging. So it's good to have this here for future-proofing.
-            IsDefaultUiCamera,
-        ))
-        .insert(ParallaxCameraComponent::default())
-        .id();
+    commands.spawn((
+        Name::new("Camera"),
+        Camera2d,
+        Camera {
+            hdr: true, // 1. HDR is required for bloom
+            ..default()
+        },
+        Tonemapping::TonyMcMapface,
+        MainCamera,
+        CameraShake::default(),
+        Bloom {
+            // 3. Enable bloom for the camera
+            intensity: 0.15,
+            composite_mode: BloomCompositeMode::Additive,
+            ..default()
+        },
+        // Render all UI to this camera.
+        // Not strictly necessary since we only use one camera,
+        // but if we don't use this component, our UI will disappear as soon
+        // as we add another camera. This includes indirect ways of adding cameras like using
+        // [ui node outlines](https://bevyengine.org/news/bevy-0-14/#ui-node-outline-gizmos)
+        // for debugging. So it's good to have this here for future-proofing.
+        IsDefaultUiCamera,
+    ));
+    // .insert(ParallaxCameraComponent::default())//TODO:bevy-parallax plugin need to be updated
+    // .id();
 
     // Setup parallax
-    create_parallax.send(CreateParallaxEvent {
-        layers_data: vec![
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.95, 0.95),
-                path: "background/black.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                scale: Vec2::splat(5.0),
-                z: RenderLayer::Background.as_z_with_offset(-10.),
-                ..default()
-            },
-            LayerData {
-                speed: LayerSpeed::Bidirectional(0.9, 0.9),
-                path: "background/stars-tile.png".to_string(),
-                tile_size: UVec2::new(1024, 1024),
-                z: RenderLayer::Background.as_z(),
-                ..default()
-            },
-        ],
-        camera,
-    });
+    // create_parallax.send(CreateParallaxEvent {
+    //     layers_data: vec![
+    //         LayerData {
+    //             speed: LayerSpeed::Bidirectional(0.95, 0.95),
+    //             path: "background/black.png".to_string(),
+    //             tile_size: UVec2::new(1024, 1024),
+    //             scale: Vec2::splat(5.0),
+    //             z: RenderLayer::Background.as_z_with_offset(-10.),
+    //             ..default()
+    //         },
+    //         LayerData {
+    //             speed: LayerSpeed::Bidirectional(0.9, 0.9),
+    //             path: "background/stars-tile.png".to_string(),
+    //             tile_size: UVec2::new(1024, 1024),
+    //             z: RenderLayer::Background.as_z(),
+    //             ..default()
+    //         },
+    //     ],
+    //     camera,
+    // });
 
     // Spawn a shape so that the shape loop always runs (fixes bug with library cleaning itself up)
-    commands.spawn((ShapeBundle {
-        path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
-        ..default()
-    },));
+    // commands.spawn((ShapeBundle {
+    //     path: GeometryBuilder::build_as(&shapes::Line(Vec2::ZERO, Vec2::ZERO)),
+    //     ..default()
+    // },));
 }

@@ -12,13 +12,13 @@ pub enum RenderLayer {
 impl RenderLayer {
     /// Gets named z position with offset to stay in allocated range.
     /// The offset must be from -100 to 100 (exclusive) or the app will panic.
-    pub fn as_z_with_offset(self, offset: f32) -> f32 {
-        if offset >= 100.0 || offset <= -100.0 {
-            panic!("Layer offset can not be 100 or more");
-        }
-        let base = self as u16 as f32;
-        base + offset
-    }
+    // pub fn as_z_with_offset(self, offset: f32) -> f32 {
+    //     if offset >= 100.0 || offset <= -100.0 {
+    //         panic!("Layer offset can not be 100 or more");
+    //     }
+    //     let base = self as u16 as f32;
+    //     base + offset
+    // }
 
     pub const fn as_z(self) -> f32 {
         self as u16 as f32

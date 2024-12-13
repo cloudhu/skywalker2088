@@ -1,23 +1,23 @@
 use crate::gameplay::effects::HitFlash;
-use crate::gameplay::gamelogic::{DespawnWithScene, ExplodesOnDespawn, Targettable, WillTarget};
+use crate::gameplay::gamelogic::{ExplodesOnDespawn, Targettable, WillTarget};
 use crate::gameplay::physics::{Collider, Physics};
 use crate::ship::engine::Engine;
 use bevy::prelude::*;
 
 // Bundles
-#[derive(Bundle, Default)]
-pub struct FighterBundle {
-    pub sprite: SpriteBundle,
-    pub physics: Physics,
-    pub engine: Engine,
-    pub health: HealthComponent,
-    pub collider: Collider,
-    pub targettable: Targettable,
-    pub will_target: WillTarget,
-    pub despawn_with_scene: DespawnWithScene,
-    pub explodes_on_despawn: ExplodesOnDespawn,
-    pub hit_flash: HitFlash,
-}
+#[derive(Component, Default)]
+#[require(
+    Sprite,
+    Physics,
+    Engine,
+    Health,
+    Collider,
+    Targettable,
+    WillTarget,
+    ExplodesOnDespawn,
+    HitFlash
+)]
+pub struct Spacecraft;
 
 #[derive(Component)]
 pub struct Seeker(pub Entity);
@@ -26,7 +26,7 @@ pub struct Seeker(pub Entity);
 pub struct Owner(pub Entity);
 
 #[derive(Component)]
-pub struct HealthComponent {
+pub struct Health {
     pub health: usize,
     pub shields: usize,
     pub max_health: usize,
@@ -36,19 +36,15 @@ pub struct HealthComponent {
     pub shields_recharge_timer: Timer,
 }
 
-impl Default for HealthComponent {
+impl Default for Health {
     fn default() -> Self {
-        HealthComponent::new(100, 100, 2.0)
+        Health::new(100, 100, 2.0)
     }
 }
 
-impl HealthComponent {
-    pub fn new(
-        max_health: usize,
-        max_shield: usize,
-        shields_recharge_rate: f32,
-    ) -> HealthComponent {
-        HealthComponent {
+impl Health {
+    pub fn new(max_health: usize, max_shield: usize, shields_recharge_rate: f32) -> Health {
+        Health {
             health: max_health,
             max_health,
             shields: max_shield,

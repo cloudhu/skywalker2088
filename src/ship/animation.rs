@@ -3,6 +3,7 @@
 use crate::components::events::AnimationCompletedEvent;
 use crate::gameplay::GameStates;
 use crate::screens::AppStates;
+use bevy::sprite::Sprite;
 use bevy::{
     app::{App, Update},
     asset::Assets,
@@ -14,7 +15,7 @@ use bevy::{
         system::{Query, Res},
     },
     prelude::error,
-    sprite::{TextureAtlas, TextureAtlasLayout},
+    sprite::TextureAtlasLayout,
     state::condition::in_state,
     time::{Time, Timer},
 };
@@ -53,11 +54,11 @@ pub enum PingPongDirection {
 }
 
 /// Describes an animation
-#[derive(Deserialize)]
-pub struct AnimationData {
-    pub direction: AnimationDirection,
-    pub frame_duration: f32,
-}
+// #[derive(Deserialize)]
+// pub struct AnimationData {
+//     pub direction: AnimationDirection,
+//     pub frame_duration: f32,
+// }
 
 /// A tag on entities that need to be animated
 #[derive(Component)]
@@ -74,56 +75,57 @@ fn animate_sprite_system(
     time: Res<Time>,
     texture_atlas_layouts: Res<Assets<TextureAtlasLayout>>,
     mut animation_complete_event_writer: EventWriter<AnimationCompletedEvent>,
-    mut query: Query<(Entity, &mut AnimationComponent, &mut TextureAtlas)>,
+    mut query: Query<(Entity, &mut AnimationComponent, &mut Sprite)>,
 ) {
-    for (entity, mut animation, mut texture_atlas) in query.iter_mut() {
+    for (entity, mut animation, mut sprite) in query.iter_mut() {
         // tick the animation timer
         animation.timer.tick(time.delta());
 
         // check if frame has completed
         if animation.timer.finished() {
-            // get the texture atlas
-            if let Some(texture_atlas_layout) = texture_atlas_layouts.get(texture_atlas.layout.id())
-            {
-                // update animation based on the animation direction
-                match &animation.direction {
-                    AnimationDirection::None => {}
-                    AnimationDirection::Forward => {
-                        let new_idx =
-                            (texture_atlas.index + 1) % texture_atlas_layout.textures.len();
-                        if new_idx == 0 {
-                            animation_complete_event_writer.send(AnimationCompletedEvent(entity));
-                        }
-                        texture_atlas.index = new_idx;
-                    }
-                    AnimationDirection::PingPong(direction) => match direction {
-                        PingPongDirection::Forward => {
-                            if texture_atlas.index < (texture_atlas_layout.textures.len() - 1) {
-                                texture_atlas.index += 1;
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                // get the texture atlas
+                if let Some(texture_atlas_layout) = texture_atlas_layouts.get(atlas.layout.id()) {
+                    // update animation based on the animation direction
+                    match &animation.direction {
+                        AnimationDirection::None => {}
+                        AnimationDirection::Forward => {
+                            let new_idx = (atlas.index + 1) % texture_atlas_layout.textures.len();
+                            if new_idx == 0 {
+                                animation_complete_event_writer
+                                    .send(AnimationCompletedEvent(entity));
                             }
+                            atlas.index = new_idx;
+                        }
+                        AnimationDirection::PingPong(direction) => match direction {
+                            PingPongDirection::Forward => {
+                                if atlas.index < (texture_atlas_layout.textures.len() - 1) {
+                                    atlas.index += 1;
+                                }
 
-                            if texture_atlas.index == (texture_atlas_layout.textures.len() - 1) {
-                                animation.direction =
-                                    AnimationDirection::PingPong(PingPongDirection::Backward)
+                                if atlas.index == (texture_atlas_layout.textures.len() - 1) {
+                                    animation.direction =
+                                        AnimationDirection::PingPong(PingPongDirection::Backward)
+                                }
                             }
-                        }
-                        PingPongDirection::Backward => {
-                            if texture_atlas.index > 0 {
-                                texture_atlas.index -= 1;
-                            }
+                            PingPongDirection::Backward => {
+                                if atlas.index > 0 {
+                                    atlas.index -= 1;
+                                }
 
-                            if texture_atlas.index == 0 {
-                                animation.direction =
-                                    AnimationDirection::PingPong(PingPongDirection::Forward)
+                                if atlas.index == 0 {
+                                    animation.direction =
+                                        AnimationDirection::PingPong(PingPongDirection::Forward)
+                                }
                             }
-                        }
-                    },
-                };
-            } else {
-                error!(
-                    "Could not get texture atlas layout for id: {}.",
-                    texture_atlas.layout.id()
-                );
+                        },
+                    };
+                } else {
+                    error!(
+                        "Could not get texture atlas layout for id: {}.",
+                        sprite.clone().texture_atlas.unwrap().layout.id()
+                    );
+                }
             }
         }
     }

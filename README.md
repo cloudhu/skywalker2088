@@ -73,7 +73,9 @@ ______
 
 # 3. 开发指南
 ## 3.1 游戏引擎
-   Game Engine:[Bevy](https://bevyengine.org/)
+   - Game Engine:[Bevy](https://bevyengine.org/)
+   - 目前支持0.14.2和0.15.0两个版本的不同分支
+
 ## 3.2 游戏模板
 - 使用`cargo generate thebevyflock/bevy_new_2d`生成的[bevy_new_2d 游戏模板](https://github.com/TheBevyFlock/bevy_new_2d)
 - 从[ASCII Space Shooter](https://github.com/JamesHDuffield/ascii-rust)开源项目Copy核心逻辑代码

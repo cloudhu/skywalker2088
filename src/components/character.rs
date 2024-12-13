@@ -1,5 +1,5 @@
 use crate::components::abilities::{SlotOneAbilityType, SlotTwoAbilityType};
-use crate::components::health::HealthComponent;
+use crate::components::health::Health;
 use crate::components::spawnable::SpawnPosition;
 use bevy::math::Vec2;
 use bevy::prelude::Resource;
@@ -80,9 +80,9 @@ pub struct Character {
     pub cooldown_multiplier: f32,
 }
 
-impl From<&Character> for HealthComponent {
+impl From<&Character> for Health {
     fn from(character: &Character) -> Self {
-        HealthComponent::new(
+        Health::new(
             character.health,
             character.shields,
             character.shields_recharge_rate,

@@ -1,12 +1,8 @@
 //! A splash screen that plays briefly at startup.
 
-use bevy::{
-    input::common_conditions::input_just_pressed,
-    prelude::*,
-    render::texture::{ImageLoaderSettings, ImageSampler},
-};
-
 use crate::{screens::AppStates, theme::prelude::*, AppSet};
+use bevy::image::{ImageLoaderSettings, ImageSampler};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     // Spawn splash screen.
@@ -40,7 +36,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         continue_to_loading_screen
-            .run_if(input_just_pressed(KeyCode::Escape).and_then(in_state(AppStates::Splash))),
+            .run_if(input_just_pressed(KeyCode::Escape).and(in_state(AppStates::Splash))),
     );
 }
 
@@ -59,22 +55,19 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
         .with_children(|children| {
             children.spawn((
                 Name::new("Splash image"),
-                ImageBundle {
-                    style: Style {
-                        margin: UiRect::all(Val::Auto),
-                        width: Val::Percent(70.0),
-                        ..default()
+                ImageNode::from(asset_server.load_with_settings(
+                    // This should be an embedded asset for instant loading, but that is
+                    // currently [broken on Windows Wasm builds](https://github.com/bevyengine/bevy/issues/14246).
+                    "images/splash.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        // Make an exception for the splash image in case
+                        // `ImagePlugin::default_nearest()` is used for pixel art.
+                        settings.sampler = ImageSampler::linear();
                     },
-                    image: UiImage::new(asset_server.load_with_settings(
-                        // This should be an embedded asset for instant loading, but that is
-                        // currently [broken on Windows Wasm builds](https://github.com/bevyengine/bevy/issues/14246).
-                        "images/splash.png",
-                        |settings: &mut ImageLoaderSettings| {
-                            // Make an exception for the splash image in case
-                            // `ImagePlugin::default_nearest()` is used for pixel art.
-                            settings.sampler = ImageSampler::linear();
-                        },
-                    )),
+                )),
+                Node {
+                    margin: UiRect::all(Val::Auto),
+                    width: Val::Percent(70.0),
                     ..default()
                 },
                 UiImageFadeInOut {
@@ -110,11 +103,11 @@ impl UiImageFadeInOut {
 
 fn tick_fade_in_out(time: Res<Time>, mut animation_query: Query<&mut UiImageFadeInOut>) {
     for mut anim in &mut animation_query {
-        anim.t += time.delta_seconds();
+        anim.t += time.delta_secs();
     }
 }
 
-fn apply_fade_in_out(mut animation_query: Query<(&UiImageFadeInOut, &mut UiImage)>) {
+fn apply_fade_in_out(mut animation_query: Query<(&UiImageFadeInOut, &mut ImageNode)>) {
     for (anim, mut image) in &mut animation_query {
         image.color.set_alpha(anim.alpha())
     }

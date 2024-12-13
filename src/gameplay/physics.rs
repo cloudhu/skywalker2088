@@ -73,11 +73,11 @@ pub fn physics_system(
         let current_acceleration = physics.acceleration;
         let drag = physics.drag;
         physics.velocity += current_acceleration;
-        transform.translation += physics.velocity.extend(0.0) * time.delta_seconds();
+        transform.translation += physics.velocity.extend(0.0) * time.delta_secs();
         // println!("Player translate at {:?}", transform.translation);
         // TODO make acceleration ramp down
         physics.acceleration = Vec2::ZERO;
-        physics.velocity *= 1.0 - (drag * time.delta_seconds());
+        physics.velocity *= 1.0 - (drag * time.delta_secs());
 
         if physics.face_velocity {
             transform.rotation = Math::quaternion_from_2d_vector(physics.velocity);
@@ -91,6 +91,6 @@ pub fn physics_system(
 
 pub fn rotator_system(time: Res<Time>, mut query: Query<(&mut Transform, &Rotator)>) {
     for (mut transform, rotator) in &mut query {
-        transform.rotate(Quat::from_rotation_z(rotator.speed * time.delta_seconds()));
+        transform.rotate(Quat::from_rotation_z(rotator.speed * time.delta_secs()));
     }
 }

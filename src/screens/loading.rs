@@ -14,8 +14,8 @@ fn spawn_loading_screen(mut commands: Commands) {
         .ui_root()
         .insert(StateScoped(AppStates::Loading))
         .with_children(|children| {
-            children.content("Loading...").insert(Style {
-                justify_content: JustifyContent::Center,
+            children.content("Loading...").insert(TextLayout {
+                justify: JustifyText::Center,
                 ..default()
             });
         });

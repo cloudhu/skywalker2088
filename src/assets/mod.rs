@@ -20,7 +20,6 @@ use crate::{
     },
     components::abilities::{AbilitiesResource, AbilityDescriptionsResource, ActivateAbilityEvent},
     components::character::CharactersResource,
-    components::input::PlayerAction,
     components::player::{InputRestrictionsAtSpawn, PlayersResource},
     screens::AppStates,
 };
@@ -30,10 +29,10 @@ use bevy_asset_loader::loading_state::LoadingState;
 use bevy_asset_loader::prelude::{
     ConfigureLoadingState, LoadingStateAppExt, StandardDynamicAssetCollection,
 };
-use leafwing_input_manager::prelude::InputManagerPlugin;
+// use leafwing_input_manager::prelude::InputManagerPlugin;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
+    // app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
     app.add_event::<ActivateAbilityEvent>();
     app.add_loading_state(
         LoadingState::new(AppStates::Loading)
