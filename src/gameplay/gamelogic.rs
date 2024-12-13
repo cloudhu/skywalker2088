@@ -1,6 +1,7 @@
 use crate::assets::audio_assets::{AudioAssets, Fonts};
 use crate::components::health::Health;
 use crate::config::GameConfig;
+use crate::gameplay::camera::camera_follow;
 use crate::gameplay::effects::{FloatingText, HitFlash};
 use crate::gameplay::loot::{DropsLoot, IsLoot, Points, WorthPoints};
 use crate::gameplay::physics::{Collider, Physics};
@@ -15,6 +16,7 @@ use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use bevy_kira_audio::prelude::Volume;
 use bevy_kira_audio::{Audio, AudioControl};
+use bevy_parallax::ParallaxSystems;
 use bevy_prototype_lyon::prelude::{GeometryBuilder, ShapeBundle, Stroke};
 use bevy_prototype_lyon::shapes;
 use rand::Rng;
@@ -107,6 +109,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             game_time_system,
+            camera_follow.before(ParallaxSystems),
             combat_system,
             take_damage_events,
             death_system,

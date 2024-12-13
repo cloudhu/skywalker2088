@@ -1,5 +1,6 @@
 //! The game's main gameplay states and transitions between them.
 
+mod camera;
 pub mod effects;
 pub mod gamelogic;
 mod hud;
@@ -10,6 +11,7 @@ pub mod physics;
 pub mod player;
 mod selection;
 mod upgrade;
+
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

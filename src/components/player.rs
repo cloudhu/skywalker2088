@@ -1,5 +1,6 @@
 use crate::components::character::{Character, CharacterType};
 use crate::components::spawnable::SpawnPosition;
+use crate::gameplay::player::PlayerComponent;
 use bevy::prelude::{Bundle, Component, Deref, DerefMut, Resource, Vec2};
 
 /// Parameters for how to spawn new players. By default, the player can do anything.
@@ -30,7 +31,7 @@ pub struct PlayerData {
 }
 
 /// Input method for a player
-/// Gamepad has a usize identifier
+/// Gamepad has an usize identifier
 #[derive(Clone, PartialEq, Debug, Copy)]
 pub enum PlayerInput {
     Keyboard,
@@ -146,7 +147,7 @@ pub struct PlayerOutgoingDamageComponent {
     pub projectile_size: f32,
     /// Base projectile count
     pub projectile_count: usize,
-    /// Starting cooldown multiplier of the player. Used in calculating the the `cooldown_multiplier`
+    /// Starting cooldown multiplier of the player. Used in calculating the `cooldown_multiplier`
     pub base_cooldown_multiplier: f32,
     /// Multiplier for how long abilities take to be ready for use again
     pub cooldown_multiplier: f32,
@@ -171,10 +172,6 @@ impl Default for PlayerIncomingDamageComponent {
 pub struct PlayerInventoryComponent {
     pub money: usize,
 }
-
-/// Flag for Player Entities
-#[derive(Component)]
-pub struct PlayerComponent;
 
 impl From<&Character> for PlayerMovementComponent {
     fn from(character: &Character) -> Self {

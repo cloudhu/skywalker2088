@@ -168,13 +168,13 @@ pub fn player_control(
             });
             if world_cursor_pos.is_some() {
                 engine.target = world_cursor_pos;
-                info!("Player controlled at {:?}", engine.target);
+                // info!("Player controlled at {:?}", engine.target);
             }
         } else if intent != Vec2::ZERO {
             let player_pos = trans.translation.clone();
             engine.target =
                 Option::from(Vec2::new(player_pos.x + intent.x, player_pos.y + intent.y));
-            info!("Player moved to  {:?}", engine.target);
+            // info!("Player moved to  {:?}", engine.target);
         } else {
             engine.target = None;
         }

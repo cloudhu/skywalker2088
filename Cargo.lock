@@ -413,6 +413,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy-parallax"
+version = "0.11.0"
+source = "git+https://github.com/foxzool/bevy-parallax.git?rev=0322b9d#0322b9d75160b6d2c5d858eaebcd2e416e446909"
+dependencies = [
+ "bevy 0.15.0",
+ "serde",
+]
+
+[[package]]
 name = "bevy_a11y"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5186,6 +5195,7 @@ name = "skywalker2088"
 version = "0.1.3"
 dependencies = [
  "bevy 0.15.0",
+ "bevy-parallax",
  "bevy_asset_loader",
  "bevy_kira_audio",
  "bevy_pkv",
